@@ -24,10 +24,6 @@ deny contains msg if {
 
 
 
-
-
-
-
 # require tags
 # require digest
 # disallow default service account

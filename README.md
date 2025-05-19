@@ -29,7 +29,7 @@ We use [helmfile](https://helmfile.readthedocs.io/en/latest/) to generate all ku
 to generate all manifest use the following command in the base directory
 
 ```bash
-helmfile template 
+helmfile template
 ```
 
 For more detailed information see [MijnBureau docs](https://minbzk.github.io/mijn-bureau/)

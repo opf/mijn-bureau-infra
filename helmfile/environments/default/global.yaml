@@ -1,6 +1,6 @@
 global:
-  domain: {{ env "DOMAIN" | default "mijnbureau.internal" | quote }}
-  matrixDomain: {{ env "MATRIX_DOMAIN" | quote }}
+  domain: { { env "DOMAIN" | default "mijnbureau.internal" | quote } }
+  matrixDomain: { { env "MATRIX_DOMAIN" | quote } }
 
   hosts:
     docs: "docs"

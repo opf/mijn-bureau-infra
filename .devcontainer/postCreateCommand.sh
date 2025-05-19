@@ -51,5 +51,3 @@ chmod +x /usr/local/bin/opa
 wget -O regal https://github.com/StyraInc/regal/releases/latest/download/regal_${SYSTEM}_${ARCH}
 sudo mv regal /usr/local/bin
 sudo chmod +x /usr/local/bin/regal
-
-
