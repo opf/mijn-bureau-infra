@@ -29,7 +29,7 @@ pip3 install pre-commit gitlint requests
 wget -O - https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # install helmfile
-wget -O helmfile.tar.gz https://github.com/helmfile/helmfile/releases/download/v1.0.0/helmfile_1.0.0_linux_arm64.tar.gz
+wget -O helmfile.tar.gz https://github.com/helmfile/helmfile/releases/download/v1.0.0/helmfile_1.0.0_${SYSTEM}_${ARCH}.tar.gz
 tar -xzf helmfile.tar.gz
 sudo mv helmfile /usr/local/bin
 
