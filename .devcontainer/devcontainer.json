@@ -1,0 +1,30 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/alpine
+{
+  "name": "MijnBureau ubuntu",
+  "image": "mcr.microsoft.com/devcontainers/base:jammy",
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+  "postStartCommand": "bash pre-commit install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "editorconfig.editorconfig",
+        "mhutchie.git-graph",
+        "seatonjiang.gitmoji-vscode",
+        "tsandall.opa",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.renderWhitespace": "boundary",
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.inheritEnv": true,
+        "debug.toolBarLocation": "commandCenter"
+      }
+    }
+  }
+  // "remoteUser": "root"
+}
