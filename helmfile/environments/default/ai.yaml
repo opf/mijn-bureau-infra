@@ -1,0 +1,6 @@
+ai:
+  selfhost: true
+  llm:
+    model:
+    endpoint:
+    apiKey:

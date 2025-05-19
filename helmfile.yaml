@@ -1,0 +1,18 @@
+helmDefaults:
+  verify: true
+
+
+commonLabels:
+  app.kubernetes.io/name: mijnbureau
+
+environments:
+  default:
+  production:
+
+
+helmfiles:
+
+
+
+
+bases:
