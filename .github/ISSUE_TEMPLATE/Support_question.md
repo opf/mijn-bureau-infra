@@ -8,7 +8,7 @@ We primarily use GitHub as an issue tracker. If however you're encountering an i
 
 ---
 
-Please make sure you have read our [docs](https://mijn-bureau.nl).
+Please make sure you have read our [docs](https://minbzk.github.io/mijn-bureau/).
 
 Also make sure it was not already answered in [an open or close issue](https://github.com/MijnBureau/deployment-helmfile/issues?q=is%3Aissue).
 

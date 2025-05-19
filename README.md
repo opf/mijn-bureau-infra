@@ -32,7 +32,7 @@ to generate all manifest use the following command in the base directory
 helmfile template 
 ```
 
-For more detailed information see [MijnBureau docs](https://mijn-bureau.nl)
+For more detailed information see [MijnBureau docs](https://minbzk.github.io/mijn-bureau/)
 
 ## Commit rules
 
