@@ -23,7 +23,7 @@ sudo apt update
 sudo apt-get -y install python3-pip
 
 # install pre-commit hook
-pip3 install pre-commit
+pip3 install pre-commit gitlint requests
 
 # install helm
 wget -O - https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
