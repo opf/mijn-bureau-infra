@@ -1,13 +1,19 @@
 helmDefaults:
   verify: true
 
-commonLabels:
-  app.kubernetes.io/name: mijnbureau
+missingFileHandler: "Error"
 
 environments:
   default:
-  production:
+    values:  &values
+      - "helmfile/environments/default/*.yaml*"
 
 helmfiles:
-
-bases:
+  - path: "helmfile/apps/keycloak/helmfile-child.yaml"
+    values: *values
+  - path: "helmfile/apps/docs/helmfile-child.yaml"
+    values: *values
+  # - path: "helmfile/apps/element/helmfile-child.yaml"
+  #   values: *values
+  # - path: "helmfile/apps/ollama/helmfile-child.yaml"
+  #   values: *values

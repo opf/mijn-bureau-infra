@@ -33,8 +33,11 @@ wget -O helmfile.tar.gz https://github.com/helmfile/helmfile/releases/download/v
 tar -xzf helmfile.tar.gz
 sudo mv helmfile /usr/local/bin
 
-# install helm secrets
+# install helm plugins
 helm plugin install https://github.com/jkroepke/helm-secrets
+helm plugin install https://github.com/databus23/helm-diff
+helm plugin install https://github.com/aslafy-z/helm-git
+helm plugin install https://github.com/hypnoglow/helm-s3
 
 # install conftest
 LATEST_VERSION=$(wget -O - "https://api.github.com/repos/open-policy-agent/conftest/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)

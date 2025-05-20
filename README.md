@@ -29,6 +29,7 @@ We use [helmfile](https://helmfile.readthedocs.io/en/latest/) to generate all ku
 to generate all manifest use the following command in the base directory
 
 ```bash
+export MASTER_PASSWORD=changethis
 helmfile template
 ```
 

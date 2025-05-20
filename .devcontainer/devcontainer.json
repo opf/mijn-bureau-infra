@@ -20,7 +20,10 @@
         "editor.renderWhitespace": "boundary",
         "files.trimTrailingWhitespace": true,
         "terminal.integrated.inheritEnv": true,
-        "debug.toolBarLocation": "commandCenter"
+        "debug.toolBarLocation": "commandCenter",
+        "files.associations": {
+          "*.yaml.gotmpl": "yaml"
+        }
       }
     }
   }
