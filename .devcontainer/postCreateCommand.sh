@@ -13,6 +13,11 @@ nvm install v22.15.1
 
 # get architecture an system properties
 ARCH=$(dpkg --print-architecture)
+if [ "$ARCH" = amd64 ]; then
+  ARCH_X86_FIX=x86_64
+else
+  ARCH_X86_FIX="$ARCH"
+fi
 SYSTEM=$(uname)
 
 # install prettier
@@ -41,8 +46,8 @@ helm plugin install https://github.com/hypnoglow/helm-s3
 
 # install conftest
 LATEST_VERSION=$(wget -O - "https://api.github.com/repos/open-policy-agent/conftest/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
-wget "https://github.com/open-policy-agent/conftest/releases/download/v${LATEST_VERSION}/conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz"
-tar xzf conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz
+wget "https://github.com/open-policy-agent/conftest/releases/download/v${LATEST_VERSION}/conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH_X86_FIX}.tar.gz"
+tar xzf conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH_X86_FIX}.tar.gz
 sudo mv conftest /usr/local/bin
 
 # install open plicy agent
@@ -51,6 +56,6 @@ sudo mv opa /usr/local/bin
 chmod +x /usr/local/bin/opa
 
 # install regal
-wget -O regal https://github.com/StyraInc/regal/releases/latest/download/regal_${SYSTEM}_${ARCH}
+wget -O regal https://github.com/StyraInc/regal/releases/latest/download/regal_${SYSTEM}_${ARCH_X86_FIX}
 sudo mv regal /usr/local/bin
 sudo chmod +x /usr/local/bin/regal
