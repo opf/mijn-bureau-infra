@@ -13,4 +13,3 @@ Please check all the boxes that apply to this pull request using "x":
 - [] I have followed the project's style guidelines by running the relevent scripts/\* tools.
 - [] I have rebased my branch onto the latest commit of the main branch.
 - [] I have squashed or reorganized my commits into logical units.
-- [] I have read, understood and agree to the [Developer Certificate of Origin](../blob/main/DCO.md), which this project utilizes and signed my commit proving i agree with `git commit --signoff`.
