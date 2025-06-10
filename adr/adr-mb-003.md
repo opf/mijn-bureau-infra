@@ -16,6 +16,4 @@ We evaluated the following tools:
 
 ## Decision
 
-We will use kubernetes
-
 ## Consequences
