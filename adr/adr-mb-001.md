@@ -1,12 +1,15 @@
 # ADR-MB-001: Use ADRs to define architecture decisions
 
 ## Status
+
 Accepted
 
 ## Context
+
 One of the hardest things to track during the life of a project is the motivation behind certain decisions. A new person coming on to a project may be perplexed, baffled, delighted, or infuriated by some past decision.
 
 ## Decision
+
 We will keep a collection of records for "architecturally significant" decisions: those that affect the structure, non-functional characteristics, dependencies, interfaces, or construction techniques.
 
 We will keep ADRs in the project repository under adr/adr-mb-NNN.md
