@@ -1,10 +1,10 @@
 ---
 global:
-  domain: {{ env "DOMAIN" | default "mijnbureau.internal" | quote }}
-  matrixDomain: {{ env "MATRIX_DOMAIN" | quote }}
+  domain: "mijnbureau.internal"
 
   hosts:
     docs: "docs"
     keycloak: "id"
     element: "chat"
     synapse: "matrix"
+    ollama: "ollama"
