@@ -28,7 +28,7 @@ deny contains msg if {
 deny contains msg if {
   input.kind in {"Deployment", "StatefulSet", "DaemonSet", "Job", "Pod"}
   some i
-  input.spec.template.spec.containers[i].securityContext.runAsNonRoot
+  input.spec.template.spec.containers[i].securityContext.runAsNonRoot == false
   msg := "Containers must not run as root, check runAsNonRoot"
 }
 
