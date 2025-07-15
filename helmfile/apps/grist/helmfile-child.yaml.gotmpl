@@ -39,7 +39,7 @@ releases:
 
   - name: grist
     chart: charts/grist
-    #condition: {{ .Values.applications.grist.enabled }}
+    condition: applications.grist.enabled
     dependencies:
     - chart: "oci://{{ (coalesce .Values.charts.bitnamicommon.registry .Values.global.helmRegistry ) }}/{{ .Values.charts.bitnamicommon.repository }}/{{ .Values.charts.bitnamicommon.name }}"
       version: 2.31.3
