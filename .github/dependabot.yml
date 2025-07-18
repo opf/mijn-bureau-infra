@@ -26,7 +26,7 @@ updates:
         patterns:
           - "*"
     commit-message:
-      prefix: ":arrow_up:(chore) "
+      prefix: "⬆️(chore) "
 
   - package-ecosystem: "npm"
     directory: "/docs"
@@ -40,4 +40,4 @@ updates:
         patterns:
           - "*"
     commit-message:
-      prefix: ":arrow_up:(chore) "
+      prefix: "⬆️(chore) "
