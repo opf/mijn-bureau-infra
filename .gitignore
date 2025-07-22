@@ -30,3 +30,5 @@ debug.log
 # Demo.yaml
 /helmfile/environments/demo/demo.yaml.gotmpl
 /output/
+
+CLAUDE.md
