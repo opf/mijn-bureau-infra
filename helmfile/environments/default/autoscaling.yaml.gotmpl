@@ -1,8 +1,14 @@
 autoscaling:
-  grist:
-    hpa:
+  horizontal:
+    grist:
       enabled: false
       minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: ""
+    keycloak:
+      enabled: true
+      minReplicas: 2
       maxReplicas: 3
       targetCPU: 75
       targetMemory: ""
