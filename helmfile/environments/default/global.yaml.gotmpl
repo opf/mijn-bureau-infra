@@ -1,6 +1,11 @@
 ---
 global:
   domain: "mijnbureau.internal"
+  # global.matrixDomain is the public-facing domain of the synapse server. See the documentation linked below for implications of setting this value.
+  # If `global.matrixDomain` is not set, it will be `<global.hostname.synapse>.<global.domain>`.
+  # Note that this value can only be set once at setup.
+  # ref: https://element-hq.github.io/synapse/latest/delegate.html
+  matrixDomain: ""
 
   # resourcePreset sets the default resources for all applications
   # allowed values "nano" "micro" "small" "medium" "large" "xlarge" "2xlarge"
