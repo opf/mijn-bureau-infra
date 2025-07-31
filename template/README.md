@@ -1,4 +1,4 @@
-# Bitnami Charts Template
+# MijnBureau Charts Template
 
 This directory contains a basic scaffolding to serve as the basis for creating a new chart.
 
