@@ -13,3 +13,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Added Helm values schema generation script
 - Added Kubernetes conformance cheker
 - Added scope check in commit message
+- Added Helm lint
+- Fixed Prettier to lint all files
