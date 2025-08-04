@@ -1,0 +1,13 @@
+bases:
+  - "../../bases/default.yaml.gotmpl"
+
+releases:
+  - name: "collabora-online"
+    chart: "charts/collabora"
+    condition: application.collabora.enabled
+    namespace: {{ .Values.application.collabora.namespace | quote }}
+    dependencies:
+    - chart: "oci://{{ (coalesce .Values.chart.bitnamicommon.registry .Values.chart.default.registry ) }}/{{ .Values.chart.bitnamicommon.repository }}/{{ .Values.chart.bitnamicommon.name }}"
+      version: 2.31.3
+    values:
+      - "values-collabora.yaml.gotmpl"

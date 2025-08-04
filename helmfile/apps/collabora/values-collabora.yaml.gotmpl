@@ -1,0 +1,138 @@
+# Default values for Collabora.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+{{- /*
+  $serverName is the name of the server in the Collabora ecosystem
+  $hostName is the hostname the server is available at
+  $clientHostName is the host the client is running on
+*/ -}}
+# {{- $serverName := .Values.global.hostname.collabora | default (printf "%s.%s" .Values.global.hostname.collabora .Values.global.domain) -}}
+{{- $hostName := printf "%s.%s" .Values.global.hostname.collabora .Values.global.domain -}}
+{{- $clientHostName := printf "%s.%s" .Values.global.hostname.collabora .Values.global.domain -}}
+
+clusterDomain: {{ .Values.cluster.networking.domain }}
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  registry: {{ coalesce .Values.container.collabora.registry .Values.container.default.registry | quote }}
+  repository: {{ .Values.container.collabora.repository }}
+  # This sets the pull policy for images.
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: {{ .Values.container.collabora.tag }}
+  pullSecrets:
+    - {{ coalesce .Values.container.collabora.imagePullSecret .Values.container.default.imagePullSecret | toYaml | nindent 8 }}
+
+collabora:
+  # Username used for authenticating with the Collabora service (default: "admin" if not provided in secrets)
+  username: {{ .Values.secret.collabora.credentials.username | default "admin" | quote }}
+
+  # Password used for authenticating with the Collabora service (default: "admin" if not provided in secrets)
+  password: {{ .Values.secret.collabora.credentials.password | default "admin" | quote }}
+
+  # The hostname that Collabora will use to identify itself (usually matches the external DNS name)
+  server_name: {{ .Values.global.hostname.collabora | quote }}
+
+  # Extra parameters passed to the Collabora start command; in this case, disables SSL inside the container
+  extra_params: --o:ssl.enable=false
+
+containerPorts:
+  # The internal port exposed by the Collabora container (used in deployment)
+  http: 9980
+
+service:
+  # The Kubernetes service type for Collabora. ClusterIP exposes it internally within the cluster.
+  type: ClusterIP
+
+  # The internal service port that Collabora listens on
+  port:
+    http: 9980
+
+ingress:
+  # Enables ingress configuration for external access to Collabora
+  enabled: true
+
+  # Specifies the name of the ingress class/controller to use (e.g., "nginx", "traefik", etc.)
+  ingressClassName: {{ .Values.cluster.ingress.ingressClassName | quote }}
+
+  # Optional TLS configuration injected from Helm values (for enabling HTTPS on the ingress)
+  extraTls: {{ .Values.tls.chat | toYaml | nindent 4 }}
+
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+
+  # Host definitions for the ingress resource
+  hosts:
+  - host: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com" | quote }}
+
+    # Path routing rules — all requests to "/" will be forwarded to Collabora
+    paths:
+      - path: /
+        pathType: Prefix
+
+# Predefined resource configuration level like 'micro', 'small', etc.
+resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
+
+# CPU and memory requests and limits for the container
+resources: {{ .Values.resource.element | toYaml | nindent 2 }}
+
+# Security context settings applied at the pod level, such as user/group ID, filesystem permissions
+podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+
+# Security context settings specific to the container, like privilege dropping, readOnlyRootFilesystem, etc.
+containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+
+# Number of desired pod replicas if HPA (autoscaling) is not enabled
+replicaCount: 1
+
+# Horizontal Pod Autoscaler configuration, such as min/max replicas and target CPU/memory
+autoscaling:
+    hpa: {{ .Values.autoscaling.horizontal.element | toYaml | nindent 6 }}
+
+networkPolicy:
+  enabled: true
+  # Restrict external access - only allow specific ingress sources
+  allowExternal: false
+  # Restrict external egress - only allow specific destinations
+  allowExternalEgress: false
+
+  extraIngress:
+   # Allow traffic from ingress controller namespace
+   - ports:
+       - port: 8080
+         protocol: TCP
+
+# extraVolumes Additional volumes to be mounted into the pod
+extraVolumes:
+  - name: nginx-conf
+    emptyDir: {}
+
+# extraVolumeMounts Mount paths for the extra volumes defined above
+extraVolumeMounts:
+  - name: nginx-conf
+    mountPath: /etc/nginx/conf.d
+
+# livenessProbe.enabled Enable Kubernetes liveness probe
+livenessProbe:
+  enabled: true
+
+# readinessProbe.enabled Enable Kubernetes readiness probe
+readinessProbe:
+  enabled: true
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: false
+  # Name of the existing ServiceAccount to use (if any)
+  name: ""
+
+# labels for pod assignment
+nodeSelector: {}
+
+# Tolerations for pod assignment
+tolerations: []
+
+# Affinity rules for pod assignment
+affinity: {}
