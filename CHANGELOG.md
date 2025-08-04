@@ -11,3 +11,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Added Synapse v1.33.0
 - Added CHANGELOG.md check to CI
 - Added Helm values schema generation script
+- Added Kubernetes conformance cheker
