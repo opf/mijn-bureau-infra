@@ -17,3 +17,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Fixed Prettier to lint all files
 - Changed docs deployment
 - Added test system
+- Added diff comments to CI
