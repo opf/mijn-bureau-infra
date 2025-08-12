@@ -40,6 +40,7 @@ master:
   persistence:
     size: {{ coalesce .Values.pvc.synapse.synapse.size .Values.pvc.default.size "8Gi" }}
     storageClass: {{ coalesce .Values.pvc.synapse.synapse.storageClass .Values.pvc.default.storageClass | quote }}
+    accessModes: {{ coalesce .Values.pvc.synapse.synapse.accessModes .Values.pvc.default.accessModes (list "ReadWriteOnce") | toYaml | nindent 4 }}
   networkPolicy:
     extraIngress:
       # Allow traffic from ingress controller namespace
@@ -70,6 +71,10 @@ master:
                 app.kubernetes.io/instance: chat-postgresql
         {{- end }}
       {{- end }}
+
+  podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 4 }}
+
+  containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 4 }}
 
 # TODO replication is not functional
 worker:
