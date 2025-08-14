@@ -28,6 +28,8 @@ need to install:
 - [Helm](https://helm.sh/docs/intro/install/)
 - [helm-secrets](https://github.com/jkroepke/helm-secrets/wiki/Installation)
 - [Helmfile](https://helmfile.readthedocs.io/en/latest/#installation)
+- [SOPS](https://getsops.io/)
+- [age](https://github.com/FiloSottile/age)
 
 ## 🌐 Domain Configuration
 
