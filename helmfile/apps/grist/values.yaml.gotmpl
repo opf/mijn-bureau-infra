@@ -102,13 +102,15 @@ metrics: {{ .Values.monitoring.prometheus | toYaml | nindent 2 }}
 
 defaultLocale: {{ .Values.global.defaultLocale | quote }}
 
-orgInPath: {{ .Values.application.grist.orgInPath | quote }}
-
-singleOrg: {{ .Values.application.grist.singleOrg | quote }}
-
 {{- if .Values.cluster.sandbox.gvisor.enabled }}
 sandboxFlavor: "gvisor"
 {{- end }}
+
+adminEmail: {{ .Values.secret.grist.adminEmail | quote }}
+
+sessionSecret: {{ .Values.application.grist.sessionSecret  | quote }}
+
+licensekey: {{ .Values.license.grist.key | quote }}
 
 externalRedis:
   host: {{ .Values.cache.grist.host | quote }}
