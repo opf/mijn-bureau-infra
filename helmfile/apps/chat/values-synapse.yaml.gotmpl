@@ -28,7 +28,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: {{ .Values.container.synapse.tag }}
   pullSecrets:
-    - {{ coalesce .Values.container.synapse.imagePullSecret .Values.container.default.imagePullSecret | toYaml }}
+    - {{ coalesce .Values.container.synapse.imagePullSecret .Values.container.default.imagePullSecret | quote }}
 
 persistence:
   size: {{ coalesce .Values.pvc.synapse.synapse.size .Values.pvc.default.size "8Gi" }}
@@ -262,9 +262,19 @@ synapse:
       jwks_uri: {{ .Values.authentication.oidc.jwks_uri | quote }}
       user_mapping_provider:
         config:
-          localpart_template: {{`'{{ (user.given_name ~ user.family_name) | replace('' '', '''') }}'`}}
-          display_name_template: {{`'{{ user.name }}'`}}
-          email_template: {{`'{{ user.email }}'`}}
+          {{- if .Values.authentication.oidc.claims.username }}
+          localpart_template: {{`'{{ user.`}}{{ index .Values.authentication.oidc.claims.username }}{{` | replace('' '', '''') }}'`}}
+          {{- else }}
+          localpart_template: {{`'{{ user.`}}{{ index .Values.authentication.oidc.claims.email }}{{` }}'`}}
+          {{- end }}
+          {{- if .Values.authentication.oidc.claims.display_name }}
+          display_name_template: {{`'{{ user.`}}{{ .Values.authentication.oidc.claims.display_name }}{{` }}'`}}
+          {{- else if and .Values.authentication.oidc.claims.given_name .Values.authentication.oidc.claims.family_name }}
+          display_name_template: {{`'{{ user.`}}{{ .Values.authentication.oidc.claims.given_name }}{{` ~ user.`}}{{ .Values.authentication.oidc.claims.family_name }}{{` }}'`}}
+          {{- else if .Values.authentication.oidc.claims.username }}
+          display_name_template: {{`'{{ user.`}}{{ .Values.authentication.oidc.claims.username }}{{` }}'`}}
+          {{- end }}
+          email_template: {{`'{{ user.`}}{{ .Values.authentication.oidc.claims.email }}{{` }}'`}}
   # Disable password configuration, we only allow OIDC
   passwordConfig:
     enabled: false
