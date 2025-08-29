@@ -23,14 +23,12 @@ const FeatureList: FeatureItem[] = [
   {
     title: "Secure",
     Svg: require("@site/static/img/cloud.svg").default,
-    description: <>Built with security by design in mind.</>,
+    description: <>Built securely from the ground up.</>,
   },
   {
     title: "Government Ready",
     Svg: require("@site/static/img/shield-check.svg").default,
-    description: (
-      <>Designed to meet government requirements with compliance in mind.</>
-    ),
+    description: <>Designed to meet government requirements.</>,
   },
 ];
 

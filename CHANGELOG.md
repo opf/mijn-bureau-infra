@@ -31,3 +31,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Added script to detect unused variables
 - Fixed chart template
 - Fixed application.ai to applicatoin.ollama
+- Fixed typos in readme
