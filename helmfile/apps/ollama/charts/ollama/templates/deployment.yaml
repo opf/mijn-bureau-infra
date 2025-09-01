@@ -46,8 +46,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "ollama.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" $) | nindent 8 }}
+      {{- end }}
       {{- if .Values.runtimeClassName }}
       runtimeClassName: {{ .Values.runtimeClassName | quote }}
       {{- end }}
@@ -57,8 +58,9 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.securityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.securityContext "context" $) | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag |  default (ternary (printf "%s-rocm" .Chart.AppVersion) (.Chart.AppVersion) (and (.Values.ollama.gpu.enabled) (eq .Values.ollama.gpu.type "amd"))) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -230,15 +232,15 @@ spec:
       {{- end }}
       {{- if or .Values.ollama.gpu.enabled .Values.tolerations }}
       tolerations:
-        {{- if and .Values.ollama.gpu.enabled (and 
-              ( or (eq .Values.ollama.gpu.type "nvidia") (not .Values.ollama.gpu.type)) 
+        {{- if and .Values.ollama.gpu.enabled (and
+              ( or (eq .Values.ollama.gpu.type "nvidia") (not .Values.ollama.gpu.type))
               ( or (not .Values.ollama.gpu.mig) (not .Values.ollama.gpu.mig.enabled))
             ) }}
         - key: "{{(.Values.ollama.gpu.nvidiaResource | default "nvidia.com/gpu")}}"
           operator: Exists
           effect: NoSchedule
-          {{- else if and .Values.ollama.gpu.enabled (and 
-              ( or (eq .Values.ollama.gpu.type "nvidia") (not .Values.ollama.gpu.type)) 
+          {{- else if and .Values.ollama.gpu.enabled (and
+              ( or (eq .Values.ollama.gpu.type "nvidia") (not .Values.ollama.gpu.type))
               (( .Values.ollama.gpu.mig.enabled))
             ) }}
             {{- range $key, $value := .Values.ollama.gpu.mig.devices }}
