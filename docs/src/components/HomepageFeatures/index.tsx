@@ -11,33 +11,25 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Open Source",
+    title: "Autonomy",
     Svg: require("@site/static/img/code-bracket-square.svg").default,
     description: (
       <>
-        MijnBureau is a fully open-source digital workplace suite built for
-        transparency and community collaboration.
+        Run everything on your own hardware and maintain full control over your
+        critical data.
       </>
     ),
   },
   {
-    title: "Cloud Native",
+    title: "Secure",
     Svg: require("@site/static/img/cloud.svg").default,
-    description: (
-      <>
-        Built for Kubernetes with modern cloud-native principles, ensuring
-        scalability and reliability.
-      </>
-    ),
+    description: <>Built with security by design in mind.</>,
   },
   {
     title: "Government Ready",
     Svg: require("@site/static/img/shield-check.svg").default,
     description: (
-      <>
-        Designed to meet government requirements with security, compliance, and
-        data sovereignty in mind.
-      </>
+      <>Designed to meet government requirements with compliance in mind.</>
     ),
   },
 ];

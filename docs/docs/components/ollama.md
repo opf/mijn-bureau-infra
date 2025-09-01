@@ -1,8 +1,7 @@
-# Ollama
+# Ollama - AI LLM
 
-The directory `helmfile/apps/ollama/` contains the helmfile for [Ollama](https://github.com/ollama/ollama), a lightweight
-framework for building and running LLMs locally. The helmfile is esentially a wrapper around the
-Ollama helm chart from [OTWLD](https://github.com/otwld/ollama-helm).
+MijnBureau supplies an installation of [Ollama](https://ollama.com/). Ollama is a lightweight
+framework for building and running LLMs locally
 
 ## Purpose
 
@@ -13,9 +12,22 @@ also essentially useless for situations other than a demo.
 
 ## Implementation notes
 
-Ollama needs to be able to download the Lamma 3.2 model and for this an egress must be allowed on
-port 443; the network policy for this is automatically executed by the hemlfile.
+Ollama needs to be able to download the Lamma 3.2 model.
 
-To allow the Ollama API to be reachable within the namespace the helmfile is deployed in, egress and
-ingress on port 11434 must be allowed; the network policy for this is automatically executed by the
-helmfile.
+## Configuration
+
+To configure this solution, you can override the default settings for your environment. The defaults are
+located in the folder `helmfile/environments/default`.
+
+| Name                       | Description                          |
+| -------------------------- | ------------------------------------ |
+| `application.ai.enabled`   | Enable Ollama                        |
+| `application.ai.namespace` | The Kubernetes namespace name        |
+| `container.ollama.*`       | Container settings to overwrite      |
+| `ai.selfhost.*`            | Applicatoin configuration for ollama |
+| `resource.ollama.*`        | Resource configuration               |
+| `pvc.ollama.*`             | Storage configuration                |
+
+## Your own AI LLM
+
+If you do not want to deploy Ollama but want to use your own AI system disable ollama by setting `application.ai.enabled` and configure your AI endspoint in `ai.llm.*`.

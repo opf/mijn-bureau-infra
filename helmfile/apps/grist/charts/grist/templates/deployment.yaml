@@ -96,13 +96,13 @@ spec:
             - name: GRIST_DEFAULT_LOCALE
               value: {{ .Values.defaultLocale | quote }}
             {{- end }}
+           {{- if .Values.licensekey }}
+            - name: GRIST_ACTIVATION
+              value: {{ .Values.licensekey | quote }}
+            {{- end }}
             {{- if .Values.orgInPath }}
             - name: GRIST_ORG_IN_PATH
               value: {{ .Values.orgInPath | quote }}
-            {{- end }}
-            {{- if .Values.singleOrg }}
-            - name: GRIST_SINGLE_ORG
-              value: {{ .Values.singleOrg | quote }}
             {{- end }}
             {{- if .Values.sandboxFlavor }}
             - name: GRIST_SANDBOX_FLAVOR
@@ -112,6 +112,18 @@ spec:
               value: "https://{{ .Values.ingress.hostname }}"
             - name: GRIST_ALLOW_AUTOMATIC_VERSION_CHECKING
               value: {{ .Values.allowAutomaticVersionChecking | quote }}
+            - name: GRIST_HIDE_UI_ELEMENTS
+              value: sendToDrive,supportGrist
+            - name: GRIST_TELEMETRY_LEVEL
+              value: "off"
+            - name: GRIST_SESSION_SECRET
+              value: {{ .Values.sessionSecret | quote }}
+            - name: GRIST_UI_FEATURES
+              value: createSite,multiSite,multiAccounts,templates,themes
+            - name: GRIST_LIST_PUBLIC_SITES
+              value: "true"
+            - name: GRIST_DEFAULT_EMAIL
+              value: {{ .Values.adminEmail | quote }}
             - name: REDIS_URL
               value: "redis://default:{{ .Values.externalRedis.password }}@{{ .Values.externalRedis.host }}:{{ .Values.externalRedis.port }}"
             - name: GRIST_DOCS_MINIO_ACCESS_KEY

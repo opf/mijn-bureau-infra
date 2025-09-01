@@ -10,9 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Added Grist v1.6.1
 - Added Synapse v1.33.0 (only monolith mode)
 - Added Element Web v1.11.106
+- Added La Suite Docs v3.5.0
 - Added CHANGELOG.md check to CI
 - Added Helm values schema generation script
-- Added Kubernetes conformance cheker
+- Added Kubernetes conformance checker
 - Added scope check in commit message
 - Added Helm lint
 - Fixed Prettier to lint all files
@@ -23,5 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Fixed .vscode setup
 - Fixed PR template
 - Added tests
+- Fixed Grist settings
 - Added configuration of OIDC claim names
-- Added La Suite Docs
+- Changed docs

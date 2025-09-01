@@ -4,8 +4,7 @@ application:
     enabled: true
     namespace: ~
     defaultLocale: ""
-    orgInPath: true
-    singleOrg: ""
+    sessionSecret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "grist" "sessionSecret" | sha1sum | quote }}
 
   # this creates a self hosted AI LLM system using Ollama. It can handle small loads.
   ai:

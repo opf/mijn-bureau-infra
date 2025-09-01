@@ -6,7 +6,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Mijn Bureau",
-  tagline: "Documentation",
+  tagline: "The autonomous, flexible and secure digital workplace suite",
   favicon: "img/favicon.ico",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -109,6 +109,10 @@ const config: Config = {
             {
               label: "Matrix",
               href: "https://matrix.to/#/#mijnbureau:matrix.org",
+            },
+            {
+              label: "Github",
+              href: "https://github.com/MinBZK/mijn-bureau-infra",
             },
           ],
         },
