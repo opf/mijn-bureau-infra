@@ -18,3 +18,7 @@ name: grist
 sources:
   - https://github.com/gristlabs/grist-core
 version: 0.1.0
+dependencies:
+  - name: common
+    repository: "file://../../../common/charts/common"
+    version: 2.31.1
