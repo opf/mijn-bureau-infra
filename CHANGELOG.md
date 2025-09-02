@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0), 
 - Added configuration of OIDC claim names
 - Changed docs
 - Added search box to docs
+- Fixed Release CI/CD
 - Added script to detect unused variables
 - Fixed chart template
 - Fixed application.ai to applicatoin.ollama
