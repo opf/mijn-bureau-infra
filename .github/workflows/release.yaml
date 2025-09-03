@@ -13,24 +13,33 @@ jobs:
   package-helmfile:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Package helmfile folder
         run: |
-          tar -czf helmfile-${{ github.ref_name }}.tar.gz helmfile/ helmfile.yaml.gotmpl CHANGELOG.md LICENSE README.md
+          tar -czf helmfile-${{ github.ref_name }}.tar.gz helmfile/ helmfile.yaml.gotmpl .sops.yaml CHANGELOG.md LICENSE README.md SECURITY.md
           sha256sum helmfile-${{ github.ref_name }}.tar.gz > helmfile-${{ github.ref_name }}.tar.gz.sha256
+
+      - name: install cosign
+        run: |
+          curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+          mv cosign-linux-amd64 cosign
+          chmod +x cosign
 
       - name: Sign the package with Cosign
         run: |
-          cosign sign-blob helmfile-${{ github.ref_name }}.tar.gz \
-            --output-signature helmfile-${{ github.ref_name }}.tar.gz.sig \
-            --output-certificate helmfile-${{ github.ref_name }}.tar.gz.pem
-
-          cosign sign-blob helmfile-${{ github.ref_name }}.tar.gz.sha256 \
-            --output-signature helmfile-${{ github.ref_name }}.tar.gz.sha256.sig \
-            --output-certificate helmfile-${{ github.ref_name }}.tar.gz.sha256.pem
+          ./cosign sign-blob --key env://COSIGN_PRIVATE_KEY -y helmfile-${{ github.ref_name }}.tar.gz \
+            --output-signature helmfile-${{ github.ref_name }}.tar.gz.sig
+          ./cosign sign-blob  --key env://COSIGN_PRIVATE_KEY -y helmfile-${{ github.ref_name }}.tar.gz.sha256 \
+            --output-signature helmfile-${{ github.ref_name }}.tar.gz.sha256.sig
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
       - name: Create helmfile Release
         uses: softprops/action-gh-release@v2
@@ -39,9 +48,7 @@ jobs:
             helmfile-${{ github.ref_name }}.tar.gz
             helmfile-${{ github.ref_name }}.tar.gz.sha256
             helmfile-${{ github.ref_name }}.tar.gz.sig
-            helmfile-${{ github.ref_name }}.tar.gz.pem
             helmfile-${{ github.ref_name }}.tar.gz.sha256.sig
-            helmfile-${{ github.ref_name }}.tar.gz.sha256.pem
           generate_release_notes: true
           draft: false
           prerelease: false
