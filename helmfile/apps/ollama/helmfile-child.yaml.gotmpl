@@ -6,8 +6,5 @@ releases:
     chart: "./charts/ollama"
     condition: application.ollama.enabled
     namespace: {{ .Values.application.ollama.namespace }}
-    dependencies:
-    - chart: "oci://{{ (coalesce .Values.chart.bitnamicommon.registry .Values.chart.default.registry ) }}/{{ .Values.chart.bitnamicommon.repository }}/{{ .Values.chart.bitnamicommon.name }}"
-      version: 2.31.3
     values:
       - "values.yaml.gotmpl"
