@@ -15,7 +15,25 @@ While MijnBureau is a public-driven initiative, our license choice is an invitat
 
 Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to learn more.
 
-### Features
+## Why use MijnBureau
+
+### Easy to install
+
+MijnBureau is simple to deploy and provides a comprehensive set of tools your employees need, from collaborative document editing and chat to video conferencing.
+
+### Secure & Sovereign
+
+Security and data sovereignty are at the heart of MijnBureau. By running on your own infrastructure, you stay in full control of your data, ensuring compliance. The platform is built with strong architecture, automated policies, and continuous security scanning.
+
+### Flexible
+
+MijnBureau adapts to your organization’s needs. You can enable only the features you require and seamlessly integrate with existing systems, such as identity management or document editing tools. This flexibility ensures you can modernize your digital workplace without losing control over your data.
+
+## Getting started
+
+Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to get started
+
+## Features
 
 MijnBureau already offers a rich set of features, with a strong focus on collaboration:
 
@@ -36,24 +54,6 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 - Email
 - User Portal
 - Admin Portal
-
-## Why use MijnBureau
-
-### Easy to install
-
-MijnBureau is simple to deploy and provides a comprehensive set of tools your employees need, from collaborative document editing and chat to video conferencing.
-
-### Secure & Sovereign
-
-Security and data sovereignty are at the heart of MijnBureau. By running on your own infrastructure, you stay in full control of your data, ensuring compliance. The platform is built with strong architecture, automated policies, and continuous security scanning.
-
-### Flexible
-
-MijnBureau adapts to your organization’s needs. You can enable only the features you require and seamlessly integrate with existing systems, such as identity management or document editing tools. This flexibility ensures you can modernize your digital workplace without losing control over your data.
-
-## Getting started
-
-Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to get started
 
 ## Commit Conventions
 
