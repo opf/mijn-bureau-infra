@@ -50,6 +50,7 @@ service:
     http: 9980
 
 ingress:
+  hostname: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com"  }}
   # Enables ingress configuration for external access to Collabora
   enabled: true
   className: "haproxy"
@@ -109,11 +110,15 @@ networkPolicy:
 extraVolumes:
   - name: nginx-conf
     emptyDir: {}
+  - name: cool
+    emptyDir: {}
 
 # extraVolumeMounts Mount paths for the extra volumes defined above
 extraVolumeMounts:
   - name: nginx-conf
     mountPath: /etc/nginx/conf.d
+  - name: cool
+    mountPath: /etc/coolwsd/
 
 # livenessProbe.enabled Enable Kubernetes liveness probe
 # livenessProbe:
@@ -141,7 +146,18 @@ affinity: {}
 diagnosticMode:
   enabled: false
 
+
+initContainers:
+ - name: shell
+   image: {{ coalesce .Values.container.collabora.registry .Values.container.default.registry }}/{{ .Values.container.collabora.repository }}:{{ .Values.container.collabora.tag }}
+   imagePullPolicy: Always
+   command: ['sh', '-c', 'cp -r /etc/coolwsd/* /tmp/cool/ && sed -i "s|true</capabilities>|false</capabilities>|g" /tmp/cool/coolwsd.xml']
+   volumeMounts:
+     - name: cool
+       mountPath: /tmp/cool/
+
 global:
   compatibility:
     openshift:
       adaptSecurityContext: disabled
+
