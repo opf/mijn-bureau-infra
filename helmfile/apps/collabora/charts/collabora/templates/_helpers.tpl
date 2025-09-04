@@ -38,6 +38,13 @@ Return the proper grist image name
 {{- end -}}
 
 {{/*
+Return the proper image name (for the init container volume-permissions image)
+*/}}
+{{- define "collabora.volumePermissions.image" -}}
+  {{- include "common.images.image" ( dict "imageRoot" .Values.defaultInitContainers.volumePermissions.image "global" .Values.global ) -}}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "collabora.chart" -}}

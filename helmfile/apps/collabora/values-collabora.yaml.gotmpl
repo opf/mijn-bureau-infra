@@ -35,7 +35,7 @@ collabora:
   server_name: {{ .Values.global.hostname.collabora | quote }}
 
   # Extra parameters passed to the Collabora start command; in this case, disables SSL inside the container
-  extra_params: --o:ssl.enable=false
+  extra_params: --o:ssl.enable=false --o:ssl.termination=true
 
 containerPorts:
   # The internal port exposed by the Collabora container (used in deployment)
@@ -52,44 +52,45 @@ service:
 ingress:
   # Enables ingress configuration for external access to Collabora
   enabled: true
-
+  className: "haproxy"
   # Specifies the name of the ingress class/controller to use (e.g., "nginx", "traefik", etc.)
-  ingressClassName: {{ .Values.cluster.ingress.ingressClassName | quote }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
 
   # Optional TLS configuration injected from Helm values (for enabling HTTPS on the ingress)
   extraTls: {{ .Values.tls.chat | toYaml | nindent 4 }}
 
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      haproxy.org/timeout-tunnel: "3600s"
+      haproxy.org/backend-config-snippet: |
+         balance url_param WOPISrc check_post
+         hash-type consistent
 
   # Host definitions for the ingress resource
   hosts:
   - host: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com" | quote }}
-
     # Path routing rules — all requests to "/" will be forwarded to Collabora
     paths:
-      - path: /
-        pathType: Prefix
+        - path: /
+          pathType: ImplementationSpecific
 
 # Predefined resource configuration level like 'micro', 'small', etc.
 resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 
 # CPU and memory requests and limits for the container
-resources: {{ .Values.resource.element | toYaml | nindent 2 }}
+resources: {{ .Values.resource.collabora | toYaml | nindent 2 }}
 
 # Security context settings applied at the pod level, such as user/group ID, filesystem permissions
-podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+podSecurityContext: {{ .Values.security.collabora.podSecurityContext | toYaml | nindent 2 }}
 
 # Security context settings specific to the container, like privilege dropping, readOnlyRootFilesystem, etc.
-containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+containerSecurityContext: {{ .Values.security.collabora.containerSecurityContext | toYaml | nindent 2 }}
 
 # Number of desired pod replicas if HPA (autoscaling) is not enabled
 replicaCount: 1
 
 # Horizontal Pod Autoscaler configuration, such as min/max replicas and target CPU/memory
 autoscaling:
-    hpa: {{ .Values.autoscaling.horizontal.element | toYaml | nindent 6 }}
+  enabled: false
 
 networkPolicy:
   enabled: true
@@ -115,16 +116,16 @@ extraVolumeMounts:
     mountPath: /etc/nginx/conf.d
 
 # livenessProbe.enabled Enable Kubernetes liveness probe
-livenessProbe:
-  enabled: true
+# livenessProbe:
+#   enabled: true
 
 # readinessProbe.enabled Enable Kubernetes readiness probe
-readinessProbe:
-  enabled: true
+# readinessProbe:
+#   enabled: true
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
-  create: false
+  create: true
   # Name of the existing ServiceAccount to use (if any)
   name: ""
 
@@ -136,3 +137,11 @@ tolerations: []
 
 # Affinity rules for pod assignment
 affinity: {}
+
+diagnosticMode:
+  enabled: false
+
+global:
+  compatibility:
+    openshift:
+      adaptSecurityContext: disabled

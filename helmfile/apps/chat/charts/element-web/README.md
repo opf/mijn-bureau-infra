@@ -124,7 +124,7 @@ Install the [Bitnami Kube Prometheus helm chart](https://github.com/bitnami/char
 
 ### Backup and restore
 
-To back up and restore Helm chart deployments on Kubernetes, you need to back up the persistent volumes from the source deployment and attach them to a new deployment using [Velero](https://velero.io/), a Kubernetes backup/restore tool. Find the instructions for using Velero in [this guide](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-backup-restore-deployments-velero-index.html).
+To back up and restore Helm chart deployments on Kubernetes, you need to back up the persistent volumes from the source deployment and attach them to a new deployment using [Velero](https://velero.io/), a Kubernetes backup/restore tool.
 
 ## Persistence
 
@@ -171,7 +171,6 @@ The Element-Web image stores the Grist data and configurations at the `/persist`
 | `image.debug`                                       | Enable image debug mode                                                                                                                                                                                                                   | `false`                       |
 | `defaultLocale`                                     | Locale to use as fallback when element-web cannot honour the browser locale                                                                                                                                                               | `""`                          |
 | `orgInPath`                                         | If true, encode org in path rather than domain                                                                                                                                                                                            | `true`                        |
-| `singleOrg`                                         | Set to an org "domain" to pin client to that org                                                                                                                                                                                          | `""`                          |
 | `allowAutomaticVersionChecking`                     | Whether element-web is allowed to automatically check if a newer element-web version is available. Defaults to "true" on the default element-web and element-web-ee Docker images. Defaults false in element-web-oss and everywhere else. | `false`                       |
 | `replicaCount`                                      | Number of element-web replicas to deploy                                                                                                                                                                                                  | `1`                           |
 | `containerPorts.http`                               | element-web HTTP container port                                                                                                                                                                                                           | `8080`                        |

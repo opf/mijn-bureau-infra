@@ -19,3 +19,17 @@ security:
       sysctls: []
       supplementalGroups: []
       fsGroup: 1001
+  collabora:
+    containerSecurityContext:
+      enabled: true
+      runAsUser: 1001
+      runAsGroup: 1001
+      allowPrivilegeEscalation: true
+      # capabilities:
+      #   add:
+      #     - MKNOD
+      #     - CAP_SYS_ADMIN
+      #     - CHOWN
+    podSecurityContext:
+      enabled: true
+      fsGroup: 1001

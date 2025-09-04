@@ -194,7 +194,7 @@ Install the [Bitnami Kube Prometheus helm chart](https://github.com/bitnami/char
 
 ### Backup and restore
 
-To back up and restore Helm chart deployments on Kubernetes, you need to back up the persistent volumes from the source deployment and attach them to a new deployment using [Velero](https://velero.io/), a Kubernetes backup/restore tool. Find the instructions for using Velero in [this guide](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-backup-restore-deployments-velero-index.html).
+To back up and restore Helm chart deployments on Kubernetes, you need to back up the persistent volumes from the source deployment and attach them to a new deployment using [Velero](https://velero.io/), a Kubernetes backup/restore tool.
 
 ## Persistence
 
@@ -242,7 +242,6 @@ The Grist image stores the Grist data and configurations at the `/persist` path 
 | `image.debug`                                       | Enable image debug mode                                                                                                                                                                                                 | `false`                                                                   |
 | `defaultLocale`                                     | Locale to use as fallback when Grist cannot honour the browser locale                                                                                                                                                   | `""`                                                                      |
 | `orgInPath`                                         | If true, encode org in path rather than domain                                                                                                                                                                          | `true`                                                                    |
-| `singleOrg`                                         | Set to an org "domain" to pin client to that org                                                                                                                                                                        | `""`                                                                      |
 | `sandboxFlavor`                                     | Can be gvisor, pynbox, unsandboxed, docker, or macSandboxExec. If set, forces Grist to use the specified kind of sandbox.                                                                                               | `""`                                                                      |
 | `allowAutomaticVersionChecking`                     | Whether Grist is allowed to automatically check if a newer Grist version is available. Defaults to "true" on the default grist and grist-ee Docker images. Defaults false in grist-oss and everywhere else.             | `false`                                                                   |
 | `externalRedis.host`                                | Redis hostname                                                                                                                                                                                                          | `""`                                                                      |
@@ -452,8 +451,6 @@ helm install my-release -f values.yaml
 > **Tip**: You can use the default values.yaml.
 
 ## License
-
-Copyright &copy; 2025 Broadcom. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -1,4 +1,4 @@
-# Copyright Broadcom, Inc. All Rights Reserved.
+#
 # SPDX-License-Identifier: APACHE-2.0
 
 ## @section Global parameters
@@ -109,11 +109,15 @@ defaultLocale: ""
 ## @param orgInPath If true, encode org in path rather than domain
 orgInPath: true
 
-## @param singleOrg Set to an org "domain" to pin client to that org
-singleOrg: ""
 
 ## @param sandboxFlavor Can be gvisor, pynbox, unsandboxed, docker, or macSandboxExec. If set, forces Grist to use the specified kind of sandbox.
 sandboxFlavor: ""
+
+licensekey: ""
+
+sessionSecret: "please-change-me"
+
+adminEmail: "you@example.com"
 
 ## @param allowAutomaticVersionChecking Whether Grist is allowed to automatically check if a newer Grist version is available. Defaults to "true" on the default grist and grist-ee Docker images. Defaults false in grist-oss and everywhere else.
 allowAutomaticVersionChecking: false
