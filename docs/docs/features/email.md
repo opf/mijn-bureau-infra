@@ -1,11 +1,15 @@
 # Email
 
-MijnBureau does not yet support email. But we are working on it.
+The Email feature is not yet available in MijnBureau. However, it is actively being developed and will be introduced in a future release.
+
+---
 
 ## Screenshots
 
-![email1](/img/features/email.png)
+Below are previews of the upcoming Email feature:
 
-We are considering a second file sharing technology
+![Email Preview 1](/img/features/email.png)
 
-![email2](/img/features/email2.png)
+We are also considering integrating a second Email technology:
+
+![Email Preview 2](/img/features/email2.png)

@@ -1,7 +1,11 @@
 # Password Manager
 
-MijnBureau does not yet support a password Manager. But we are working on it.
+The Password Manager feature is not yet available in MijnBureau. However, it is actively being developed and will be introduced in a future release.
+
+---
 
 ## Screenshots
 
-![passwordmanager1](/img/features/password-manager.png)
+Below is a preview of the upcoming Password Manager feature:
+
+![Password Manager Preview](/img/features/password-manager.png)

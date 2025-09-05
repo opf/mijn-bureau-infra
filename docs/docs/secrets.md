@@ -4,45 +4,58 @@ sidebar_position: 6
 
 # Secrets
 
-Sensitive values (like database passwords) can be securely stored for MijnBureau using helm-secrets. You can store secrets in different ways. Some companies use secret managers like hashicorp vault or encryption tools like [SOPS](https://getsops.io/) or vals. We have added secrets handling into account for MijnBureau. We prepared SOPS with a example file. The same can be done for Vals
+Sensitive values, such as database passwords, can be securely stored for MijnBureau using `helm-secrets`. Secrets can be managed in various ways, including secret managers like HashiCorp Vault or encryption tools like [SOPS](https://getsops.io/) and Vals. MijnBureau supports secrets handling and provides an example configuration for SOPS. A similar setup can be created for Vals.
+
+### Example Secrets File
 
 ```bash
 ./helmfile/environments/{environment}/example.secrets.yaml
 ```
 
+---
+
 ## SOPS
 
-In this part we describe how to use SOPS. First install [SOPS](https://getsops.io/) and [AGE](https://github.com/FiloSottile/age)
+This section explains how to use SOPS for managing secrets. First, install [SOPS](https://getsops.io/) and [AGE](https://github.com/FiloSottile/age).
 
-1. Generate an [Age](https://github.com/FiloSottile/age) key pair:
+### Steps to Use SOPS
 
-```bash
-age-keygen -o mykey.txt
-```
+1. **Generate an AGE Key Pair**:
 
-2. Update .sops.yaml:
-   Replace the sample age: entry with your public key.
+   Run the following command to generate a key pair:
 
-3. Encrypt a file:
+   ```bash
+   age-keygen -o mykey.txt
+   ```
 
-add some values in the example.secrets.yaml and encrypt it.
+2. **Update `.sops.yaml`**:
 
-```bash
-helm secrets encrypt -i ./helmfile/environments/{environment}/example.secrets.yaml
-```
+   Replace the `age:` entry in `.sops.yaml` with your public key.
 
-4. Decrypt for local use:
+3. **Encrypt a File**:
 
-```bash
-export SOPS_AGE_KEY_FILE=./mykey.txt
-helm secrets decrypt -i ./helmfile/environments/{environment}/example.secrets.yaml
-```
+   Add values to `example.secrets.yaml` and encrypt it:
 
-5. Use with helmfile
+   ```bash
+   helm secrets encrypt -i ./helmfile/environments/{environment}/example.secrets.yaml
+   ```
 
-```bash
-export MIJNBUREAU_MASTER_PASSWORD=changethis
-export SOPS_AGE_KEY_FILE=./mykey.txt
-helmfile template
-helmfile apply
-```
+4. **Decrypt for Local Use**:
+
+   Decrypt the file for local use by running:
+
+   ```bash
+   export SOPS_AGE_KEY_FILE=./mykey.txt
+   helm secrets decrypt -i ./helmfile/environments/{environment}/example.secrets.yaml
+   ```
+
+5. **Use with Helmfile**:
+
+   Export the required environment variables and run Helmfile commands:
+
+   ```bash
+   export MIJNBUREAU_MASTER_PASSWORD=changethis
+   export SOPS_AGE_KEY_FILE=./mykey.txt
+   helmfile template
+   helmfile apply
+   ```

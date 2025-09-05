@@ -1,7 +1,11 @@
 # Chat
 
-MijnBureau supports chat based on the matrix protocol.
+MijnBureau includes a chat feature based on the Matrix protocol, enabling secure and decentralized communication.
+
+---
 
 ## Screenshots
 
-![chat1](/img/features/chat.png)
+Below is a preview of the chat feature:
+
+![Chat Preview](/img/features/chat.png)

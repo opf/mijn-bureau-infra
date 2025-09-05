@@ -1,55 +1,82 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
-# Install
+# Installation Guide
 
-Before you can install MijnBureau you need to make sure you are connected to a Kubernetes. The following commands shows you which Kubernetes cluster you are connected to.
+Follow this guide to install MijnBureau on your Kubernetes cluster. Ensure you are connected to a Kubernetes cluster before proceeding.
+
+---
+
+## Verify Kubernetes Connection
+
+Check which Kubernetes cluster you are connected to by running:
 
 ```bash
 kubectl config current-context
 ```
 
-## Set master password
+---
 
-Set the environment variable for the master password for deterministic secret generation.
+## Set Master Password
+
+Set the environment variable for the master password to enable deterministic secret generation:
 
 ```bash
 export MIJNBUREAU_MASTER_PASSWORD="your-very-secure-password"
 ```
 
 :::warning Password Security
-This password generates most application secrets. Use a strong password and store it securely - you'll need it for future operations.
+This password is used to generate most application secrets. Use a strong password and store it securely, as it will be required for future operations.
 :::
 
-## Set other variables
+---
 
-By default MijnBureau does not create a kubernetes namespace if it does not exist. you can change this by setting
+## Configure Additional Variables
+
+By default, MijnBureau does not create a Kubernetes namespace if it does not exist. You can enable automatic namespace creation by setting the following variable:
 
 ```bash
 export MIJNBUREAU_CREATE_NAMESPACES=true
 ```
 
-### Deploy
+---
 
-To install mijnbureau you need to install and prepare helmfile and have helm available. To install [helmfile](https://helmfile.readthedocs.io/en/latest/#installation) and [helm](https://helm.sh/docs/intro/install/) check the documentation. Once installed initialize helmfile.
+## Deploy MijnBureau
+
+### Prerequisites
+
+Install and prepare Helmfile and Helm. Refer to their respective documentation for installation instructions:
+
+- [Helmfile Installation Guide](https://helmfile.readthedocs.io/en/latest/#installation)
+- [Helm Installation Guide](https://helm.sh/docs/intro/install/)
+
+Once installed, initialize Helmfile:
 
 ```bash
 helmfile init
 ```
 
-To install MijnBureau onto kubernetes execute `helmfile apply`.
+### Installation
+
+To deploy MijnBureau to your Kubernetes cluster, execute the following command:
 
 ```bash
 helmfile -e <environment> apply
 ```
 
-If you want to inspect the installation without deploying you can run
+Replace `<environment>` with the desired environment, such as `demo` or `production`. If you do not specify the `-e <environment>` option, MijnBureau will use the default environment.
+
+### Inspect Installation
+
+If you want to inspect the installation without deploying, use the following command:
 
 ```bash
 helmfile -e <environment> template
 ```
 
-where `<environment>` can be the `demo` or `production` environment. if you do not specify the `-e <environment>` option MijnBureau will use the default environment.
+---
 
-there are many more helmfile commands that you can use, see the helmfile [documentation](https://helmfile.readthedocs.io/en/latest/#cli-reference)
+## Additional Helmfile Commands
+
+Helmfile provides many additional commands for managing your deployment. Refer to the [Helmfile CLI Reference](https://helmfile.readthedocs.io/en/latest/#cli-reference) for more details.
