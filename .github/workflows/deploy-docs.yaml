@@ -44,7 +44,67 @@ jobs:
         with:
           path: docs/build
 
-  deploy:
+  deploy-cloudflare-pages:
+    if: github.event_name == 'pull_request'
+    name: Deploy docs to Cloudflare Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: docs/
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: "docs/.nvmrc"
+          cache: yarn
+          cache-dependency-path: docs/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: replace baseUrl variables
+        run: |
+          sed -i 's|baseUrl: "/mijn-bureau-infra/"|baseUrl: "/"|g' docusaurus.config.ts
+
+      - name: Build website
+        run: yarn build
+
+      - name: install yarn for wrangler
+        run: npm install -g yarn
+
+      - name: Publish to Cloudflare Pages
+        id: wrangler
+        uses: cloudflare/wrangler-action@v3
+        if: github.event_name == 'pull_request'
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: "docs"
+          command: versions upload
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Docs Preview URL
+
+      - name: Comment on PR with Preview URL
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            Docs Preview URL: ${{ steps.wrangler.outputs.deployment-url }}
+
+  deploy-github-pages:
     if: github.event_name != 'pull_request'
     name: Deploy docs to GitHub Pages
     needs: build
