@@ -57,7 +57,16 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 
 ## Commit Conventions
 
-This repo use the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+This repo uses the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes:
+
+1. folder names in helmfile/apps/* (the products)
+2. settings: update settings (not related to 1 product)
+3. deps: update dependencies (not related to 1 product)
+4. docs: documentation update (not related to 1 product)
+5. tests: general tests (not related to 1 product)
+6. policies: general policies (not related to 1 product)
+7. ci: general CI updates
+8. other: If none of the above apply
 
 ## Additional Resources
 
