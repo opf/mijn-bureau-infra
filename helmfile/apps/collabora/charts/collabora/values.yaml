@@ -760,3 +760,15 @@ collabora:
   ##   - name: "TZ"
   ##     value: "Europe/Amsterdam"
   extraEnv: []
+
+ ## @param collabora.extra_params Extra parameters to pass to the Collabora startup command.
+  ## Useful for enabling/disabling SSL or setting specific runtime flags.
+  ## Example:
+  ## extra_params: --o:ssl.enable=false --o:ssl.termination=true
+  extra_params: ""
+
+  ## @param collabora.server_name Hostname for the Collabora server.
+  ## Defines the domain name that Collabora will use internally.
+  ## Example:
+  ## server_name: collabora.example.com
+  server_name: ""

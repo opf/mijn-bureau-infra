@@ -110,6 +110,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            - configMapRef:
+                name: {{ include "collabora.fullname" . }}
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}

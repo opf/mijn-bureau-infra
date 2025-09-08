@@ -58,7 +58,7 @@ ingress:
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
 
   # Optional TLS configuration injected from Helm values (for enabling HTTPS on the ingress)
-  extraTls: {{ .Values.tls.chat | toYaml | nindent 4 }}
+  extraTls: {{ .Values.tls.collabora | toYaml | nindent 4 }}
 
   annotations:
       haproxy.org/timeout-tunnel: "3600s"
@@ -103,7 +103,7 @@ networkPolicy:
   extraIngress:
    # Allow traffic from ingress controller namespace
    - ports:
-       - port: 8080
+       - port: 9980
          protocol: TCP
 
 # extraVolumes Additional volumes to be mounted into the pod
@@ -121,12 +121,12 @@ extraVolumeMounts:
     mountPath: /etc/coolwsd/
 
 # livenessProbe.enabled Enable Kubernetes liveness probe
-# livenessProbe:
-#   enabled: true
+livenessProbe:
+  enabled: true
 
 # readinessProbe.enabled Enable Kubernetes readiness probe
-# readinessProbe:
-#   enabled: true
+readinessProbe:
+  enabled: true
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
@@ -160,4 +160,3 @@ global:
   compatibility:
     openshift:
       adaptSecurityContext: disabled
-
