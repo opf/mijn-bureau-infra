@@ -59,7 +59,7 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 
 This repo uses the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes:
 
-1. folder names in helmfile/apps/* (the products)
+1. folder names in helmfile/apps/\* (the products)
 2. settings: update settings (not related to 1 product)
 3. deps: update dependencies (not related to 1 product)
 4. docs: documentation update (not related to 1 product)

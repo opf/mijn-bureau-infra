@@ -2,9 +2,6 @@
 ignore=B6
 regex-style-search=True
 extra-path=scripts/gitlint_emoji.py
-ignore-merge-commits=False
-ignore-fixup-commits=False
-ignore-squash-commits=False
 
 
 [title-max-length]
