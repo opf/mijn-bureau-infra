@@ -1,13 +1,21 @@
 [general]
 ignore=B6
-
+regex-style-search=True
 extra-path=scripts/gitlint_emoji.py
+ignore-merge-commits=False
+ignore-fixup-commits=False
+ignore-squash-commits=False
+
 
 [title-max-length]
-line-length=80
+line-length=120
 
 [title-min-length]
 min-length=5
 
 [ignore-by-title]
 ignore=B6
+
+[ignore-by-author-name]
+regex=dependabot
+ignore=all

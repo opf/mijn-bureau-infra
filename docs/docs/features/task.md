@@ -1,7 +1,11 @@
-# Task
+# Task Management
 
-MijnBureau does not yet support Tasks. But we are working on it.
+The Task Management feature is not yet available in MijnBureau. However, it is actively being developed and will be introduced in a future release.
+
+---
 
 ## Screenshots
 
-![task1](/img/features/task.png)
+Below is a preview of the upcoming Task Management feature:
+
+![Task Management Preview](/img/features/task.png)

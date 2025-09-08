@@ -2,30 +2,58 @@
 sidebar_position: 4
 ---
 
-# Testing
+# Testing MijnBureau
 
-In this part we describe the testing of MijnBureau. We create a secure and high quality product which means we try to test important part and always try to improve this. In the `./scripts/` directory you will find script that increase quality and security. If you pass the scripts you will probably also pass the CI/CD (although not guaranteed).
+This guide explains the testing process for MijnBureau. To ensure a secure and high-quality product, we test critical components and continuously improve our testing practices. The `./scripts/` directory contains scripts to enhance quality and security. Passing these scripts increases the likelihood of passing the CI/CD pipeline (though it is not guaranteed).
+
+---
 
 ## Formatting
 
-We have strict formatting rules that are enforced by prettier. you can run ./scripts/format.sh to format all your changes.
+We enforce strict formatting rules using Prettier. To format your changes, run:
+
+```bash
+./scripts/format.sh
+```
+
+---
 
 ## Linting
 
-We have strict linting that er enforced by gitlint and helmfile. you can run ./scripts/lint.sh to lint all your changes.
+Linting is enforced using GitLint and Helmfile. To lint your changes, run:
 
-## pre-commit
+```bash
+./scripts/lint.sh
+```
 
-We use pre-commit to check general rules before committing. You can run pre-commit on the repo
+---
+
+## Pre-commit Checks
+
+We use pre-commit hooks to enforce general rules before committing. To run pre-commit checks on the repository, execute:
 
 ```bash
 pre-commit run --all
 ```
 
-## Policy
+---
 
-We have policies that check if you adhere to the ADRs. This is done by conftest. you can run ./scripts/policy.sh to check all your changes. if you are interested in all the policies we have you can find the policies in the ./policy folder.
+## Policy Compliance
 
-## Testing
+Policies ensure adherence to Architectural Decision Records (ADRs). These checks are performed using Conftest. To verify policy compliance, run:
 
-We have developed a testing system for helmfile to check if all charts have a high enough quality and implemented important variables. You can run ./scripts/test.sh to test all your changes.
+```bash
+./scripts/policy.sh
+```
+
+If you are interested in the policies, they are located in the `./policy/` folder.
+
+---
+
+## Helmfile Testing
+
+We have developed a testing system for Helmfile to ensure charts meet quality standards and include important variables. To test your changes, run:
+
+```bash
+./scripts/test.sh
+```

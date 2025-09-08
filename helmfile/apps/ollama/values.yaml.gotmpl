@@ -1,4 +1,4 @@
-{{- if .Values.application.ai.enabled }}
+{{- if .Values.application.ollama.enabled }}
 image:
   repository: {{ printf "%s/%s" (coalesce .Values.container.ollama.registry .Values.container.default.registry) (.Values.container.ollama.repository) | quote }}
   tag: {{ .Values.container.ollama.tag | quote }}
@@ -12,21 +12,21 @@ imagePullSecrets:
 ollama:
   models:
     pull:
-      - llama3.2
+      - {{ .Values.application.ollama.model | quote }}
     run:
-      - llama3.2
+      - {{ .Values.application.ollama.model | quote }}
   mountPath: "/home/ollama/.ollama"
   gpu:
-    enabled: {{ .Values.ai.selfhost.gpu.enabled | default false }}
-    {{- if .Values.ai.selfhost.gpu.enabled }}
-    type: {{ .Values.ai.selfhost.gpu.type | default "nvidia" | quote }}
-    number: {{ .Values.ai.selfhost.gpu.number | default 1 }}
-    {{- if .Values.ai.selfhost.gpu.mig }}
+    enabled: {{ .Values.application.ollama.gpu.enabled | default false }}
+    {{- if .Values.application.ollama.gpu.enabled }}
+    type: {{ .Values.application.ollama.gpu.type | default "nvidia" | quote }}
+    number: {{ .Values.application.ollama.gpu.number | default 1 }}
+    {{- if .Values.application.ollama.gpu.mig }}
     mig:
-      enabled: {{ .Values.ai.selfhost.gpu.mig.enabled | default false }}
-      {{- if .Values.ai.selfhost.gpu.mig.devices }}
+      enabled: {{ .Values.application.ollama.gpu.mig.enabled | default false }}
+      {{- if .Values.application.ollama.gpu.mig.devices }}
       devices:
-        {{- toYaml .Values.ai.selfhost.gpu.mig.devices | nindent 8 }}
+        {{- toYaml .Values.application.ollama.gpu.mig.devices | nindent 8 }}
       {{- end }}
     {{- end }}
     {{- end }}
@@ -38,6 +38,13 @@ ollama:
 extraEnv:
   - name: HOME
     value: "/home/ollama"
+
+autoscaling:
+  enabled: {{ .Values.autoscaling.horizontal.ollama.enabled }}
+  minReplicas: {{ .Values.autoscaling.horizontal.ollama.minReplicas| quote }}
+  maxReplicas: {{ .Values.autoscaling.horizontal.ollama.maxReplicas  | quote }}
+  targetCPUUtilizationPercentage: {{ .Values.autoscaling.horizontal.ollama.targetCPU | quote }}
+  targetMemoryUtilizationPercentage: {{ .Values.autoscaling.horizontal.ollama.targetMemory | quote }}
 
 resources:
   {{- if .Values.resource.ollama }}
@@ -53,10 +60,13 @@ resources:
 
 persistentVolume:
   enabled: true
-  size: 15Gi
-  accessModes:
-    - ReadWriteOnce
+  size: {{ coalesce .Values.pvc.ollama.size .Values.pvc.default.size | quote }}
+  accessModes: {{ coalesce .Values.pvc.ollama.accessModes .Values.pvc.default.accessModes | toYaml | nindent 4 }}
   storageClass: {{ coalesce .Values.pvc.ollama.storageClass .Values.pvc.default.storageClass | quote }}
 
+
+
+podSecurityContext: {{.Values.security.default.podSecurityContext | toYaml | nindent 2  }}
+securityContext: {{.Values.security.default.containerSecurityContext | toYaml | nindent 2  }}
 
 {{- end }}

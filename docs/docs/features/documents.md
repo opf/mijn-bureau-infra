@@ -1,15 +1,27 @@
 # Documents
 
-MijnBureau supports collaborative document editing.
+MijnBureau offers collaborative document editing, enabling teams to work together seamlessly on various types of content.
+
+---
 
 ## Screenshots
 
-![document1](/img/features/document-editing.png)
+Below are previews of the document editing and related features:
 
-![document2](/img/features/document-editing2.png)
+### Document Editing
 
-![note1](/img/features/notes.png)
+![Document Editing](/img/features/document-editing.png)
 
-![presentation1](/img/features/presentation.png)
+![Document Editing 2](/img/features/document-editing2.png)
 
-![spreadsheet1](/img/features/spreadsheet2.png)
+### Notes
+
+![Notes](/img/features/notes.png)
+
+### Presentations
+
+![Presentations](/img/features/presentation.png)
+
+### Spreadsheets
+
+![Spreadsheets](/img/features/spreadsheet2.png)

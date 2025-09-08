@@ -135,11 +135,14 @@ podLabels: {}
 
 # -- Pod Security Context
 podSecurityContext:
+  enabled: false
   runAsNonRoot: true
   # fsGroup: 2000
 
 # -- Container Security Context
-securityContext: {}
+securityContext:
+  enabled: false
+
   # capabilities:
   #  drop:
   #   - ALL
