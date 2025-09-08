@@ -4,147 +4,62 @@ sidebar_position: 2
 
 # Prerequisites
 
-MijnBureau does not have many prerequisites except for a Kubernetes cluster.
+MijnBureau has minimal prerequisites, requiring only a Kubernetes cluster and some essential tools.
+
+---
 
 ## ☸️ Kubernetes Cluster
 
-Minimal Kubernetes cluster requirements:
+### Minimum Requirements
 
-- A [CNCF certified Kubernetes](https://www.cncf.io/training/certification/software-conformance/) installation.
-- AMD64 platform
-- A LoadBalancer
-- A ingress controller: Nginx or HAProxy-openshift
+- A [CNCF certified](https://www.cncf.io/training/certification/software-conformance/) Kubernetes or [Haven](https://haven.commonground.nl/) compliant Kubernetes.
+- AMD64 platform.
+- A LoadBalancer.
+- An ingress controller: Nginx or HAProxy (OpenShift).
 
-Currently MijnBureau only supports the Nginx and HAProxy ingress controller but more can be added if needed.
+> Note: Currently, MijnBureau supports only the Nginx and HAProxy ingress controllers. Additional controllers can be added if needed.
 
-### Kubernetes resources
+### Kubernetes Resources
 
-We tried to make resource setup easy and have a global size parameter that changes the resources used for all components of MijnBureau. Bellow a list of expected resource usage depending on the size parameter. The resource usage bellow are for the default settings. If you want to enable/disable components and recalculate the resource usage you can use the ./script/predicted_resources.py. Since we are still adding components and not updating these values every time they might be slightly off.
+MijnBureau simplifies resource setup with a global size parameter that adjusts resource usage for all components. Below is the expected resource usage based on the size parameter. For precise calculations, use the `./script/predicted_resources.py` script. Note that these values may vary as new components are added.
 
-#### nano
+#### Resource Usage by Size
 
-For demo environment
+| Size        | Environment | CPU Requested | CPU Limits | Memory Requested | Memory Limits |
+| ----------- | ----------- | ------------- | ---------- | ---------------- | ------------- |
+| **nano**    | Demo        | 1.5 cores     | 2.4 cores  | 3.5 GiB          | 6.2 GiB       |
+|             | Production  | 0.8 cores     | 1.4 cores  | 2.6 GiB          | 4.9 GiB       |
+| **micro**   | Demo        | 3.1 cores     | 4.9 cores  | 4.9 GiB          | 8.3 GiB       |
+|             | Production  | 1.4 cores     | 2.3 cores  | 3.1 GiB          | 5.6 GiB       |
+| **small**   | Demo        | 5.9 cores     | 9.0 cores  | 7.7 GiB          | 12.5 GiB      |
+|             | Production  | 2.4 cores     | 6.2 cores  | 3.2 GiB          | 12.5 GiB      |
+| **medium**  | Demo        | 5.9 cores     | 9.0 cores  | 13.3 GiB         | 21.0 GiB      |
+|             | Production  | 2.4 cores     | 3.8 cores  | 6.1 GiB          | 10.2 GiB      |
+| **large**   | Demo        | 11.4 cores    | 17.3 cores | 24.6 GiB         | 37.9 GiB      |
+|             | Production  | 4.4 cores     | 6.8 cores  | 10.2 GiB         | 16.4 GiB      |
+| **xlarge**  | Demo        | 11.4 cores    | 33.6 cores | 35.8 GiB         | 71.7 GiB      |
+|             | Production  | 4.4 cores     | 12.8 cores | 14.3 GiB         | 18.7 GiB      |
+| **2xlarge** | Demo        | 11.4 cores    | 66.8 cores | 35.8 GiB         | 139.3 GiB     |
+|             | Production  | 4.4 cores     | 24.8 cores | 14.3 GiB         | 53.2 GiB      |
 
-- CPU requested 1.5 cores
-- CPU Limits 2.4 cores
-- Memory requested 3.5 GiB
-- Memory requested 6.2 GiB
-
-For production environment
-
-- CPU requested 0.800 cores
-- CPU Limits 1.4 cores
-- Memory requested 2.6 GiB
-- Memory requested 4.9 GiB
-
-#### micro
-
-For demo environment
-
-- CPU requested 3.1 cores
-- CPU Limits 4.9 cores
-- Memory requested 4.9 GiB
-- Memory requested 8.3 GiB
-
-For production environment
-
-- CPU requested 1.4 cores
-- CPU Limits 2.3 cores
-- Memory requested 3.1 GiB
-- Memory requested 5.6 GiB
-
-#### small
-
-For demo environment
-
-- CPU requested 5.9 cores
-- CPU Limits 9.0 cores
-- Memory requested 7.7 GiB
-- Memory requested 12.5 GiB
-
-For production environment
-
-- CPU requested 2.4 cores
-- CPU Limits 6.2 cores
-- Memory requested 3.2 GiB
-- Memory requested 12.5 GiB
-
-#### medium
-
-For demo environment
-
-- CPU requested 5.9 cores
-- CPU Limits 9.0 cores
-- Memory requested 13.3 GiB
-- Memory requested 21.0 GiB
-
-For production environment
-
-- CPU requested 2.4 cores
-- CPU Limits 3.8 cores
-- Memory requested 6.1 GiB
-- Memory requested 10.2 GiB
-
-#### large
-
-For demo environment
-
-- CPU requested 11.4 cores
-- CPU Limits 17.3 cores
-- Memory requested 24.6 GiB
-- Memory requested 37.9 GiB
-
-For production environment
-
-- CPU requested 4.4 cores
-- CPU Limits 6.8 cores
-- Memory requested 10 2 GiB
-- Memory requested 16.4 GiB
-
-#### xlarge
-
-For demo environment
-
-- CPU requested 11.4 cores
-- CPU Limits 33.6 cores
-- Memory requested 35.8 GiB
-- Memory requested 71.7 GiB
-
-For production environment
-
-- CPU requested 4.4 cores
-- CPU Limits 12.8 cores
-- Memory requested 14.3 GiB
-- Memory requested 8.7 GiB
-
-#### 2xlarge
-
-For demo environment
-
-- CPU requested 11.4 cores
-- CPU Limits 66.8 cores
-- Memory requested 35.8 GiB
-- Memory requested 139.3 GiB
-
-For production environment
-
-- CPU requested 4.4 cores
-- CPU Limits 24.8 cores
-- Memory requested 14.3 GiB
-- Memory requested 53.2 GiB
+---
 
 ## 🛠️ Tools
 
-To install MijnBureau on Kubernetes you need some tools. We use Helmfile to generate all the Kubernetes manifests but you could also use Flux or ArgoCD with some small edits. To use Helmfile you will need to install:
+To install MijnBureau on Kubernetes, you need the following tools:
 
-- [Helmfile](https://helmfile.readthedocs.io/en/latest/#installation)
-- [Helm](https://helm.sh/docs/intro/install/)
+- **Helmfile**: Used to generate Kubernetes manifests. [Installation Guide](https://helmfile.readthedocs.io/en/latest/#installation)
+- **Helm**: [Installation Guide](https://helm.sh/docs/intro/install/)
 
-If you plan to store secrets like credentials, we recommend using a encryption tool or secret manager. In this documentation we will use sops, but there are many more that you could consider. It depends on your organization what is best.
+### Secrets Management
 
-- [SOPS](https://getsops.io/)
-- [age](https://github.com/FiloSottile/age)
+If you plan to store secrets like credentials, we recommend using an encryption tool or secret manager. This documentation uses SOPS, but you can choose another tool based on your organization’s needs:
+
+- **SOPS**: [Documentation](https://getsops.io/)
+- **AGE**: [Documentation](https://github.com/FiloSottile/age)
+
+---
 
 ## 🌐 Domain Configuration
 
-Since MijnBureau as mainly a browser based suite, you will need a domain or subdomain you control so the tool can be made available to users.
+MijnBureau is primarily a browser-based suite. You will need a domain or subdomain you control to make the tool accessible to users.

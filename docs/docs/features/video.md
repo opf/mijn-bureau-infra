@@ -1,7 +1,11 @@
-# Video
+# Video Conferencing
 
-MijnBureau supports video conferencing
+MijnBureau includes a video conferencing feature, enabling seamless virtual communication and collaboration.
+
+---
 
 ## Screenshots
 
-![video1](/img/features/video.png)
+Below is a preview of the video conferencing feature:
+
+![Video Conferencing Preview](/img/features/video.png)

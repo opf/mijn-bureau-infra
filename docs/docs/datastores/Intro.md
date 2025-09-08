@@ -1,9 +1,41 @@
-# Intro
+---
+sidebar_position: 2
+---
 
-Data is extremely important in MijnBureau because users will create and share data. If you use the Demo environment we deploy all datastores like postgresql databases, redis caches and minio object stores, but it will not contain any backup and restore features. For the production environment we do not deploy datastores and you need to configure MijnBureau to connect to externally managed datastores.
+# Introduction to Datastores
 
-The reason for not deploying the datastores in production is because you often need specialized tools for your backup&restory and disaster recovery. Since every organizations handles its data differently we decided to exclude the datastores. Some organization might use kubernetes datastores but others might use externally managed datastores
+Data is a critical component of MijnBureau, as users will create and share significant amounts of information. This guide explains how datastores are managed in both the Demo and Production environments.
 
-When you deploy a production environment you need to prepare the datastores beforehand and configure MijnBureau to connect to them.
+---
 
-MijnBureau also uses PVC that contain important data. Please make sure you also backup these when you run in production. [Velero](https://velero.io/) is an populair tool that can handle the backups of PVCs.
+## Demo Environment
+
+In the Demo environment, MijnBureau deploys all required datastores, including:
+
+- **PostgreSQL Databases**
+- **Redis Caches**
+- **MinIO Object Stores**
+
+> **Note**: The Demo environment does not include backup and restore features. It is intended for testing and evaluation purposes.
+
+---
+
+## Production Environment
+
+In the Production environment, MijnBureau does not deploy datastores. Instead, you must configure MijnBureau to connect to externally managed datastores. This approach allows organizations to use specialized tools for:
+
+- **Backup and Restore**
+- **Disaster Recovery**
+
+### Why Exclude Datastores in Production?
+
+Every organization handles data differently. While some may use Kubernetes-managed datastores, others might prefer externally managed solutions. By excluding datastores, MijnBureau provides flexibility to integrate with your existing infrastructure.
+
+### Preparing for Production
+
+Before deploying a production environment, ensure the following:
+
+1. **Datastores**: Set up and configure external datastores (e.g., PostgreSQL, Redis, MinIO).
+2. **Persistent Volume Claims (PVCs)**: MijnBureau uses PVCs to store important data. Ensure these are backed up regularly.
+
+> **Recommendation**: Use a tool like [Velero](https://velero.io/) to manage PVC backups effectively.
