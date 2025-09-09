@@ -1,5 +1,11 @@
 autoscaling:
   horizontal:
+    ollama:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 80
+      targetMemory: ""
     grist:
       enabled: false
       minReplicas: 1

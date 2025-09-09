@@ -1,0 +1,26 @@
+global:
+  domain: "kubernetes.local"
+  resourcesPreset: "small"
+
+cluster:
+  ingress:
+    type: nginx
+
+application:
+  grist:
+    namespace: grist
+
+  ollama:
+    namespace: ollama
+
+  keycloak:
+    namespace: keycloak
+
+  chat:
+    namespace: chat
+
+  video:
+    namespace: video
+
+  nextcloud:
+    namespace: nextcloud

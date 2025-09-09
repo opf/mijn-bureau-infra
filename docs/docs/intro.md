@@ -2,41 +2,49 @@
 sidebar_position: 1
 ---
 
-# Intro
+# Introduction
 
-MijnBureau is a flexible and secure digital workplace suite. Its main goal is to provide an **autonomous** solution for digital workplaces, ensuring you can run everything on your own hardware and maintain full control over your critical data.
+MijnBureau is a flexible and secure digital workplace suite. Its primary goal is to provide an **autonomous** solution for digital workplaces, ensuring you can run everything on your own hardware while maintaining full control over your critical data.
 
-MijnBureau is developed in collaboration with Dutch municipalities, provinces, and ministries, inspired by similar initiatives such as Germany’s Opendesk and France’s LaSuite.
+Developed in collaboration with Dutch municipalities, provinces, and ministries, MijnBureau draws inspiration from similar initiatives like Germany’s Opendesk and France’s LaSuite.
 
-While MijnBureau is a public-driven initiative, our license choice is an invitation for private sector actors to use, sell and contribute to the project.
+Although MijnBureau is a public-driven initiative, its licensing encourages private sector actors to use, sell, and contribute to the project.
+
+---
 
 ## Features
 
-MijnBureau already offers a rich set of features, with a strong focus on collaboration:
+MijnBureau offers a rich set of features focused on collaboration:
 
 - Collaborative Documents
-- Collaborative Spreadsheet
+- Collaborative Spreadsheets
 - Collaborative Presentations
-- Secure file sharing
-- Team chat
-- Self-hosted AI language models
-- Integrated identity management
+- Secure File Sharing
+- Team Chat
+- Self-hosted AI Language Models
+- Integrated Identity Management
 
-We are actively expanding the suite and plan to add even more capabilities, including:
+### Planned Features
+
+We are actively expanding the suite with plans to include:
 
 - AI Assistant
-- Discussion forum
-- Video conferencing
-- Password manager
+- Discussion Forum
+- Video Conferencing
+- Password Manager
 - Email
 - User Portal
 - Admin Portal
 
-MijnBureau currently features the following main components:
+---
+
+## Main Components
+
+MijnBureau currently includes the following key components:
 
 | Feature           | Functional Component | Component Version                                                  | Upstream Documentation                                        | LICENSE    |
-| ----------------- | -------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- | ---------- | --- | --- |
+| ----------------- | -------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- | ---------- |
 | Identity Provider | Keycloak             | [26.2.4](https://github.com/keycloak/keycloak/releases/tag/26.2.4) | [documentation](https://www.keycloak.org/documentation)       | Apache-2.0 |
-| Chat              | Element synapse      | [v1.129](https://github.com/element-hq/synapse/tree/v1.129.0)      | [documentation](https://element-hq.github.io/synapse/latest/) | AGPL-3.0   |     | MIT |
+| Chat              | Element Synapse      | [v1.129](https://github.com/element-hq/synapse/tree/v1.129.0)      | [documentation](https://element-hq.github.io/synapse/latest/) | AGPL-3.0   |
 | AI LLM            | Ollama               | [v0.7.0](https://github.com/ollama/ollama/tree/v0.7.0)             | [documentation](https://ollama.com/)                          | MIT        |
 | Spreadsheet       | Grist                | [v1.6.1](https://github.com/gristlabs/grist-core/tree/v1.6.1)      | [documentation](https://support.getgrist.com/self-managed/)   | Apache-2.0 |

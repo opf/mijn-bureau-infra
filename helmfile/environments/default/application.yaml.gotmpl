@@ -7,9 +7,17 @@ application:
     sessionSecret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "grist" "sessionSecret" | sha1sum | quote }}
 
   # this creates a self hosted AI LLM system using Ollama. It can handle small loads.
-  ai:
+  ollama:
     enabled: true
     namespace: ~
+    model: "llama3.2"
+    gpu:
+      enabled: false
+      type:
+      number:
+      mig:
+        enabled:
+        devices:
 
   # keycloak is an identity and access management solution. If you have your own identity provider please disable this system and configure the OIDC settings in the authentication.yaml file.
   keycloak:

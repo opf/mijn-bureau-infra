@@ -15,7 +15,25 @@ While MijnBureau is a public-driven initiative, our license choice is an invitat
 
 Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to learn more.
 
-### Features
+## Why use MijnBureau
+
+### Easy to install
+
+MijnBureau is simple to deploy and provides a comprehensive set of tools your employees need, from collaborative document editing and chat to video conferencing.
+
+### Secure & Sovereign
+
+Security and data sovereignty are at the heart of MijnBureau. By running on your own infrastructure, you stay in full control of your data, ensuring compliance. The platform is built with strong architecture, automated policies, and continuous security scanning.
+
+### Flexible
+
+MijnBureau adapts to your organization’s needs. You can enable only the features you require and seamlessly integrate with existing systems, such as identity management or document editing tools. This flexibility ensures you can modernize your digital workplace without losing control over your data.
+
+## Getting started
+
+Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to get started
+
+## Features
 
 MijnBureau already offers a rich set of features, with a strong focus on collaboration:
 
@@ -37,27 +55,18 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 - User Portal
 - Admin Portal
 
-## Why use MijnBureau
-
-### Easy to install
-
-MijnBureau is simple to deploy and provides a comprehensive set of tools your employees need, from collaborative document editing and chat to video conferencing.
-
-### Secure & Sovereign
-
-Security and data sovereignty are at the heart of MijnBureau. By running on your own infrastructure, you stay in full control of your data, ensuring compliance. The platform is built with strong architecture, automated policies, and continuous security scanning.
-
-### Flexible
-
-MijnBureau adapts to your organization’s needs. You can enable only the features you require and seamlessly integrate with existing systems, such as identity management or document editing tools. This flexibility ensures you can modernize your digital workplace without losing control over your data.
-
-## Getting started
-
-Go to the [Documentation](https://minbzk.github.io/mijn-bureau-infra/) to get started
-
 ## Commit Conventions
 
-This repo use the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+This repo uses the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes:
+
+1. folder names in helmfile/apps/\* (the products)
+2. settings: update settings (not related to 1 product)
+3. deps: update dependencies (not related to 1 product)
+4. docs: documentation update (not related to 1 product)
+5. tests: general tests (not related to 1 product)
+6. policies: general policies (not related to 1 product)
+7. ci: general CI updates
+8. other: If none of the above apply
 
 ## Additional Resources
 

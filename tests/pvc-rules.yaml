@@ -1,5 +1,5 @@
 application:
-  ai:
+  ollama:
     enabled: false
 
 pvc:

@@ -4,6 +4,7 @@ Gitlint extra rule to validate that the message title is of the form
 """
 from __future__ import unicode_literals
 
+import os
 import re
 
 import requests
@@ -30,14 +31,25 @@ class GitmojiTitle(LineRule):
             "https://raw.githubusercontent.com/carloscuesta/gitmoji/master/packages/gitmojis/src/gitmojis.json"
         ).json()["gitmojis"]
         emojis = [item["emoji"] for item in gitmojis]
-        scopes = ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"]
+
         pattern = r"^({:s})\(.*\)\s[a-zA-Z].*$".format("|".join(emojis))
         if not re.search(pattern, title):
             violation_msg = 'Title does not match regex "<gitmoji>(<scope>) <subject>"'
             return [RuleViolation(self.id, violation_msg, title)]
 
-
-        pattern = r"^({:s})\({:s}\)\s[a-zA-Z].*$".format("|".join(emojis),"|".join(scopes) )
+        # Dynamically generate scopes from folder names in helmfile/apps
+        # Use the repository base directory from the GITLINT_GIT_CONTEXT environment variable if available
+        base_dir = os.environ.get("GITLINT_GIT_CONTEXT", os.getcwd())
+        apps_dir = os.path.join(base_dir, "helmfile", "apps")
+        scopes = [name for name in os.listdir(apps_dir) if os.path.isdir(os.path.join(apps_dir, name))]
+        scopes.append("settings")
+        scopes.append("deps")
+        scopes.append("docs")
+        scopes.append("tests")
+        scopes.append("policies")
+        scopes.append("ci")
+        scopes.append("other")
+        pattern = r"^({:s})\({:s}\)\s[a-zA-Z].*$".format("|".join(emojis), "|".join(scopes))
         if not re.search(pattern, title):
             violation_msg = 'The scope should be one of: {:s}'.format(", ".join(scopes))
             return [RuleViolation(self.id, violation_msg, title)]

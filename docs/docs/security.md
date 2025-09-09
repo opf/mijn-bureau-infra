@@ -4,42 +4,67 @@ sidebar_position: 8
 
 # Security
 
-Security is very important for MijnBureau. We have added great efforts to make our tool secure. Here we describe what we did, and what you can do to make MijnBureau even more secure.
+Security is a top priority for MijnBureau. We have implemented several measures to ensure the platform is secure. This document outlines the steps we have taken and provides recommendations for enhancing security further.
 
-## Infra code
+---
 
-MijnBureau is mainly using products from vendors and deploying them to kubenetes with Infra code. Therefore it is important to add security rules to the infra code so that we can check if we conform to security best practices.
+## Infrastructure Code
 
-We created policies in the /policy/ folder that check security rules on our infra code.
+MijnBureau primarily uses vendor-provided products deployed to Kubernetes using infrastructure-as-code (IaC). To ensure security best practices are followed:
 
-We also scan our infra code manually every few months with tools like checkov and kube-score to see if we need to refine our policies.
+- **Policies**: Security policies in the `/policy/` folder validate our IaC against best practices.
+- **Manual Scans**: Every few months, we manually scan our infrastructure code using tools like [Checkov](https://www.checkov.io/) and [Kube-score](https://kube-score.com/) to identify areas for improvement.
+- **Strict Development**: During development, MijnBureau is deployed on OpenShift with the `restricted` Security Context Constraint (SCC). This SCC denies access to all host features and requires pods to:
+  - Be run with a UID allocated to the namespace.
+  - Use an SELinux context allocated to the namespace.
+
+  The `restricted` SCC is the most restrictive and secure option. It is used by default for authenticated users. For more details, refer to our blog post.
+
+---
 
 ## Containers
 
-Containers can contain security vulnerabilities. We currently use the containers provides by the maintainers that create the tools we use. But we made the containers configurable in MijnBureau so you or we can easily patch a container if we find a vulnerability that needs fixing.
+Containers can introduce security vulnerabilities. Here’s how we address container security:
 
-In the future we plan to create a pipeline to continuously scan all default containers in mijnbureau and track the CVEs actively.
+- **Base Containers**: We use containers provided by the maintainers of the tools we deploy.
+- **Configurability**: Containers in MijnBureau are configurable, allowing you or us to patch vulnerabilities as needed.
+- **Future Plans**: We plan to implement a pipeline to continuously scan all default containers in MijnBureau and actively track CVEs.
+- **Pull Policy**: MijnBureau always sets the pull policy to `Always` to ensure the latest container images are used.
 
-In MijnBureau we always set the pull policy to Always.
+---
 
 ## Pod Security
 
-Kubernetes added allot of effort to add security and it easy to add for your kubernetes administators. Please read the kubernetes [documentation](https://kubernetes.io/docs/concepts/security/pod-security-admission/#pod-security-admission-labels-for-namespaces) to enable pod security admission. The enforce mode it the most strict one and is recommended by MijnBureau.
+Kubernetes provides robust security features for pods. To enhance pod security:
 
-we also create standards to influence security for mijnbureau. these can be found in `helmfile/environments/default/security.yaml.gotmpl`. We have set strict security rules but you change it if needed.
+- **Pod Security Admission**: Kubernetes administrators should enable [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/#pod-security-admission-labels-for-namespaces). MijnBureau recommends using the `enforce` mode for the strictest security.
+- **Security Standards**: We have defined security standards in `helmfile/environments/default/security.yaml.gotmpl`. These include strict security rules, which can be adjusted if necessary.
+
+---
 
 ## AppArmor
 
-Kubernetes supports AppArmor profiles
+Kubernetes supports AppArmor profiles to enhance container security. We recommend enabling AppArmor profiles for your workloads.
 
-## Container runtime sandbox
+---
 
-To make container even more secure you could enabled gvisor as one of the container runtime sandboxes.
+## Container Runtime Sandbox
 
-## Security monitoring
+To further secure containers, consider enabling a container runtime sandbox like [gVisor](https://gvisor.dev/).
 
-You could enable or install security monitoring tools on yoru kubernetes nodes like Falco.
+---
+
+## Security Monitoring
+
+For additional security, you can install monitoring tools on your Kubernetes nodes. Tools like [Falco](https://falco.org/) can help detect and respond to security events.
+
+---
 
 ## Network Policies
 
-Kubernetes support network policies. MijnBureau assumes a DenyAll network policy to be active. It is recommended that you add a deny-all network policy to all namespaces where mijnbureau is installed.
+MijnBureau assumes a `DenyAll` network policy is active. To secure your network:
+
+- Add a `DenyAll` network policy to all namespaces where MijnBureau is installed.
+- Use Kubernetes [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) to control traffic flow between pods.
+
+---
