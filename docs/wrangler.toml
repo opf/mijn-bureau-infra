@@ -1,0 +1,10 @@
+name = "mijn-bureau-infra"
+compatibility_date = "2025-03-25"
+preview_urls = true
+tsconfig = "./tsconfig.json"
+
+[build]
+command = "yarn build"
+
+[assets]
+directory = "./build"
