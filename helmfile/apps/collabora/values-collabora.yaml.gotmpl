@@ -65,6 +65,9 @@ ingress:
       haproxy.org/backend-config-snippet: |
          balance url_param WOPISrc check_post
          hash-type consistent
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 
   # Host definitions for the ingress resource
   hosts:
