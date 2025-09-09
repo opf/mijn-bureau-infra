@@ -1,0 +1,54 @@
+{{- /*
+
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "docs.yProvider.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: y-provider
+  {{- if or .Values.yProvider.service.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.yProvider.service.annotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.yProvider.service.type }}
+  {{- if and .Values.yProvider.service.clusterIP (eq .Values.yProvider.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.yProvider.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.yProvider.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.yProvider.service.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.yProvider.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "common.tplvalues.render" (dict "value" .Values.yProvider.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if or (eq .Values.yProvider.service.type "LoadBalancer") (eq .Values.yProvider.service.type "NodePort") }}
+  externalTrafficPolicy: {{ .Values.yProvider.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.yProvider.service.type "LoadBalancer") (not (empty .Values.yProvider.service.loadBalancerSourceRanges)) }}
+  loadBalancerSourceRanges: {{ .Values.yProvider.service.loadBalancerSourceRanges }}
+  {{- end }}
+  {{- if and (eq .Values.yProvider.service.type "LoadBalancer") (not (empty .Values.yProvider.service.loadBalancerIP)) }}
+  loadBalancerIP: {{ .Values.yProvider.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.yProvider.service.ports.https }}
+      {{- if not (eq .Values.yProvider.service.ports.https .Values.yProvider.containerPorts.https) }}
+      targetPort: {{ .Values.yProvider.containerPorts.https }}
+      {{- end }}
+      protocol: TCP
+      {{- if and (or (eq .Values.yProvider.service.type "NodePort") (eq .Values.yProvider.service.type "LoadBalancer")) (not (empty .Values.yProvider.service.nodePorts.http)) }}
+      nodePort: {{ .Values.yProvider.service.nodePorts.http }}
+      {{- else if eq .Values.yProvider.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.yProvider.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.yProvider.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list .Values.yProvider.podLabels .Values.commonLabels) "context" .) | fromYaml }}
+  selector: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: y-provider

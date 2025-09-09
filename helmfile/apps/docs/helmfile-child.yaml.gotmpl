@@ -48,18 +48,18 @@ releases:
     values:
       - "values-minio.yaml.gotmpl"
 
-{{/*  - name: docs*/}}
-{{/*    chart: charts/docs*/}}
-{{/*    condition: application.docs.enabled*/}}
-{{/*    dependencies:*/}}
-{{/*    - chart: "oci://{{ (coalesce .Values.chart.bitnamicommon.registry .Values.chart.default.registry ) }}/{{ .Values.chart.bitnamicommon.repository }}/{{ .Values.chart.bitnamicommon.name }}"*/}}
-{{/*      version: 2.31.3*/}}
-{{/*    namespace: {{ .Values.application.docs.namespace }}*/}}
-{{/*    {{- if and (eq .Environment.Name "demo") ( .Values.application.docs.enabled) }}*/}}
-{{/*    needs:*/}}
-{{/*      - {{ .Values.application.docs.namespace }}/docs-postgresql*/}}
-{{/*      - {{ .Values.application.docs.namespace }}/docs-redis*/}}
-{{/*      - {{ .Values.application.docs.namespace }}/docs-minio*/}}
-{{/*    {{- end }}*/}}
-{{/*    values:*/}}
-{{/*      - "values.yaml.gotmpl"*/}}
+  - name: docs
+    chart: charts/docs
+    condition: application.docs.enabled
+    dependencies:
+    - chart: "oci://{{ (coalesce .Values.chart.bitnamicommon.registry .Values.chart.default.registry ) }}/{{ .Values.chart.bitnamicommon.repository }}/{{ .Values.chart.bitnamicommon.name }}"
+      version: 2.31.3
+    namespace: {{ .Values.application.docs.namespace }}
+    {{- if and (eq .Environment.Name "demo") ( .Values.application.docs.enabled) }}
+    needs:
+      - {{ .Values.application.docs.namespace }}/docs-postgresql
+      - {{ .Values.application.docs.namespace }}/docs-redis
+      - {{ .Values.application.docs.namespace }}/docs-minio
+    {{- end }}
+    values:
+      - "values.yaml.gotmpl"

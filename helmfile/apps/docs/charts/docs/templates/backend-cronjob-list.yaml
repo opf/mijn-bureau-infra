@@ -1,0 +1,136 @@
+{{- /*
+
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.backend.cronJobs }}
+apiVersion: {{ include "common.capabilities.cronjob.apiVersion" . }}
+kind: CronJobList
+metadata:
+  name: {{ template "docs.backend.fullname" . }}-cronjobs
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: backend
+  {{- if or .Values.backend.deploymentAnnotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.backend.deploymentAnnotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+items:
+  {{- range .Values.backend.cronJobs }}
+  - apiVersion: {{ include "common.capabilities.cronjob.apiVersion" . }}
+    kind: CronJob
+    metadata:
+      name: {{ template "docs.backend.fullname" . }}-cronjobs-{{ .name }}
+      namespace: {{ include "common.names.namespace" . | quote }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $.Values.commonLabels "context" $ ) | nindent 4 }}
+        app.kubernetes.io/component: backend
+      {{- if or $.Values.backend.deploymentAnnotations $.Values.commonAnnotations }}
+      {{- $annotations := include "common.tplvalues.merge" (dict "values" (list $.Values.backend.deploymentAnnotations $.Values.commonAnnotations) "context" .) }}
+      annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+      {{- end }}
+    spec:
+      schedule: {{ .schedule }}
+      concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
+      successfulJobsHistoryLimit: {{ .successfulJobsHistoryLimit | default 3 }}
+      failedJobsHistoryLimit: {{ .failedJobsHistoryLimit | default 1 }}
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              name: {{ template "docs.backend.fullname" . }}-cronjob-{{ .name }}
+              {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list $.Values.backend.podLabels $.Values.commonLabels) "context" .) }}
+              labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+                app.kubernetes.io/component: backend
+            spec:
+              {{- include "docs.imagePullSecrets" $ | nindent 14 }}
+              serviceAccountName: {{ template "docs.serviceAccountName" $ }}
+              automountServiceAccountToken: {{ $.Values.backend.automountServiceAccountToken }}
+              {{- if $.Values.backend.hostAliases }}
+              hostAliases: {{- include "common.tplvalues.render" (dict "value" $.Values.backend.hostAliases "context" $) | nindent 16 }}
+              {{- end }}
+              {{- if $.Values.backend.affinity }}
+              affinity: {{- include "common.tplvalues.render" ( dict "value" $.Values.backend.affinity "context" $) | nindent 16 }}
+              {{- else }}
+              affinity:
+                podAffinity: {{- include "common.affinities.pods" (dict "type" $.Values.backend.podAffinityPreset "component" "docs" "customLabels" $podLabels "context" $) | nindent 18 }}
+                podAntiAffinity: {{- include "common.affinities.pods" (dict "type" $.Values.backend.podAntiAffinityPreset "component" "docs" "customLabels" $podLabels "context" $) | nindent 18 }}
+                nodeAffinity: {{- include "common.affinities.nodes" (dict "type" $.Values.backend.nodeAffinityPreset.type "key" $.Values.backend.nodeAffinityPreset.key "values" $.Values.backend.nodeAffinityPreset.values) | nindent 18 }}
+              {{- end }}
+              {{- if $.Values.backend.nodeSelector }}
+              nodeSelector: {{- include "common.tplvalues.render" ( dict "value" $.Values.backend.nodeSelector "context" $) | nindent 16 }}
+              {{- end }}
+              {{- if $.Values.backend.tolerations }}
+              tolerations: {{- include "common.tplvalues.render" (dict "value" $.Values.backend.tolerations "context" .) | nindent 16 }}
+              {{- end }}
+              {{- if $.Values.backend.priorityClassName }}
+              priorityClassName: {{ $.Values.backend.priorityClassName | quote }}
+              {{- end }}
+              {{- if $.Values.backend.schedulerName }}
+              schedulerName: {{ $.Values.backend.schedulerName | quote }}
+              {{- end }}
+              {{- if $.Values.backend.topologySpreadConstraints }}
+              topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" $.Values.backend.topologySpreadConstraints "context" .) | nindent 16 }}
+              {{- end }}
+              {{- if $.Values.backend.terminationGracePeriodSeconds }}
+              terminationGracePeriodSeconds: {{ $.Values.backend.terminationGracePeriodSeconds }}
+              {{- end }}
+              restartPolicy: {{ .restartPolicy | default "Never" }}
+              containers:
+                - name: {{ template "docs.backend.fullname" . }}
+                  image: {{ template "docs.backend.image" . }}
+                  imagePullPolicy: {{ $.Values.backend.image.pullPolicy }}
+                  {{- if $.Values.backend.containerSecurityContext.enabled }}
+                  securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" $.Values.backend.containerSecurityContext "context" $) | nindent 20 }}
+                  {{- end }}
+                  args:
+                    {{- toYaml .args | nindent 20 }}
+                  env:
+                    - name: BITNAMI_DEBUG
+                      value: {{ ternary "true" "false" (or $.Values.backend.image.debug $.Values.diagnosticMode.enabled) | quote }}
+                    {{- if $.Values.backend.extraEnvVars }}
+                    {{- include "common.tplvalues.render" (dict "value" $.Values.backend.extraEnvVars "context" $) | nindent 20 }}
+                    {{- end }}
+                  envFrom:
+                    - configMapRef:
+                      name: {{ template "docs.backend.fullname" . }}-env
+                    {{- if $.Values.backend.extraEnvVarsCM }}
+                    - configMapRef:
+                        name: {{ include "common.tplvalues.render" (dict "value" $.Values.backend.extraEnvVarsCM "context" $) }}
+                    {{- end }}
+                    {{- if $.Values.backend.extraEnvVarsSecret }}
+                      - secretRef:
+                          name: {{ include "common.tplvalues.render" (dict "value" $.Values.backend.extraEnvVarsSecret "context" $) }}
+                    {{- end }}
+                  {{- if $.Values.backend.resources }}
+                  resources: {{- toYaml $.Values.backend.resources | nindent 20 }}
+                  {{- else if ne $.Values.backend.resourcesPreset "none" }}
+                  resources: {{- include "common.resources.preset" (dict "type" $.Values.backend.resourcesPreset) | nindent 20 }}
+                  {{- end }}
+                  volumeMounts:
+                    - name: empty-dir
+                      mountPath: /tmp
+                      subPath: tmp-dir
+                    {{- if $.Values.backend.themeCustomization.enabled }}
+                    - name: theme-customization
+                      mountPath: {{ $.Values.backend.themeCustomization.mountPath }}
+                      readOnly: true
+                    {{- end }}
+                    {{- if $.Values.backend.extraVolumeMounts }}
+                    {{- include "common.tplvalues.render" (dict "value" $.Values.backend.extraVolumeMounts "context" $) | nindent 20 }}
+                    {{- end }}
+                {{- if $.Values.backend.sidecars }}
+                {{- include "common.tplvalues.render" ( dict "value" $.Values.backend.sidecars "context" $) | nindent 16 }}
+                {{- end }}
+              volumes:
+                - name: empty-dir
+                  emptyDir: {}
+                {{- if $.Values.backend.themeCustomization.enabled }}
+                - name: theme-customization
+                  configMap:
+                    name: docs-theme-customization
+                {{- end }}
+                {{- if $.Values.backend.extraVolumes }}
+                {{- include "common.tplvalues.render" (dict "value" $.Values.backend.extraVolumes "context" $) | nindent 16 }}
+                {{- end }}
+  {{- end }}
+{{- end }}

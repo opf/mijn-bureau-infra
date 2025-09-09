@@ -1,0 +1,60 @@
+{{- /*
+
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "docs.backend.fullname" . }}-env
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: backend
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  COLLABORATION_SERVER_SECRET: {{ .Values.collaboration.secret | quote }}
+  DJANGO_CSRF_TRUSTED_ORIGINS: {{ .Values.django.csrfTrustedOrigin | quote }}
+  DJANGO_CONFIGURATION: {{ .Values.django.configuration | quote }}
+  DJANGO_ALLOWED_HOSTS: {{ .Values.django.allowedHosts | quote }}
+  DJANGO_SERVER_TO_SERVER_API_TOKENS: {{ .Values.django.serverToServerApiTokens | quote }}
+  DJANGO_SECRET_KEY: {{ .Values.django.secretKey | quote }}
+  DJANGO_SETTINGS_MODULE: {{ .Values.django.settingsModule | quote }}
+  DJANGO_SUPERUSER_PASSWORD: {{ .Values.django.superUserPassword | quote }}
+  DJANGO_EMAIL_BRAND_NAME: {{ .Values.django.email.brandName | quote }}
+  DJANGO_EMAIL_HOST: {{ .Values.django.email.host | quote }}
+  DJANGO_EMAIL_LOGO_IMG: {{ .Values.django.email.logoImg | quote }}
+  DJANGO_EMAIL_PORT: {{ .Values.django.email.port | quote }}
+  DJANGO_EMAIL_USE_SSL: {{ .Values.django.email.useSsl | quote }}
+  DJANGO_CELERY_BROKER_URL: {{ .Values.django.celeryBrokerUrl }}
+  STORAGES_STATICFILES_BACKEND: {{ .Values.django.storagesStaticFilesBackend | quote }}
+  LOGGING_LEVEL_HANDLERS_CONSOLE: {{ .Values.logging.level.loggers.root | quote }}
+  LOGGING_LEVEL_HANDLERS_APP: {{ .Values.logging.level.loggers.app | quote }}
+  OIDC_USERINFO_SHORTNAME_FIELD: {{ .Values.auth.oidc.userInfo.shortNameField | quote }}
+  OIDC_USERINFO_FULLNAME_FIELDS: {{ .Values.auth.oidc.userInfo.fullNameField | quote }}
+  OIDC_OP_JWKS_ENDPOINT: {{ .Values.auth.oidc.openIdProvider.jwksEndpoint | quote }}
+  OIDC_OP_AUTHORIZATION_ENDPOINT: {{ .Values.auth.oidc.openIdProvider.authorizationEndpoint | quote }}
+  OIDC_OP_TOKEN_ENDPOINT: {{ .Values.auth.oidc.openIdProvider.tokenEndpoint | quote }}
+  OIDC_OP_USER_ENDPOINT: {{ .Values.auth.oidc.openIdProvider.userEndpoint | quote }}
+  OIDC_OP_LOGOUT_ENDPOINT: {{ .Values.auth.oidc.openIdProvider.logoutEndpoint | quote }}
+  OIDC_RP_CLIENT_ID: {{ .Values.auth.oidc.relyingParty.clientId | quote }}
+  OIDC_RP_CLIENT_SECRET: {{ .Values.auth.oidc.relyingParty.clientSecret | quote }}
+  OIDC_RP_SIGN_ALGO: {{ .Values.auth.oidc.relyingParty.signAlgo | quote }}
+  OIDC_RP_SCOPES: {{ .Values.auth.oidc.relyingParty.scopes | quote }}
+  LOGIN_REDIRECT_URL: {{ .Values.auth.login.redirectUrl | quote }}
+  LOGIN_REDIRECT_URL_FAILURE: {{ .Values.auth.login.redirectUrlFailure | quote }}
+  LOGOUT_REDIRECT_URL: {{ .Values.auth.logout.redirectUrl | quote }}
+  DB_HOST: {{ .Values.database.host | quote }}
+  DB_NAME: {{ .Values.database.name | quote }}
+  DB_USER: {{ .Values.database.user | quote }}
+  DB_PASSWORD: {{ .Values.database.password | quote }}
+  DB_PORT: {{ .Values.database.port | quote }}
+  REDIS_URL: {{ .Values.redis.url | quote }}
+  AWS_S3_ENDPOINT_URL: {{ .Values.awsS3.endpointUrl | quote }}
+  AWS_S3_ACCESS_KEY_ID: {{ .Values.awsS3.accessKeyId | quote }}
+  AWS_S3_SECRET_ACCESS_KEY: {{ .Values.awsS3.secretAccessKey | quote }}
+  AWS_STORAGE_BUCKET_NAME: {{ .Values.awsS3.storageBucketName | quote }}
+  Y_PROVIDER_API_BASE_URL: {{ .Values.yProvider.api.baseUrl | quote }}
+  Y_PROVIDER_API_KEY: {{ .Values.yProvider.api.key | quote }}
+  CACHES_KEY_PREFIX: {{ .Values.yProvider.caches.keyPrefix | quote }}

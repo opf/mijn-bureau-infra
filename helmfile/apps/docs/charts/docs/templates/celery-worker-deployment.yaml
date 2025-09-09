@@ -1,0 +1,172 @@
+{{- /*
+
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "docs.celery.worker.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: celery-worker
+  {{- if or .Values.backend.celery.deploymentAnnotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.backend.celery.deploymentAnnotations .Values.commonAnnotations) "context" .) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.backend.celery.replicaCount }}
+  {{- if .Values.backend.celery.updateStrategy }}
+  strategy: {{- toYaml .Values.backend.celery.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list .Values.backend.celery.podLabels .Values.commonLabels) "context" .) }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/component: celery-worker
+  template:
+    metadata:
+      {{- if .Values.backend.celery.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/component: celery-worker
+    spec:
+      {{- include "docs.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ template "docs.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.backend.celery.automountServiceAccountToken }}
+      {{- if .Values.backend.celery.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backend.celery.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.backend.celery.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.backend.celery.podAffinityPreset "component" "docs" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.backend.celery.podAntiAffinityPreset "component" "docs" "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.backend.celery.nodeAffinityPreset.type "key" .Values.backend.celery.nodeAffinityPreset.key "values" .Values.backend.celery.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.backend.celery.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.backend.celery.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backend.celery.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backend.celery.priorityClassName }}
+      priorityClassName: {{ .Values.backend.celery.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.backend.celery.schedulerName }}
+      schedulerName: {{ .Values.backend.celery.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.backend.celery.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backend.celery.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.backend.celery.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backend.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.backend.celery.terminationGracePeriodSeconds }}
+      {{- end }}
+      initContainers:
+        {{- if and .Values.defaultInitContainers.volumePermissions.enabled .Values.persistence.enabled }}
+        {{- include "docs.defaultInitContainers.volumePermissions" (dict "context" . "component" "backend.celery") | nindent 8 }}
+        {{- end }}
+        {{- if .Values.backend.celery.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: {{ template "docs.celery.worker.fullname" . }}
+          image: {{ template "docs.celery.worker.image" . }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          {{- if .Values.backend.celery.containerSecurityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.backend.celery.containerSecurityContext "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.backend.celery.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.backend.celery.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.backend.image.debug .Values.diagnosticMode.enabled) | quote }}
+            {{- if .Values.backend.celery.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "docs.backend.fullname" . }}-env
+            {{- if .Values.backend.celery.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.backend.celery.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.backend.celery.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.backend.celery.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.backend.celery.resources }}
+          resources: {{- toYaml .Values.backend.celery.resources | nindent 12 }}
+          {{- else if ne .Values.backend.celery.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.backend.celery.resourcesPreset) | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.containerPorts.http }}
+            {{- if .Values.backend.extraContainerPorts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.backend.extraContainerPorts "context" $) | nindent 12 }}
+            {{- end }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.backend.celery.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backend.celery.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backend.celery.livenessProbe "enabled") "context" $) | nindent 12 }}
+            exec:
+              command: ["/bin/sh", "-c", "celery -A impress.celery_app inspect ping -d impress@$HOSTNAME"]
+          {{- end }}
+          {{- if .Values.backend.celery.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backend.celery.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backend.celery.readinessProbe "enabled") "context" $) | nindent 12 }}
+            exec:
+              command: [ "/bin/sh", "-c", "celery -A impress.celery_app inspect ping -d impress@$HOSTNAME" ]
+          {{- end }}
+          {{- if .Values.backend.celery.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backend.celery.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backend.celery.startupProbe "enabled") "context" $) | nindent 12 }}
+            exec:
+              command: ["/bin/sh", "-c", "celery -A impress.celery_app inspect ping -d impress@$HOSTNAME"]
+          {{- end }}
+          {{- end }}
+          {{- if .Values.backend.celery.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            {{- if .Values.backend.themeCustomization.enabled }}
+            - name: theme-customization
+              mountPath: {{ .Values.backend.themeCustomization.mountPath }}
+              readOnly: true
+            {{- end }}
+          {{- if .Values.backend.celery.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.backend.celery.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.backend.celery.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        {{- if .Values.backend.themeCustomization.enabled }}
+        - name: theme-customization
+          configMap:
+            name: docs-theme-customization
+        {{- end }}
+        {{- if .Values.backend.celery.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.backend.celery.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
