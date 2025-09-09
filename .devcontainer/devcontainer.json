@@ -3,6 +3,14 @@
   "image": "mcr.microsoft.com/devcontainers/base:jammy",
   "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
   "postStartCommand": "bash -c 'source ~/.bashrc && .devcontainer/postStartCommand.sh'",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": "true"
+    }
+  },
+  "containerEnv": {
+    "MIJNBUREAU_MASTER_PASSWORD": "test"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
