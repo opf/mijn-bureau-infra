@@ -32,3 +32,8 @@ debug.log
 /output/
 
 CLAUDE.md
+
+# Kind certificates
+kubernetes.local.crt
+kubernetes.local.der
+kubernetes.local.key
