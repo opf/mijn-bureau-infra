@@ -68,6 +68,8 @@ ingress:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/configuration-snippet: |
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+      custom.annotation/environment: "testing"   # or staging/dev
+      custom.annotation/test: "test-value"
 
   # Host definitions for the ingress resource
   hosts:
