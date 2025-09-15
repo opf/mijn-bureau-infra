@@ -86,10 +86,10 @@ resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 resources: {{ .Values.resource.collabora | toYaml | nindent 2 }}
 
 # Security context settings applied at the pod level, such as user/group ID, filesystem permissions
-podSecurityContext: {{ .Values.security.collabora.podSecurityContext | toYaml | nindent 2 }}
+podSecurityContext: {{ .Values.security.collabora.podSecurityContext | default .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 
 # Security context settings specific to the container, like privilege dropping, readOnlyRootFilesystem, etc.
-containerSecurityContext: {{ .Values.security.collabora.containerSecurityContext | toYaml | nindent 2 }}
+containerSecurityContext: {{ .Values.security.collabora.containerSecurityContext | default .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
 
 # Number of desired pod replicas if HPA (autoscaling) is not enabled
 replicaCount: 1
