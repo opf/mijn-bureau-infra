@@ -37,6 +37,10 @@ application:
   collabora:
     enabled: true
     namespace: ~
+    # This copies default config and disables capabilities in `/tmp/cool/coolwsd.xml`.
+    # Only required when running on OpenShift clusters, not needed in normal Kubernetes.
+    enableInsecureCollWSD: true
+
   nextcloud:
     enabled: true
     namespace: ~

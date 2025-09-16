@@ -26,16 +26,19 @@ image:
 
 collabora:
   # Username used for authenticating with the Collabora service (default: "admin" if not provided in secrets)
-  username: {{ .Values.secret.collabora.credentials.username | default "admin" | quote }}
+  username: {{ .Values.secret.collabora.credentials.username | quote }}
 
   # Password used for authenticating with the Collabora service (default: "admin" if not provided in secrets)
-  password: {{ .Values.secret.collabora.credentials.password | default "admin" | quote }}
+  password: {{ .Values.secret.collabora.credentials.password | quote }}
 
   # The hostname that Collabora will use to identify itself (usually matches the external DNS name)
   server_name: {{ .Values.global.hostname.collabora | quote }}
 
   # Extra parameters passed to the Collabora start command; in this case, disables SSL inside the container
   extra_params: --o:ssl.enable=false --o:ssl.termination=true
+
+  # When true, enables OpenShift-specific initContainer workaround.
+  enableInsecureCollWSD : {{ .Values.enableInsecureCollWSD  | quote }}
 
 containerPorts:
   # The internal port exposed by the Collabora container (used in deployment)
@@ -53,23 +56,34 @@ ingress:
   hostname: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com"  }}
   # Enables ingress configuration for external access to Collabora
   enabled: true
-  className: "haproxy"
+
   # Specifies the name of the ingress class/controller to use (e.g., "nginx", "traefik", etc.)
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
 
   # Optional TLS configuration injected from Helm values (for enabling HTTPS on the ingress)
   extraTls: {{ .Values.tls.collabora | toYaml | nindent 4 }}
-
   annotations:
-      haproxy.org/timeout-tunnel: "3600s"
-      haproxy.org/backend-config-snippet: |
-         balance url_param WOPISrc check_post
-         hash-type consistent
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-      custom.annotation/environment: "testing"   # or staging/dev
-      custom.annotation/test: "test-value"
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$arg_WOPISrc"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.org/timeout-tunnel: "3600s"
+    haproxy.org/backend-config-snippet: |
+      balance url_param WOPISrc check_post
+      hash-type consistent
+    {{- end }}
+    custom.annotation/environment: "testing"   # or staging/dev
+    custom.annotation/test: "test-value"
+
 
   # Host definitions for the ingress resource
   hosts:
@@ -85,11 +99,22 @@ resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 # CPU and memory requests and limits for the container
 resources: {{ .Values.resource.collabora | toYaml | nindent 2 }}
 
-# Security context settings applied at the pod level, such as user/group ID, filesystem permissions
-podSecurityContext: {{ .Values.security.collabora.podSecurityContext | default .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 
-# Security context settings specific to the container, like privilege dropping, readOnlyRootFilesystem, etc.
-containerSecurityContext: {{ .Values.security.collabora.containerSecurityContext | default .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+# Security context settings applied at the pod level
+podSecurityContext: |
+{{- if .Values.enableInsecureCollWSD }}
+{{ .Values.security.collabora.podSecurityContext | toYaml | nindent 2 }}
+{{- else }}
+{{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+{{- end }}
+
+# Security context settings specific to the container
+containerSecurityContext: |
+{{- if .Values.enableInsecureCollWSD }}
+{{ .Values.security.collabora.containerSecurityContext | toYaml | nindent 2 }}
+{{- else }}
+{{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+{{- end }}
 
 # Number of desired pod replicas if HPA (autoscaling) is not enabled
 replicaCount: 1
@@ -115,15 +140,19 @@ networkPolicy:
 extraVolumes:
   - name: nginx-conf
     emptyDir: {}
+{{- if .Values.enableInsecureCollWSD }}
   - name: cool
     emptyDir: {}
+{{- end }}
 
 # extraVolumeMounts Mount paths for the extra volumes defined above
 extraVolumeMounts:
   - name: nginx-conf
     mountPath: /etc/nginx/conf.d
+{{- if .Values.enableInsecureCollWSD }}
   - name: cool
     mountPath: /etc/coolwsd/
+{{- end }}
 
 # livenessProbe.enabled Enable Kubernetes liveness probe
 livenessProbe:
@@ -151,7 +180,9 @@ affinity: {}
 diagnosticMode:
   enabled: false
 
-
+# OpenShift-specific workaround:
+{{- if .Values.enableInsecureCollWSD }}
+# Adds an initContainer that copies default `coolwsd.xml` and disables capabilities.
 initContainers:
  - name: shell
    image: {{ coalesce .Values.container.collabora.registry .Values.container.default.registry }}/{{ .Values.container.collabora.repository }}:{{ .Values.container.collabora.tag }}
@@ -165,3 +196,4 @@ global:
   compatibility:
     openshift:
       adaptSecurityContext: disabled
+{{- end }}
