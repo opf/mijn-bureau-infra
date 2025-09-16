@@ -89,6 +89,7 @@ It currently includes the following open-source components
 | Chat              | Element synapse      | [v1.133](https://github.com/element-hq/synapse/tree/v1.133.0)      | [documentation](https://element-hq.github.io/synapse/latest/) | AGPL-3.0   |
 | Spreadsheet       | Grist                | [v1.6.1](https://github.com/gristlabs/grist-core/tree/v1.6.1)      | [documentation](https://support.getgrist.com/self-managed/)   | Apache-2.0 |
 | AI LLM            | Ollama               | [v0.9.5](https://github.com/ollama/ollama/tree/v0.9.5)             | [documentation](https://ollama.com/)                          | MIT        |
+| File sharing      | Nextcloud            | [v30.0.7](https://github.com/nextcloud/server/tree/v30.0.7)        | [documentation](https://nextcloud.com/)                       | AGPL-3.0   |
 
 ---
 
