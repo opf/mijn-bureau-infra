@@ -137,7 +137,7 @@ externalDatabase:
   logging: true
 
 persistence:
-  enabled: true
+  enabled: false
   storageClass: {{ coalesce .Values.pvc.grist.grist.storageClass .Values.pvc.default.storageClass | quote }}
   accessModes: {{ coalesce .Values.pvc.grist.grist.accessModes .Values.pvc.default.accessModes (list "ReadWriteOnce") | toYaml | nindent 4 }}
   size: {{ coalesce .Values.pvc.grist.grist.size .Values.pvc.default.size "8Gi" }}
