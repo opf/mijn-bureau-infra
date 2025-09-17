@@ -87,6 +87,8 @@ serviceAccount:
 ingress:
   enabled: true
   hostname: {{ .Values.global.hostname.element | default "chat" }}.{{ .Values.global.domain | default "example.com" }}
+  tls: {{ .Values.global.tls.enabled | default true }}
+  selfSigned: {{ and .Values.global.tls.enabled .Values.global.tls.selfSigned | default false }}
   extraTls: {{ .Values.tls.chat | toYaml | nindent 4 }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   annotations:
