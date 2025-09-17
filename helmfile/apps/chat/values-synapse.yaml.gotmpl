@@ -38,6 +38,9 @@ persistence:
 master:
   resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
   resources: {{ .Values.resource.synapse.master | toYaml | nindent 4 }}
+{{- if .Values.cluster.sandbox.runtimeClassName }}
+  runtimeClassName: {{ .Values.cluster.sandbox.runtimeClassName | quote }}
+{{- end }}
   autoscaling:
     vpa: {{ .Values.autoscaling.vertical.synapse.master | toYaml | nindent 6 }}
   startupProbe:
