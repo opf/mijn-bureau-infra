@@ -24,6 +24,8 @@ autoscaling:
 ingress:
   enabled: true
   hostname: {{ .Values.global.hostname.grist }}.{{ .Values.global.domain }}
+  tls: {{ .Values.global.tls.enabled | default true }}
+  selfSigned: {{ and .Values.global.tls.enabled .Values.global.tls.selfSigned | default false }}
   extraTls: {{ .Values.tls.grist | toYaml | nindent 4 }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   annotations:
@@ -135,7 +137,7 @@ externalDatabase:
   logging: true
 
 persistence:
-  enabled: true
+  enabled: false
   storageClass: {{ coalesce .Values.pvc.grist.grist.storageClass .Values.pvc.default.storageClass | quote }}
   accessModes: {{ coalesce .Values.pvc.grist.grist.accessModes .Values.pvc.default.accessModes (list "ReadWriteOnce") | toYaml | nindent 4 }}
   size: {{ coalesce .Values.pvc.grist.grist.size .Values.pvc.default.size "8Gi" }}

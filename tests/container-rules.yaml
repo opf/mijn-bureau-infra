@@ -21,6 +21,9 @@ container:
   minio_console:
     registry: ""
     imagePullSecret: ""
+  nextcloud:
+    registry: ""
+    imagePullSecret: ""
   docs:
     registry: ""
     imagePullSecret: ""

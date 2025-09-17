@@ -30,3 +30,10 @@ debug.log
 # Demo.yaml
 /helmfile/environments/demo/demo.yaml.gotmpl
 /output/
+
+CLAUDE.md
+
+# Kind certificates
+kubernetes.local.crt
+kubernetes.local.der
+kubernetes.local.key
