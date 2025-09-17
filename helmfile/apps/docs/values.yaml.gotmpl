@@ -1,7 +1,71 @@
+{{ $hostname := printf "%s.%s" .Values.global.hostname.docs .Values.global.domain }}
+{{ $baseUrl := printf "https://%s" $hostname }}
+{{ $redisUrl := printf "redis://default:%s@%s:%d/1" .Values.cache.docs.password .Values.cache.docs.host .Values.cache.docs.port }}
+
+global:
+  security:
+    allowInsecureImages: true
+
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.docs.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+
+commonLabels:
+  app.kubernetes.io/part-of: docs
+
+clusterDomain: {{ .Values.cluster.networking.domain }}
+
 backend:
-  replicaCount: 3
+  image:
+    registry: {{(coalesce .Values.container.docs.registry .Values.container.default.registry) | quote }}
+    repository: {{ .Values.container.docs.backend.repository | quote }}
+    tag: {{ .Values.container.docs.backend.tag | quote }}
+  replicaCount: 1
+  resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
+  resources: {{ .Values.resource.docs.backend | toYaml | nindent 4 }}
+  podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 4 }}
+  containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 4 }}
   pdb:
     maxUnavailable: 1
+  networkPolicy:
+    extraEgress:
+      # Database connectivity
+      - ports:
+          - port: {{ .Values.database.docs.port }}
+            protocol: TCP
+        {{- if .Values.database.docs.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: postgresql
+                app.kubernetes.io/component: primary
+        {{- end }}
+      # Redis connectivity
+      - ports:
+          - port: {{ .Values.cache.docs.port }}
+            protocol: TCP
+        {{- if .Values.cache.docs.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: redis
+                app.kubernetes.io/component: master
+        {{- end }}
+      # MinIO connectivity
+      - ports:
+          - port: {{ .Values.objectstore.docs.port }}
+            protocol: TCP
+        {{- if .Values.objectstore.grist.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: minio
+        {{- end }}
+      # Allow https egress for keycloak connection
+      - ports:
+          - port: 443
+      # Allow http egress for yProvider connection
+      - ports:
+          - port: 4444
   themeCustomization:
     enabled: true
     fileContent: |
@@ -142,26 +206,284 @@ backend:
           }
         }
       }"
+  celery:
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
+    resources: {{ .Values.resource.docs.celery | toYaml | nindent 6 }}
+    podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 6 }}
+    containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 6 }}
+    networkPolicy:
+      extraEgress:
+        # Database connectivity
+        - ports:
+            - port: {{ .Values.database.docs.port }}
+              protocol: TCP
+          {{- if .Values.database.docs.isInternal }}
+          to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: postgresql
+                  app.kubernetes.io/component: primary
+          {{- end }}
+        # Redis connectivity
+        - ports:
+            - port: {{ .Values.cache.docs.port }}
+              protocol: TCP
+          {{- if .Values.cache.docs.isInternal }}
+          to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: redis
+                  app.kubernetes.io/component: master
+          {{- end }}
+        # MinIO connectivity
+        - ports:
+            - port: {{ .Values.objectstore.docs.port }}
+              protocol: TCP
+          {{- if .Values.objectstore.grist.isInternal }}
+          to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: minio
+          {{- end }}
 
 frontend:
-  replicaCount: 3
+  image:
+    registry: {{(coalesce .Values.container.docs.registry .Values.container.default.registry) | quote }}
+    repository: {{ .Values.container.docs.frontend.repository | quote }}
+    tag: {{ .Values.container.docs.frontend.tag | quote }}
+  replicaCount: 1
+  resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
+  resources: {{ .Values.resource.docs.backend | toYaml | nindent 4 }}
+  podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 4 }}
+  containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 4 }}
   pdb:
     maxUnavailable: 1
 
 yProvider:
+  image:
+    registry: {{(coalesce .Values.container.docs.registry .Values.container.default.registry) | quote }}
+    repository: {{ .Values.container.docs.yProvider.repository | quote }}
+    tag: {{ .Values.container.docs.yProvider.tag | quote }}
   replicaCount: 1
+  resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
+  resources: {{ .Values.resource.docs.backend | toYaml | nindent 4 }}
+  podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 4 }}
+  containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 4 }}
   pdb:
     maxUnavailable: 1
+  networkPolicy:
+    extraEgress:
+      # Database connectivity
+      - ports:
+          - port: {{ .Values.database.docs.port }}
+            protocol: TCP
+        {{- if .Values.database.docs.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: postgresql
+                app.kubernetes.io/component: primary
+        {{- end }}
+      # Redis connectivity
+      - ports:
+          - port: {{ .Values.cache.docs.port }}
+            protocol: TCP
+        {{- if .Values.cache.docs.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: redis
+                app.kubernetes.io/component: master
+        {{- end }}
+      # MinIO connectivity
+      - ports:
+          - port: {{ .Values.objectstore.docs.port }}
+            protocol: TCP
+        {{- if .Values.objectstore.grist.isInternal }}
+        to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/name: minio
+        {{- end }}
+      # FIXME could this be changed to internal traffic?
+      # Allow https egress for backend connection
+      - ports:
+          - port: 443
+  api:
+    key: {{ .Values.application.docs.yProvider.key }}
   caches:
     keyPrefix: {{ now | unixEpoch | quote }}
 
 ingress:
   enabled: true
+  hostname: {{ $hostname }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
 ingressAdmin:
   enabled: true
-ingressCollaborationsWS:
+  hostname: {{ .Values.global.hostname.docs }}.{{ .Values.global.domain }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
+ingressCollaborationApi:
   enabled: true
+  hostname: {{ $hostname }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
+ingressCollaborationWS:
+  enabled: true
+  hostname: {{ $hostname }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/timeout-tunnel: "86400"
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
 ingressCollaborationsApi:
   enabled: true
+  hostname: {{ $hostname }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
 ingressMedia:
   enabled: true
+  hostname: {{ $hostname }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- else if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains;preload
+    {{- end }}
+  extraTls: {{ .Values.tls.docs | toYaml | nindent 4 }}
+
+metrics: {{ .Values.monitoring.prometheus | toYaml | nindent 2 }}
+
+{{- if .Values.cluster.sandbox.gvisor.enabled }}
+sandboxFlavor: "gvisor"
+{{- end }}
+
+collaboration:
+  api:
+    url: {{ printf "%s%s" $baseUrl "/collaboration/api/" }}
+    secret: {{ .Values.application.docs.collaboration.secret }}
+  webSockets:
+    url: {{ printf "wss://%s%s" $hostname "/collaboration/ws/" }}
+    notConnectedReadOnly: true
+
+django:
+  csrfTrustedOrigin: {{ $baseUrl }}
+  allowedHosts: {{ $hostname }}
+  secretKey: {{ .Values.application.docs.django.secretKey }}
+  superUser:
+    email: {{ .Values.secret.docs.superUser.email }}
+    password: {{ .Values.secret.docs.superUser.password }}
+  email:
+    brandName: "Mijn Bureau"
+    host: {{ .Values.smtp.host }}
+    # FIXME Do we have Mijn Bureau branding?
+    logoImg: ""
+    port: {{ .Values.smtp.port }}
+    useSsl: {{ .Values.smtp.tls.enabled }}
+  celeryBrokerUrl: {{ $redisUrl }}
+
+auth:
+  oidc:
+    userInfo:
+      shortNameField: {{ .Values.authentication.oidc.claims.given_name }}
+      fullNameField: {{ .Values.authentication.oidc.claims.display_name }}
+    openIdProvider:
+      jwksEndpoint: {{ .Values.authentication.oidc.jwks_uri }}
+      authorizationEndpoint: {{ .Values.authentication.oidc.authorization_endpoint }}
+      tokenEndpoint: {{ .Values.authentication.oidc.token_endpoint }}
+      userEndpoint: {{ .Values.authentication.oidc.userinfo_endpoint }}
+      logoutEndpoint: {{ .Values.authentication.oidc.end_session_endpoint }}
+    relyingParty:
+      clientId: {{ .Values.authentication.client.docs.client_id }}
+      clientSecret: {{ .Values.authentication.client.docs.client_secret }}
+      signAlgo: {{ .Values.authentication.client.docs.sign_algorithm }}
+      scopes: {{ .Values.authentication.client.docs.scopes }}
+  login:
+    redirectUrl: {{ $baseUrl }}
+    redirectUrlFailure: {{ $baseUrl }}
+  logout:
+    redirectUrl: {{ $baseUrl }}
+
+database:
+  host: {{ .Values.database.docs.host }}
+  port: {{ .Values.database.docs.port }}
+  name: {{ .Values.database.docs.name }}
+  user: {{ .Values.database.docs.user }}
+  password: {{ .Values.database.docs.password }}
+
+redis:
+  url: {{ $redisUrl }}
+
+awsS3:
+  endpointUrl: {{ printf "http%s://%s:%d" ( ternary "s" "" .Values.objectstore.docs.useSSL ) .Values.objectstore.docs.endpoint .Values.objectstore.docs.port }}
+  accessKeyId: {{ .Values.objectstore.docs.username }}
+  secretAccessKey: {{ .Values.objectstore.docs.rootPassword }}
+  storageBucketName: {{ .Values.objectstore.docs.bucket }}

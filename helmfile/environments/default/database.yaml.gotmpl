@@ -31,6 +31,7 @@ database:
     name: docs
     host: docs-postgresql
     port: 5432
+    isInternal: true
     user: docs
     password: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD" ) "docs" "database" | sha1sum | quote}}
     adminpassword: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD" ) "docs" "database_admin" | sha1sum | quote}}

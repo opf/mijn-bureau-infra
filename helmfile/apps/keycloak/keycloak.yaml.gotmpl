@@ -1397,6 +1397,25 @@ keycloakConfigCli:
               "https://{{ .Values.global.hostname.synapse }}.{{ .Values.global.domain }}"
             ],
             "protocol": "openid-connect"
+          },
+          {
+            "clientId": "{{ .Values.authentication.client.docs.client_id }}",
+            "name": "Docs",
+            "description": "Docs - Eenvoudig samenwerken aan documenten",
+            "rootUrl": "https://{{ .Values.global.hostname.docs }}.{{ .Values.global.domain }}",
+            "adminUrl": "https://{{ .Values.global.hostname.docs }}.{{ .Values.global.domain }}",
+            "baseUrl": "https://{{ .Values.global.hostname.docs }}.{{ .Values.global.domain }}",
+            "enabled": true,
+            "alwaysDisplayInConsole": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": {{ .Values.authentication.client.docs.client_secret | quote }},
+            "redirectUris": [
+              "/*"
+            ],
+            "webOrigins": [
+              "https://{{ .Values.global.hostname.docs }}.{{ .Values.global.domain }}"
+            ],
+            "protocol": "openid-connect"
           }
         ],
         {{- if eq .Environment.Name "demo" }}

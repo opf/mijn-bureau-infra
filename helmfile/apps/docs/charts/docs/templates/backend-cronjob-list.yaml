@@ -127,7 +127,7 @@ items:
                 {{- if $.Values.backend.themeCustomization.enabled }}
                 - name: theme-customization
                   configMap:
-                    name: docs-theme-customization
+                    name: {{ include "docs.theme.fullname" . }}
                 {{- end }}
                 {{- if $.Values.backend.extraVolumes }}
                 {{- include "common.tplvalues.render" (dict "value" $.Values.backend.extraVolumes "context" $) | nindent 16 }}

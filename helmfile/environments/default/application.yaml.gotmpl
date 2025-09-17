@@ -36,3 +36,9 @@ application:
   docs:
     enabled: true
     namespace: ~
+    collaboration:
+      secret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "collaborationSecret" | sha1sum | quote }}
+    yProvider:
+      key: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "yProviderKey" | sha1sum | quote }}
+    django:
+      secretKey: {{ print ( derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "djangoSecretKey" | sha1sum ) ( derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "djangoSecretKey2" | sha1sum ) | trunc 63 | quote }}

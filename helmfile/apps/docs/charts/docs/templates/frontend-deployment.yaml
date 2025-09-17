@@ -61,7 +61,7 @@ spec:
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.frontend.topologySpreadConstraints "context" .) | nindent 8 }}
       {{- end }}
       {{- if .Values.frontend.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.frontend.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.frontend.podSecurityContext "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.frontend.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.frontend.terminationGracePeriodSeconds }}
@@ -126,19 +126,25 @@ spec:
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.frontend.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.frontend.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.frontend.livenessProbe "enabled") "context" $) | nindent 12 }}
-            # FIXME %%httpGet || command || etc%%
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.containerPorts.http }}
           {{- end }}
           {{- if .Values.frontend.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.frontend.customReadinessProbe "context" $) | nindent 12 }}
           {{- else if .Values.frontend.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.frontend.readinessProbe "enabled") "context" $) | nindent 12 }}
-          # FIXME %%httpGet || command || etc%%
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.containerPorts.http }}
           {{- end }}
           {{- if .Values.frontend.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.frontend.customStartupProbe "context" $) | nindent 12 }}
           {{- else if .Values.frontend.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.frontend.startupProbe "enabled") "context" $) | nindent 12 }}
-          # FIXME %%httpGet || command || etc%%
+            httpGet:
+              path: /
+              port: {{ .Values.frontend.containerPorts.http }}
           {{- end }}
           {{- end }}
           {{- if .Values.frontend.lifecycleHooks }}

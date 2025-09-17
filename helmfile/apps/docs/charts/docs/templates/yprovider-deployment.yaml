@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "common.names.fullname" . }}
+  name: {{ template "docs.yProvider.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: y-provider
@@ -61,7 +61,7 @@ spec:
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.yProvider.topologySpreadConstraints "context" .) | nindent 8 }}
       {{- end }}
       {{- if .Values.yProvider.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.yProvider.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.yProvider.podSecurityContext "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.yProvider.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.yProvider.terminationGracePeriodSeconds }}
@@ -102,7 +102,7 @@ spec:
               # FIXME should be more common or calculated here
               value: {{ .Values.django.csrfTrustedOrigin | quote }}
             - name: COLLABORATION_SERVER_SECRET
-              value: {{ .Values.collaboration.secret | quote }}
+              value: {{ .Values.collaboration.api.secret | quote }}
             - name: Y_PROVIDER_API_KEY
               value: {{ .Values.yProvider.api.key | quote }}
             {{- if .Values.yProvider.extraEnvVars }}

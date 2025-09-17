@@ -11,6 +11,13 @@ Full name for backend
 {{- end -}}
 
 {{/*
+Full name for theme customizations
+*/}}
+{{- define "docs.theme.fullname" -}}
+{{ include "common.names.fullname" . }}-theme
+{{- end -}}
+
+{{/*
 Full name for frontend
 */}}
 {{- define "docs.frontend.fullname" -}}
@@ -56,7 +63,7 @@ Return the proper yProvider image name
 Return the proper celery worker image name
 */}}
 {{- define "docs.celery.worker.image" -}}
-{{ include "common.images.image" (dict "imageRoot" .Values.frontend.image "global" .Values.global) }}
+{{ include "common.images.image" (dict "imageRoot" .Values.backend.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*

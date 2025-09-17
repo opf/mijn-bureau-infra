@@ -3,7 +3,7 @@
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if .Values.ingressCollaborationsWS.enabled }}
+{{- if .Values.ingressCollaborationWS.enabled }}
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
@@ -11,27 +11,27 @@ metadata:
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: y-provider
-  {{- if or .Values.ingressCollaborationsWS.annotations .Values.commonAnnotations }}
-  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.ingressCollaborationsWS.annotations .Values.commonAnnotations) "context" .) }}
+  {{- if or .Values.ingressCollaborationWS.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.ingressCollaborationWS.annotations .Values.commonAnnotations) "context" .) }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.ingressCollaborationsWS.ingressClassName }}
-  ingressClassName: {{ .Values.ingressCollaborationsWS.ingressClassName | quote }}
+  {{- if .Values.ingressCollaborationWS.ingressClassName }}
+  ingressClassName: {{ .Values.ingressCollaborationWS.ingressClassName | quote }}
   {{- end }}
   rules:
-    {{- if .Values.ingressCollaborationsWS.hostname }}
-    - host: {{ .Values.ingressCollaborationsWS.hostname }}
+    {{- if .Values.ingressCollaborationWS.hostname }}
+    - host: {{ .Values.ingressCollaborationWS.hostname }}
       http:
         paths:
-          {{- if .Values.ingressCollaborationsWS.extraPaths }}
-          {{- toYaml .Values.ingressCollaborationsWS.extraPaths | nindent 10 }}
+          {{- if .Values.ingressCollaborationWS.extraPaths }}
+          {{- toYaml .Values.ingressCollaborationWS.extraPaths | nindent 10 }}
           {{- end }}
-          - path: {{ .Values.ingressCollaborationsWS.path }}
-            pathType: {{ .Values.ingressCollaborationsWS.pathType }}
+          - path: {{ .Values.ingressCollaborationWS.path }}
+            pathType: {{ .Values.ingressCollaborationWS.pathType }}
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "docs.yProvider.fullname" .) "servicePort" "http" "context" $)  | nindent 14 }}
     {{- end }}
-    {{- range .Values.ingressCollaborationsWS.extraHosts }}
+    {{- range .Values.ingressCollaborationWS.extraHosts }}
     - host: {{ .name | quote }}
       http:
         paths:
@@ -39,18 +39,18 @@ spec:
             pathType: {{ default "ImplementationSpecific" .pathType }}
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "docs.yProvider.fullname" $) "servicePort" "http" "context" $) | nindent 14 }}
     {{- end }}
-    {{- if .Values.ingressCollaborationsWS.extraRules }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.ingressCollaborationsWS.extraRules "context" $) | nindent 4 }}
+    {{- if .Values.ingressCollaborationWS.extraRules }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.ingressCollaborationWS.extraRules "context" $) | nindent 4 }}
     {{- end }}
-  {{- if or (and .Values.ingressCollaborationsWS.tls (or (include "common.ingress.certManagerRequest" ( dict "annotations" .Values.ingressCollaborationsWS.annotations )) .Values.ingressCollaborationsWS.selfSigned)) .Values.ingressCollaborationsWS.extraTls }}
+  {{- if or (and .Values.ingressCollaborationWS.tls (or (include "common.ingress.certManagerRequest" ( dict "annotations" .Values.ingressCollaborationWS.annotations )) .Values.ingressCollaborationWS.selfSigned)) .Values.ingressCollaborationWS.extraTls }}
   tls:
-    {{- if and .Values.ingressCollaborationsWS.tls (or (include "common.ingress.certManagerRequest" ( dict "annotations" .Values.ingressCollaborationsWS.annotations )) .Values.ingressCollaborationsWS.selfSigned) }}
+    {{- if and .Values.ingressCollaborationWS.tls (or (include "common.ingress.certManagerRequest" ( dict "annotations" .Values.ingressCollaborationWS.annotations )) .Values.ingressCollaborationWS.selfSigned) }}
     - hosts:
-        - {{ .Values.ingressCollaborationsWS.hostname | quote }}
-      secretName: {{ printf "%s-tls" .Values.ingressCollaborationsWS.hostname }}
+        - {{ .Values.ingressCollaborationWS.hostname | quote }}
+      secretName: {{ printf "%s-tls" .Values.ingressCollaborationWS.hostname }}
     {{- end }}
-    {{- if .Values.ingressCollaborationsWS.extraTls }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.ingressCollaborationsWS.extraTls "context" $) | nindent 4 }}
+    {{- if .Values.ingressCollaborationWS.extraTls }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.ingressCollaborationWS.extraTls "context" $) | nindent 4 }}
     {{- end }}
   {{- end }}
 {{- end }}

@@ -80,8 +80,8 @@ diagnosticMode:
 backend:
   ## Impress backend image
   ## ref: https://hub.docker.com/r/lasuite/impress-backend/tags
-  ## @param backend.image.registry [default: REGISTRY_NAME] Impress backend image registry
-  ## @param backend.image.repository [default: REPOSITORY_NAME/%%IMAGE_NAME%%] Impress backend image repository
+  ## @param backend.image.registry Impress backend image registry
+  ## @param backend.image.repository Impress backend image repository
   ## @skip backend.image.tag Impress backend image tag (immutable tags are recommended)
   ## @param backend.image.digest Impress backend image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
   ## @param backend.image.pullPolicy Impress backend image pull policy
@@ -111,7 +111,7 @@ backend:
   ## @param backend.containerPorts.http Impress backend HTTP container port
   ##
   containerPorts:
-    http: 8080
+    http: 8000
   ## @param backend.extraContainerPorts Optionally specify extra list of additional ports for Impress backend containers
   ## e.g:
   ## extraContainerPorts:
@@ -554,7 +554,8 @@ backend:
   ## @param backend.migrate.command Backend migrate command
   ## @param backend.migrate.restartPolicy Backend migrate job restart policy
   migrate:
-    annotations: []
+    annotations:
+      argocd.argoproj.io/sync-options: Replace=true,Force=true
     command:
       - /bin/sh
       - "-c"
@@ -573,7 +574,8 @@ backend:
   ## @param backend.createSuperUser.command Backend create superuser command
   ## @param backend.createSuperUser.restartPolicy Backend create superuser job restart policy
   createSuperUser:
-    annotations: []
+    annotations:
+      argocd.argoproj.io/sync-options: Replace=true,Force=true
     command:
       - "/bin/sh"
       - "-c"
@@ -599,8 +601,8 @@ backend:
     command: []
     restartPolicy: Never
     annotations:
-      # FIXME This should probably be moved out of at least this file, but perhaps even to environment
       argocd.argoproj.io/hook: PostSync
+      argocd.argoproj.io/sync-options: Replace=true,Force=true
   # List of cronjob to add
   # cronJobs:
   #   - name: reset-database
@@ -743,7 +745,6 @@ backend:
     command: []
     ## @param backend.celery.args Override default Celery worker container args (useful when using custom images)
     ##
-    # FIXME should this be here?
     args: ["celery", "-A", "impress.celery_app", "worker", "-l", "INFO", "-n", "impress@%h"]
     ## @param backend.celery.automountServiceAccountToken Mount Service Account token in Celery worker pods
     ##
@@ -931,6 +932,70 @@ backend:
         maxReplicas: 3
         targetCPU: 75
         targetMemory: ""
+    ## Network Policies
+    ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+    ##
+    networkPolicy:
+      ## @param networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+      ##
+      enabled: true
+      ## @param networkPolicy.allowExternal Don't require server label for connections
+      ## The Policy model to apply. When set to false, only pods with the correct
+      ## server label will have network access to the ports server is listening
+      ## on. When true, server will accept connections from any source
+      ## (with the correct destination port).
+      ##
+      allowExternal: true
+      ## @param networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+      ##
+      allowExternalEgress: false
+      ## @param networkPolicy.addExternalClientAccess Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+      ##
+      addExternalClientAccess: false
+      ## @param networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
+      ## e.g:
+      ## extraIngress:
+      ##   - ports:
+      ##       - port: 1234
+      ##     from:
+      ##       - podSelector:
+      ##           - matchLabels:
+      ##               - role: frontend
+      ##       - podSelector:
+      ##           - matchExpressions:
+      ##               - key: role
+      ##                 operator: In
+      ##                 values:
+      ##                   - frontend
+      extraIngress: []
+      ## @param networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+      ## e.g:
+      ## extraEgress:
+      ##   - ports:
+      ##       - port: 1234
+      ##     to:
+      ##       - podSelector:
+      ##           - matchLabels:
+      ##               - role: frontend
+      ##       - podSelector:
+      ##           - matchExpressions:
+      ##               - key: role
+      ##                 operator: In
+      ##                 values:
+      ##                   - frontend
+      ##
+      extraEgress: []
+      ## @param networkPolicy.ingressPodMatchLabels [object] Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.
+      ## e.g:
+      ## ingressPodMatchLabels:
+      ##   my-client: "true"
+      #
+      ingressPodMatchLabels: {}
+      ## @param networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+      ## @param networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+      ##
+      ingressNSMatchLabels: {}
+      ingressNSPodMatchLabels: {}
 
 ## @section Impress frontend Parameters
 ##
@@ -940,8 +1005,8 @@ backend:
 frontend:
   ## Impress frontend image
   ## ref: https://hub.docker.com/r/lasuite/impress-frontend/tags
-  ## @param frontend.image.registry [default: REGISTRY_NAME] Impress frontend image registry
-  ## @param frontend.image.repository [default: REPOSITORY_NAME/%%IMAGE_NAME%%] Impress frontend image repository
+  ## @param frontend.image.registry Impress frontend image registry
+  ## @param frontend.image.repository Impress frontend image repository
   ## @skip frontend.image.tag Impress frontend image tag (immutable tags are recommended)
   ## @param frontend.image.digest Impress frontend image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
   ## @param frontend.image.pullPolicy Impress frontend image pull policy
@@ -972,7 +1037,7 @@ frontend:
   ## @param frontend.containerPorts.https Impress frontend HTTPS container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## @param frontend.extraContainerPorts Optionally specify extra list of additional ports for Impress frontend containers
   ## e.g:
   ## extraContainerPorts:
@@ -990,8 +1055,7 @@ frontend:
   ## @param frontend.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
-    # FIXME should be true?
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
@@ -1005,8 +1069,7 @@ frontend:
   ## @param frontend.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    # FIXME should be true?
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
@@ -1406,110 +1469,6 @@ frontend:
     ##     timeoutSeconds: 300
     ##
     sessionAffinityConfig: {}
-  ## Docs ingress parameters
-  ## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
-  ##
-  ingress:
-    ## @param ingress.enabled Enable ingress record generation for Docs
-    ##
-    enabled: false
-    ## @param ingress.pathType Ingress path type
-    ##
-    pathType: Prefix
-    ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
-    ##
-    apiVersion: ""
-    ## @param ingress.hostname Default host for the ingress record
-    ##
-    hostname: docs.local
-    ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-    ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
-    ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
-    ##
-    ingressClassName: ""
-    ## @param ingress.path Default path for the ingress record
-    ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
-    ##
-    path: /
-    ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
-    ## Use this parameter to set the required annotations for cert-manager, see
-    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
-    ## e.g:
-    ## annotations:
-    ##   kubernetes.io/ingress.class: nginx
-    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
-    ##
-    annotations: {}
-    ## @param ingress.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
-    ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
-    ## You can:
-    ##   - Use the `ingress.secrets` parameter to create this TLS secret
-    ##   - Rely on cert-manager to create it by setting the corresponding annotations
-    ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
-    ##
-    tls: false
-    ## @param ingress.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
-    ##
-    selfSigned: false
-    ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record
-    ## e.g:
-    ## extraHosts:
-    ##   - name: docs.local
-    ##     path: /
-    ##
-    extraHosts: []
-    ## @param ingress.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
-    ## e.g:
-    ## extraPaths:
-    ## - path: /*
-    ##   backend:
-    ##     serviceName: ssl-redirect
-    ##     servicePort: use-annotation
-    ##
-    extraPaths: []
-    ## @param ingress.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
-    ## e.g:
-    ## extraTls:
-    ## - hosts:
-    ##     - docs.local
-    ##   secretName: docs.local-tls
-    ##
-    extraTls: []
-    ## @param ingress.secrets Custom TLS certificates as secrets
-    ## NOTE: 'key' and 'certificate' are expected in PEM format
-    ## NOTE: 'name' should line up with a 'secretName' set further up
-    ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
-    ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
-    ## It is also possible to create and manage the certificates outside of this helm chart
-    ## Please see README.md for more information
-    ## e.g:
-    ## secrets:
-    ##   - name: docs.local-tls
-    ##     key: |-
-    ##       -----BEGIN RSA PRIVATE KEY-----
-    ##       ...
-    ##       -----END RSA PRIVATE KEY-----
-    ##     certificate: |-
-    ##       -----BEGIN CERTIFICATE-----
-    ##       ...
-    ##       -----END CERTIFICATE-----
-    ##
-    secrets: []
-    ## @param ingress.extraRules Additional rules to be covered with this ingress record
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
-    ## e.g:
-    ## extraRules:
-    ## - host: example.local
-    ##     http:
-    ##       path: /
-    ##       backend:
-    ##         service:
-    ##           name: example-svc
-    ##           port:
-    ##             name: http
-    ##
-    extraRules: []
 
 ## @section Docs y-provider Parameters
 ##
@@ -1517,8 +1476,8 @@ frontend:
 yProvider:
   ## Impress y-provider image
   ## ref: https://hub.docker.com/r/lasuite/impress-y-provider
-  ## @param yProvider.image.registry [default: REGISTRY_NAME] Impress y-provider image registry
-  ## @param yProvider.image.repository [default: REPOSITORY_NAME/%%IMAGE_NAME%%] Impress y-provider image repository
+  ## @param yProvider.image.registry Impress y-provider image registry
+  ## @param yProvider.image.repository Impress y-provider image repository
   ## @skip yProvider.image.tag Impress y-provider image tag (immutable tags are recommended)
   ## @param yProvider.image.digest Impress y-provider image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
   ## @param yProvider.image.pullPolicy Impress y-provider image pull policy
@@ -1533,7 +1492,7 @@ yProvider:
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
     ##
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     ## e.g:
@@ -1981,9 +1940,7 @@ yProvider:
     ##     timeoutSeconds: 300
     ##
     sessionAffinityConfig: {}
-  # FIXME best place here? Values are known probably in the deployment, could be moved there.
   api:
-    baseUrl: http://impress-y-provider:443/api/
     key: my-secret
   caches:
     keyPrefix: "docs"
@@ -2018,7 +1975,7 @@ ingress:
   ## @param ingress.frontendPath Default path for the ingress record
   ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
   ##
-  frontendPath: /api
+  frontendPath: /
   ## @param ingress.backendPath Default path for the ingress record
   ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
   ##
@@ -2218,7 +2175,7 @@ ingressAdmin:
 ## Docs collaboration websockets ingress parameters
 ## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
 ##
-ingressCollaborationsWS:
+ingressCollaborationWS:
   ## @param ingressCollaborationWS.enabled Enable ingress record generation for Docs collaboration websockets
   ##
   enabled: false
@@ -2249,7 +2206,6 @@ ingressCollaborationsWS:
   ##   cert-manager.io/cluster-issuer: cluster-issuer-name
   ##
   annotations:
-    # FIXME not all ingresses are nginx and should these be set here, or in hemlfile values?
     nginx.ingress.kubernetes.io/enable-websocket: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
@@ -2674,7 +2630,7 @@ defaultInitContainers:
       repository: bitnami/os-shell
       tag: 12-debian-12-r46
       digest: ""
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
       ## Optionally specify an array of imagePullSecrets.
       ## Secrets must be manually created in the namespace.
       ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -2826,18 +2782,26 @@ metrics:
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
 ##
 collaboration:
-  secret: my-secret
+  api:
+    url: https://impress.127.0.0.1.nip.io/collaboration/api/
+    secret: my-secret
   loggingEnabled: true
+  webSockets:
+    url: wss://impress.127.0.0.1.nip.io/collaboration/ws/
+    notConnectedReadOnly: false
 
 django:
   # FIXME all url-configuration is calculable
   csrfTrustedOrigin: https://impress.127.0.0.1.nip.io
   configuration: Feature
   allowedHosts: impress.127.0.0.1.nip.io
+  # FIXME what is this for? In documentation it's an array? In example it's a string.
   serverToServerApiTokens: secret-api-key
   secretKey: djangoSecretKey # FIXME was a reference with *?
   settingsModule: impress.settings
-  superUserPassword: admin
+  superUser:
+    email: you@example.com
+    password: admin
   email:
     brandName: "La Suite Numérique"
     host: "mailcatcher"
@@ -2879,10 +2843,10 @@ auth:
 
 database:
   host: postgres-postgresql
+  port: 5432
   name: impress
   user: dinum
   password: pass
-  port: 5432
 
 redis:
   url: redis://default:pass@redis-master:6379/1

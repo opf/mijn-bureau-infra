@@ -10,7 +10,7 @@ metadata:
   name: {{ template "docs.yProvider.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
-    app.kubernetes.io/component: yProvider
+    app.kubernetes.io/component: y-provider
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -18,7 +18,7 @@ spec:
   {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.yProvider.podLabels .Values.commonLabels ) "context" . ) }}
   podSelector:
     matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
-      app.kubernetes.io/component: yProvider
+      app.kubernetes.io/component: y-provider
   policyTypes:
     - Ingress
     - Egress
@@ -38,8 +38,8 @@ spec:
     {{- end }}
   ingress:
     - ports:
-        - port: {{ .Values.frontend.containerPorts.http }}
-        {{- range .Values.frontend.extraContainerPorts }}
+        - port: {{ .Values.yProvider.containerPorts.https }}
+        {{- range .Values.yProvider.extraContainerPorts }}
         - port: {{ .containerPort }}
         {{- end }}
       {{- if not .Values.yProvider.networkPolicy.allowExternal }}

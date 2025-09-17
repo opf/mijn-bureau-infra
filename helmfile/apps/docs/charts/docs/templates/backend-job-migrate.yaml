@@ -11,8 +11,6 @@ metadata:
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: backend
   annotations:
-    # FIXME argocd is not a given for each deployment. Should this stay or be moved to values?
-    argocd.argoproj.io/sync-options: Replace=true,Force=true
     {{- if or .Values.backend.migrate.annotations .Values.commonAnnotations }}
     {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.backend.migrate.annotations .Values.commonAnnotations) "context" .) }}
     {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
@@ -109,7 +107,7 @@ spec:
         {{- if .Values.backend.themeCustomization.enabled }}
         - name: theme-customization
           configMap:
-            name: docs-theme-customization
+            name: {{ include "docs.theme.fullname" . }}
         {{- end }}
         {{- if .Values.backend.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.backend.extraVolumes "context" $) | nindent 8 }}

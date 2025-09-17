@@ -61,7 +61,7 @@ spec:
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.backend.topologySpreadConstraints "context" .) | nindent 8 }}
       {{- end }}
       {{- if .Values.backend.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.backend.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.backend.podSecurityContext "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.backend.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.backend.terminationGracePeriodSeconds }}
@@ -168,7 +168,7 @@ spec:
         {{- if .Values.backend.themeCustomization.enabled }}
         - name: theme-customization
           configMap:
-            name: docs-theme-customization
+            name: {{ include "docs.theme.fullname" . }}
         {{- end }}
         {{- if .Values.backend.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.backend.extraVolumes "context" $) | nindent 8 }}

@@ -7,10 +7,10 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
 kind: NetworkPolicy
 metadata:
-  name: {{ template "docs.backend.fullname" . }}
+  name: {{ template "docs.celery.worker.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
-    app.kubernetes.io/component: backend
+    app.kubernetes.io/component: celery-worker
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -18,7 +18,7 @@ spec:
   {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.backend.podLabels .Values.commonLabels ) "context" . ) }}
   podSelector:
     matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
-      app.kubernetes.io/component: backend
+      app.kubernetes.io/component: celery-worker
   policyTypes:
     - Ingress
     - Egress
@@ -32,13 +32,6 @@ spec:
           protocol: UDP
         - port: 53
           protocol: TCP
-    - ports:
-        - port: {{ .Values.backend.containerPorts.http }}
-          protocol: TCP
-      to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/component: celery-worker
     {{- if .Values.backend.networkPolicy.extraEgress }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.backend.networkPolicy.extraEgress "context" $ ) | nindent 4 }}
     {{- end }}
