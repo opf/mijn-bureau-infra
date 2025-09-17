@@ -32,7 +32,7 @@ collabora:
   password: {{ .Values.secret.collabora.credentials.password | quote }}
 
   # The hostname that Collabora will use to identify itself (usually matches the external DNS name)
-  server_name: {{ .Values.global.hostname.collabora | quote }}
+  server_name: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com"  }}
 
   # Extra parameters passed to the Collabora start command; in this case, disables SSL inside the container
   extra_params: --o:ssl.enable=false --o:ssl.termination=true
@@ -87,8 +87,6 @@ ingress:
       balance url_param WOPISrc check_post
       hash-type consistent
     {{- end }}
-    custom.annotation/environment: "testing"   # or staging/dev
-    custom.annotation/test: "test-value"
 
 
   # Host definitions for the ingress resource
@@ -107,25 +105,18 @@ resources: {{ .Values.resource.collabora | toYaml | nindent 2 }}
 
 
 # Security context settings applied at the pod level
-{{- if .Values.application.collabora.enableInsecureCollWSD }}
-podSecurityContext: {{ .Values.security.collabora.podSecurityContext | toYaml | nindent 2 }}
-{{- else }}
-podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
-{{- end }}
+podSecurityContext: {{ coalesce .Values.security.collabora.podSecurityContext .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 
 # Security context settings specific to the container
-{{- if .Values.application.collabora.enableInsecureCollWSD }}
-containerSecurityContext: {{ .Values.security.collabora.containerSecurityContext | toYaml | nindent 2 }}
-{{- else }}
-containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
-{{- end }}
+containerSecurityContext: {{ coalesce .Values.security.collabora.containerSecurityContext .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
 
 # Number of desired pod replicas if HPA (autoscaling) is not enabled
 replicaCount: 1
 
 # Horizontal Pod Autoscaler configuration, such as min/max replicas and target CPU/memory
+# Horizontal Pod Autoscaling (HPA) is disabled for now. Because after scaling it breaks the collaborative editing and copy/paste.
 autoscaling:
-  enabled: false
+  hpa: {{ .Values.autoscaling.horizontal.collabora | toYaml | nindent 4 }}
 
 networkPolicy:
   enabled: true
