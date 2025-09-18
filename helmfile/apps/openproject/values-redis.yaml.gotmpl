@@ -7,14 +7,15 @@ global:
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.redis.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
 
+  redis:
+    auth:
+      enabled: true
+      password: {{ .Values.cache.openproject.password | quote }}
+
 image:
   registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
   repository: {{ .Values.container.redis.repository | quote }}
   tag: {{ .Values.container.redis.tag | quote }}
-
-auth:
-  enabled: true
-  password: {{ .Values.cache.openproject.password | quote }}
 
 master:
   persistence:

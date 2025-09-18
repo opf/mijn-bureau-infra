@@ -7,16 +7,17 @@ global:
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.postgres.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
 
+  postgresql:
+    auth:
+      postgresPassword: {{ .Values.secret.openproject.postgresPassword | quote }}
+      username: {{ .Values.database.openproject.user | quote }}
+      password: {{ .Values.database.openproject.password | quote }}
+      database: {{ .Values.database.openproject.name | quote }}
+
 image:
   registry: {{ (coalesce .Values.container.postgres.registry .Values.container.default.registry) | quote }}
   repository: {{ .Values.container.postgres.repository | quote }}
   tag: {{ .Values.container.postgres.tag | quote }}
-
-auth:
-  postgresPassword: {{ .Values.secret.openproject.postgresPassword | quote }}
-  username: {{ .Values.database.openproject.user | quote }}
-  password: {{ .Values.database.openproject.password | quote }}
-  database: {{ .Values.database.openproject.name | quote }}
 
 primary:
   persistence:
