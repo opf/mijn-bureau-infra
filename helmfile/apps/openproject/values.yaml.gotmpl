@@ -108,9 +108,9 @@ resources:
 
 # Environment variables
 env:
-  TMPDIR: /tmp
-  TMP: /tmp
-  TEMP: /tmp
+  TMPDIR: /app/tmp
+  TMP: /app/tmp
+  TEMP: /app/tmp
 
 # Security context
 podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
@@ -121,13 +121,23 @@ containerSecurityContext:
     drop:
     - ALL
   privileged: false
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   runAsGroup: 1001
   runAsNonRoot: true
   runAsUser: 1001
   seLinuxOptions: {}
   seccompProfile:
     type: RuntimeDefault
+
+# Enable temporary volumes to fix seeder issues
+openproject:
+  useTmpVolumes: true
+
+# Environment variables for all containers (including seeder)
+environment:
+  TMPDIR: /app/tmp
+  TMP: /app/tmp
+  TEMP: /app/tmp
 
 # Network policy
 networkPolicy:

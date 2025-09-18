@@ -8,7 +8,7 @@ repositories:
 releases:
   - name: openproject-postgresql
     chart: ../common/charts/postgresql
-    version: "16.7.18"
+    version: "17.5.0"
     namespace: {{ .Values.application.openproject.namespace }}
     installed: {{ and (eq .Environment.Name "demo") ( .Values.application.openproject.enabled) | toYaml }}
     values:
