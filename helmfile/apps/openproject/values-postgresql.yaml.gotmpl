@@ -1,0 +1,49 @@
+global:
+  security:
+    allowInsecureImages: true
+
+  defaultStorageClass: {{ coalesce .Values.pvc.openproject.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
+  storageClass: {{ coalesce .Values.pvc.openproject.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.postgres.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+
+image:
+  registry: {{ (coalesce .Values.container.postgres.registry .Values.container.default.registry) | quote }}
+  repository: {{ .Values.container.postgres.repository | quote }}
+  tag: {{ .Values.container.postgres.tag | quote }}
+
+auth:
+  postgresPassword: {{ .Values.secret.openproject.postgresPassword | quote }}
+  username: {{ .Values.database.openproject.user | quote }}
+  password: {{ .Values.database.openproject.password | quote }}
+  database: {{ .Values.database.openproject.name | quote }}
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: {{ coalesce .Values.pvc.openproject.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
+    size: {{ coalesce .Values.pvc.openproject.postgresql.size "8Gi" | quote }}
+    accessModes:
+      - {{ coalesce (index .Values.pvc.openproject.postgresql.accessModes 0) "ReadWriteOnce" }}
+
+resources: {{ .Values.resource.openproject.postgresql | toYaml | nindent 2 }}
+
+podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+
+containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  allowExternalEgress: false
+
+  extraEgress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+      to: []
+    - ports:
+        - port: 53
+          protocol: TCP
+      to: []

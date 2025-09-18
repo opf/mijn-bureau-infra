@@ -1,0 +1,133 @@
+global:
+  security:
+    allowInsecureImages: true
+
+  defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
+  storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+
+image:
+  registry: {{ (coalesce .Values.container.openproject.registry .Values.container.default.registry) | quote }}
+  repository: {{ .Values.container.openproject.repository | quote }}
+  tag: {{ .Values.container.openproject.tag | quote }}
+
+autoscaling:
+  hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
+
+ingress:
+  enabled: true
+  host: {{ .Values.global.hostname.openproject }}.{{ .Values.global.domain }}
+  ingressClassName: {{ .Values.cluster.ingress.className | quote }}
+  tls:
+    enabled: true
+    secretName: {{ printf "%s-tls" .Values.global.hostname.openproject }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "haproxy-openshift" }}
+    haproxy.router.openshift.io/ssl-redirect: "true"
+    {{- end }}
+
+# Database configuration
+database:
+  host: {{ .Values.database.openproject.host }}
+  port: {{ .Values.database.openproject.port }}
+  name: {{ .Values.database.openproject.name }}
+  user: {{ .Values.database.openproject.user }}
+  password: {{ .Values.database.openproject.password }}
+
+# Cache configuration (using Redis instead of Memcached)
+cache:
+  host: {{ .Values.cache.openproject.host }}
+  port: {{ .Values.cache.openproject.port }}
+  password: {{ .Values.cache.openproject.password }}
+
+# PostgreSQL configuration (override embedded chart)
+postgresql:
+  image:
+    registry: {{ (coalesce .Values.container.postgres.registry .Values.container.default.registry) | quote }}
+    repository: {{ .Values.container.postgres.repository | quote }}
+    tag: {{ .Values.container.postgres.tag | quote }}
+
+# Redis configuration (using Redis instead of Memcached)
+redis:
+  image:
+    registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
+    repository: {{ .Values.container.redis.repository | quote }}
+    tag: {{ .Values.container.redis.tag | quote }}
+
+# OIDC configuration
+oidc:
+  enabled: true
+  provider:
+    name: "Keycloak"
+    host: {{ .Values.global.hostname.keycloak }}.{{ .Values.global.domain }}
+    identifier: {{ .Values.authentication.client.openproject.client_id }}
+    secret: {{ .Values.authentication.client.openproject.client_secret }}
+    authorization_endpoint: "{{ .Values.authentication.oidc.authorization_endpoint }}"
+    token_endpoint: "{{ .Values.authentication.oidc.token_endpoint }}"
+    userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
+    jwks_uri: "{{ .Values.authentication.oidc.issuer }}/protocol/openid-connect/certs"
+    scope: ["openid", "profile", "email"]
+
+# SMTP configuration
+smtp:
+  enabled: {{ .Values.smtp.enabled }}
+  host: {{ .Values.smtp.host | quote }}
+  port: {{ .Values.smtp.port }}
+  protocol: {{ .Values.smtp.protocol | quote }}
+  from_address: {{ .Values.smtp.fromAddress | quote }}
+  tls:
+    enabled: {{ .Values.smtp.tls.enabled }}
+    force: {{ .Values.smtp.tls.force }}
+    require_transport_security: {{ .Values.smtp.tls.requireTransportSecurity }}
+  username: {{ .Values.smtp.username | quote }}
+  password: {{ .Values.smtp.password | quote }}
+
+# Resources
+resources:
+  limits:
+    cpu: "4"
+    memory: 4Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+# Security context
+podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+
+containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+
+# Network policy
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  allowExternalEgress: false
+
+  extraEgress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+      to: []
+    - ports:
+        - port: 53
+          protocol: TCP
+      to: []
+    # Allow HTTPS outbound
+    - ports:
+        - port: 443
+          protocol: TCP
+      to: []
+    # Allow HTTP outbound
+    - ports:
+        - port: 80
+          protocol: TCP
+      to: []

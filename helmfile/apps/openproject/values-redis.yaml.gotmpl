@@ -1,0 +1,47 @@
+global:
+  security:
+    allowInsecureImages: true
+
+  defaultStorageClass: {{ coalesce .Values.pvc.openproject.redis.storageClass .Values.pvc.default.storageClass | quote }}
+  storageClass: {{ coalesce .Values.pvc.openproject.redis.storageClass .Values.pvc.default.storageClass | quote }}
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.redis.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+
+image:
+  registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
+  repository: {{ .Values.container.redis.repository | quote }}
+  tag: {{ .Values.container.redis.tag | quote }}
+
+auth:
+  enabled: true
+  password: {{ .Values.cache.openproject.password | quote }}
+
+master:
+  persistence:
+    enabled: true
+    storageClass: {{ coalesce .Values.pvc.openproject.redis.storageClass .Values.pvc.default.storageClass | quote }}
+    size: {{ coalesce .Values.pvc.openproject.redis.size "1Gi" | quote }}
+    accessModes:
+      - {{ coalesce (index .Values.pvc.openproject.redis.accessModes 0) "ReadWriteOnce" }}
+
+resources: {{ .Values.resource.openproject.redis | toYaml | nindent 2 }}
+
+podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+
+containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
+
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  allowExternalEgress: false
+
+  extraEgress:
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+      to: []
+    - ports:
+        - port: 53
+          protocol: TCP
+      to: []

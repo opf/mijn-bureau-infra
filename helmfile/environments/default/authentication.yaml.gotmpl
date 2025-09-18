@@ -29,3 +29,6 @@ authentication:
     nextcloud:
       client_id: "nextcloud"
       client_secret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD" ) "keycloak" "nextcloud_client_secret" | sha1sum | quote}}
+    openproject:
+      client_id: "openproject"
+      client_secret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD" ) "keycloak" "openproject_client_secret" | sha1sum | quote}}
