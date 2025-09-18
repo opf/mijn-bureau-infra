@@ -52,6 +52,10 @@ service:
   port:
     http: 9980
 
+{{- if .Values.cluster.runtimeClassName }}
+runtimeClassName: {{ .Values.cluster.runtimeClassName | quote }}
+{{- end }}
+
 ingress:
   hostname: {{ .Values.global.hostname.collabora | default "collabora" }}.{{ .Values.global.domain | default "example.com"  }}
   # Enables ingress configuration for external access to Collabora
