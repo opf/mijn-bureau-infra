@@ -129,15 +129,62 @@ containerSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-# Enable temporary volumes to fix seeder issues
+# Enable temporary volumes to fix seeder issues (learned from opnc-helm-chart)
 openproject:
   useTmpVolumes: true
+  tmpVolumesStorageClassName: "standard"
+  tmpVolumesAnnotations:
+    volume.beta.kubernetes.io/storage-class: "standard"
+  tmpVolumesLabels:
+    app.kubernetes.io/component: "temp-storage"
+  # Additional volume for custom temp directory
+  # Note: Using existing /app/tmp mount from OpenProject chart
+  # The OpenProject chart already handles tmp directory permissions
+  # Add init container to create tmp directory in persistent volume
+  extraInitContainers:
+    - name: "init-tmp-dir"
+      image: "busybox:1.36"
+      command: ["sh", "-c"]
+      args:
+        - |
+          mkdir -p /var/openproject/assets/tmp
+          chown -R 1001:1001 /var/openproject/assets/tmp
+          chmod -R 755 /var/openproject/assets/tmp
+      volumeMounts:
+        - name: "data"
+          mountPath: "/var/openproject/assets"
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+
+# Seeder job configuration with proper resources (from OpenProject 7.1.0+)
+seederJob:
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  # Ensure seeder job has proper environment variables
+  env:
+    TMPDIR: /app/tmp
+    TMP: /app/tmp
+    TEMP: /app/tmp
+    RUBY_OPT: "-W0"
+  # Mount the same tmp volume as the main application
+  # Note: /app/tmp is already mounted by the OpenProject chart
+  extraVolumes: []
 
 # Environment variables for all containers (including seeder)
+# Fix for Ruby tmpdir issues: Use dedicated writable temp directory
+# instead of world-writable /tmp to avoid security warnings
 environment:
   TMPDIR: /app/tmp
   TMP: /app/tmp
   TEMP: /app/tmp
+  # Suppress Ruby warnings about world-writable temp directories
+  RUBY_OPT: "-W0"
 
 # Network policy
 networkPolicy:
