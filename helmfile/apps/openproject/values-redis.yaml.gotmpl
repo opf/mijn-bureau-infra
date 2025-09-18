@@ -23,9 +23,15 @@ master:
     storageClass: {{ coalesce .Values.pvc.openproject.redis.storageClass .Values.pvc.default.storageClass | quote }}
     size: {{ coalesce .Values.pvc.openproject.redis.size "1Gi" | quote }}
     accessModes:
-      - {{ coalesce (index .Values.pvc.openproject.redis.accessModes 0) "ReadWriteOnce" }}
+      - {{ if .Values.pvc.openproject.redis.accessModes }}{{ index .Values.pvc.openproject.redis.accessModes 0 }}{{ else }}ReadWriteOnce{{ end }}
 
-resources: {{ .Values.resource.openproject.redis | toYaml | nindent 2 }}
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 

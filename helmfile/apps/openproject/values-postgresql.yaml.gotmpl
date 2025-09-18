@@ -15,9 +15,10 @@ global:
       database: {{ .Values.database.openproject.name | quote }}
 
 image:
-  registry: {{ (coalesce .Values.container.postgres.registry .Values.container.default.registry) | quote }}
-  repository: {{ .Values.container.postgres.repository | quote }}
-  tag: {{ .Values.container.postgres.tag | quote }}
+  registry: {{ coalesce .Values.container.postgres.registry .Values.container.default.registry | default "docker.io" | quote }}
+  repository: {{ .Values.container.postgres.repository | default "bitnami/postgresql" | quote }}
+  tag: {{ .Values.container.postgres.tag | default "17.5.0-debian-12-r18" | quote }}
+  digest: ""
 
 primary:
   persistence:
@@ -25,9 +26,15 @@ primary:
     storageClass: {{ coalesce .Values.pvc.openproject.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
     size: {{ coalesce .Values.pvc.openproject.postgresql.size "8Gi" | quote }}
     accessModes:
-      - {{ coalesce (index .Values.pvc.openproject.postgresql.accessModes 0) "ReadWriteOnce" }}
+      - {{ if .Values.pvc.openproject.postgresql.accessModes }}{{ index .Values.pvc.openproject.postgresql.accessModes 0 }}{{ else }}ReadWriteOnce{{ end }}
 
-resources: {{ .Values.resource.openproject.postgresql | toYaml | nindent 2 }}
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
 
 podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 
