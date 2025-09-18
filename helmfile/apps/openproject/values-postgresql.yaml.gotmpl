@@ -9,7 +9,7 @@ global:
 
   postgresql:
     auth:
-      postgresPassword: {{ .Values.secret.openproject.postgresPassword | quote }}
+      postgresPassword: {{ .Values.database.openproject.adminpassword | quote }}
       username: {{ .Values.database.openproject.user | quote }}
       password: {{ .Values.database.openproject.password | quote }}
       database: {{ .Values.database.openproject.name | quote }}
