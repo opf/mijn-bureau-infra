@@ -1499,7 +1499,7 @@ provisioning:
   ## @param provisioning.backoffLimit Maximum number of pod restarts allowed on failure (uses exponential backoff)
   ## Set to handle infrastructure-level failures while local retry handles MinIO restart delays
   ##
-  backoffLimit: 10
+  backoffLimit: 50
   ## @param provisioning.schedulerName Name of the k8s scheduler (other than default) for MinIO&reg; provisioning
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
