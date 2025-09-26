@@ -1,18 +1,18 @@
-<!--- app-name: %%CHART_NAME%% -->
+<!--- app-name: livekit-server -->
 
-# %%CHART_NAME%%
+# livekit server
 
-%%DESCRIPTION%% (check existing examples)
+Real-time video, audio and data for developers
 
 ## TL;DR
 
 ```console
-helm install my-release git+https://github.com/MinBZK/mijn-bureau-infra@helmfile/apps/%%CHART_NAME%%/charts?ref=main
+helm install my-release git+https://github.com/MinBZK/mijn-bureau-infra@helmfile/apps/livekit/charts?ref=main
 ```
 
 ## Introduction
 
-%%INTRODUCTION%% (check existing examples)
+LiveKit is an open source project that provides scalable, multi-user conferencing based on WebRTC. It's designed to provide everything you need to build real-time video audio data capabilities in your applications.
 
 ## Prerequisites
 
@@ -26,12 +26,12 @@ helm install my-release git+https://github.com/MinBZK/mijn-bureau-infra@helmfile
 To install the chart with the release name `my-release`:
 
 ```console
-helm install my-release git+https://github.com/MinBZK/mijn-bureau-infra@helmfile/apps/%%CHART_NAME%%/charts?ref=main
+helm install my-release git+https://github.com/MinBZK/mijn-bureau-infra@helmfile/apps/livekit/charts?ref=main
 ```
 
 > Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository.
 
-The command deploys %%CHART_NAME%% on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+The command deploys livekit_server on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
 
@@ -41,24 +41,7 @@ It is strongly recommended to use immutable tags in a production environment. Th
 
 Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.
 
-### External database support
-
-%%IF NEEDED%%
-
-You may want to have %%CHART_NAME%% connect to an external database rather than installing one inside your cluster. Typical reasons for this are to use a managed database service, or to share a common database server for all your applications. To achieve this, the chart allows you to specify credentials for an external database with the [`externalDatabase` parameter](#parameters). You should also disable the MariaDB installation with the `mariadb.enabled` option. Here is an example:
-
-```console
-mariadb.enabled=false
-externalDatabase.host=myexternalhost
-externalDatabase.user=myuser
-externalDatabase.password=mypassword
-externalDatabase.database=mydatabase
-externalDatabase.port=3306
-```
-
 ### Ingress
-
-%%IF NEEDED%%
 
 This chart provides support for Ingress resources. If you have an ingress controller installed on your cluster, such as [nginx-ingress-controller](https://github.com/bitnami/charts/tree/main/bitnami/nginx-ingress-controller) or [contour](https://github.com/bitnami/charts/tree/main/bitnami/contour) you can utilize the ingress controller to serve your application.To enable Ingress integration, set `ingress.enabled` to `true`.
 
@@ -100,14 +83,12 @@ tls.certKeyFilename="cert.key"
 tls.certCAFilename="ca.pem"
 ```
 
-### %%OTHER_SECTIONS%%
-
 ### Additional environment variables
 
 In case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `extraEnvVars` property.
 
 ```yaml
-%%CHART_NAME%%:
+livekit_server:
   extraEnvVars:
     - name: LOG_LEVEL
       value: error
@@ -117,7 +98,7 @@ Alternatively, you can use a ConfigMap or a Secret with the environment variable
 
 ### Sidecars
 
-If additional containers are needed in the same pod as %%CHART_NAME%% (such as additional metrics or logging exporters), they can be defined using the `sidecars` parameter.
+If additional containers are needed in the same pod as livekit_server (such as additional metrics or logging exporters), they can be defined using the `sidecars` parameter.
 
 ```yaml
 sidecars:
@@ -163,7 +144,7 @@ As an alternative, use one of the preset configurations for pod affinity, pod an
 
 ### Prometheus metrics
 
-This chart can be integrated with Prometheus by setting `metrics.enabled` to `true`. %% EXPLAIN INTEGRATION. CHECK OTHER EXAMPLES %%. It will have the necessary annotations to be automatically scraped by Prometheus.
+This chart can be integrated with Prometheus by setting `metrics.enabled` to `true`. It will have the necessary annotations to be automatically scraped by Prometheus.
 
 #### Prometheus requirements
 
@@ -185,7 +166,7 @@ To back up and restore Helm chart deployments on Kubernetes, you need to back up
 
 ## Persistence
 
-The [Bitnami %%CHART_NAME%%](https://github.com/bitnami/containers/tree/main/bitnami/%%CHART_NAME%%) image stores the %%CHART_NAME%% data and configurations at the `/bitnami` path of the container. Persistent Volume Claims are used to keep the data across deployments.
+The [Bitnami livekit_server](https://github.com/bitnami/containers/tree/main/bitnami/livekit_server) image stores the livekit_server data and configurations at the `/bitnami` path of the container. Persistent Volume Claims are used to keep the data across deployments.
 
 If you encounter errors when working with persistent volumes, refer to our [troubleshooting guide for persistent volumes](https://docs.bitnami.com/kubernetes/faq/troubleshooting/troubleshooting-persistence-volumes/).
 
@@ -193,28 +174,28 @@ If you encounter errors when working with persistent volumes, refer to our [trou
 
 See <https://github.com/bitnami/readme-generator-for-helm> to create the table
 
-The above parameters map to the env variables defined in [bitnami/%%CHART_NAME%%](https://github.com/bitnami/containers/tree/main/bitnami/%%CHART_NAME%%). For more information please refer to the [bitnami/%%CHART_NAME%%](https://github.com/bitnami/containers/tree/main/bitnami/%%CHART_NAME%%) image documentation.
+The above parameters map to the env variables defined in [bitnami/livekit_server](https://github.com/bitnami/containers/tree/main/bitnami/livekit_server). For more information please refer to the [bitnami/livekit_server](https://github.com/bitnami/containers/tree/main/bitnami/livekit_server) image documentation.
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console
 helm install my-release \
-  --set %%CHART_NAME%%Username=admin \
-  --set %%CHART_NAME%%Password=password \
+  --set livekit_serverUsername=admin \
+  --set livekit_serverPassword=password \
   --set mariadb.auth.rootPassword=secretpassword \
-    oci://REGISTRY_NAME/REPOSITORY_NAME/%%CHART_NAME%%
+    oci://REGISTRY_NAME/REPOSITORY_NAME/livekit_server
 ```
 
 > Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.
 
-The above command sets the %%CHART_NAME%% administrator account username and password to `admin` and `password` respectively. Additionally, it sets the MariaDB `root` user password to `secretpassword`.
+The above command sets the livekit_server administrator account username and password to `admin` and `password` respectively. Additionally, it sets the MariaDB `root` user password to `secretpassword`.
 
 > NOTE: Once this chart is deployed, it is not possible to change the application's access credentials, such as usernames or passwords, using Helm. To change these application credentials after deployment, delete any persistent volumes (PVs) used by the chart and re-deploy it, or use the application's built-in administrative tools if available.
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
 ```console
-helm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/%%CHART_NAME%%
+helm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/livekit_server
 ```
 
 > Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.
