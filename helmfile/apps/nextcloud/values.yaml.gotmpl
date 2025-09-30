@@ -41,7 +41,7 @@ resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 runtimeClassName: {{ .Values.cluster.runtimeClassName | quote }}
 {{- end }}
 
-resources: {{ .Values.resource.nextcloud | toYaml | nindent 2 }}
+resources: {{ .Values.resource.nextcloud.nextcloud | default dict | toYaml | nindent 2 }}
 
 networkPolicy:
   enabled: true
