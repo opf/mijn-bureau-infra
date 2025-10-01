@@ -1,4 +1,3 @@
-{{ if .Values.cronjob.create }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -16,7 +15,7 @@ spec:
   template:
     metadata:
       labels: {{- include "common.labels.matchLabels" . | nindent 8 }}
-        app.kubernetes.io/component: livekit-server
+        app.kubernetes.io/component: livekit-server-job
       {{- with .Values.cronjob.podAnnotations }}
       annotations: {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -41,4 +40,3 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.cronjob.args "context" $) | nindent 10 }}
           resources:
             {{- toYaml .Values.cronjob.resources | nindent 12 }}
-{{- end }}
