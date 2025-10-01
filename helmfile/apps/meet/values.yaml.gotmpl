@@ -9,7 +9,7 @@ global:
     - name: {{ (coalesce .Values.container.meet_frontend.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
   ## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
   ##
-  defaultStorageClass: ""
+  defaultStorageClass: {{ .Values.pvc.default.storageClass | quote }}
 
 
 clusterDomain: {{ .Values.cluster.networking.domain | default "cluster.local" | quote }}

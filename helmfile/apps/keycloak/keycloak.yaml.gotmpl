@@ -20,7 +20,6 @@ global:
   ##
   imagePullSecrets: []
   defaultStorageClass: {{ coalesce .Values.pvc.keycloak.keycloak.storageClass .Values.pvc.default.storageClass | quote }}
-  storageClass: {{ coalesce .Values.pvc.keycloak.keycloak.storageClass .Values.pvc.default.storageClass | quote }}
   ## Security parameters
   ##
   security:

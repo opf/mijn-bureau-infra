@@ -18,7 +18,6 @@ global:
 ## @param global.storageClass DEPRECATED: use global.defaultStorageClass instead
   ##
   defaultStorageClass: {{ coalesce .Values.pvc.keycloak.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
-  storageClass: {{ coalesce .Values.pvc.keycloak.postgresql.storageClass .Values.pvc.default.storageClass | quote }}
   ## Security parameters
   ##
   security:
