@@ -9,7 +9,7 @@ global:
     - name: {{ (coalesce .Values.container.livekit_server.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
   ## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
   ##
-  defaultStorageClass: ""
+  defaultStorageClass: {{ .Values.pvc.default.storageClass | quote }}
 
 commonLabels:
   app.kubernetes.io/part-of: livekit

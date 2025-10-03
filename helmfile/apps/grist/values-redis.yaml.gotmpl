@@ -21,7 +21,7 @@ global:
   ##
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.redis.imagePullSecret .Values.container.default.imagePullSecret)  | quote }}
-  defaultStorageClass: ""
+  defaultStorageClass: {{ .Values.pvc.default.storageClass | quote }}
   storageClass: ""
   ## Security parameters
   ##
