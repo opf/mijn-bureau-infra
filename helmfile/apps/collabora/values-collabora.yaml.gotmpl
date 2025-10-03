@@ -11,6 +11,16 @@
 {{- $hostName := printf "%s.%s" .Values.global.hostname.collabora .Values.global.domain -}}
 {{- $clientHostName := printf "%s.%s" .Values.global.hostname.collabora .Values.global.domain -}}
 
+
+# OpenShift-specific workaround:
+{{- if .Values.application.collabora.enableInsecureCoolWSD }}
+global:
+  compatibility:
+    openshift:
+      adaptSecurityContext: disabled
+{{- end }}
+
+
 clusterDomain: {{ .Values.cluster.networking.domain | default "cluster.local" | quote }}
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
@@ -141,19 +151,11 @@ networkPolicy:
 extraVolumes:
   - name: nginx-conf
     emptyDir: {}
-{{- if .Values.application.collabora.enableInsecureCoolWSD }}
-  - name: cool
-    emptyDir: {}
-{{- end }}
 
 # extraVolumeMounts Mount paths for the extra volumes defined above
 extraVolumeMounts:
   - name: nginx-conf
     mountPath: /etc/nginx/conf.d
-{{- if .Values.application.collabora.enableInsecureCoolWSD }}
-  - name: cool
-    mountPath: /etc/coolwsd/
-{{- end }}
 
 # livenessProbe.enabled Enable Kubernetes liveness probe
 livenessProbe:
@@ -180,22 +182,3 @@ affinity: {}
 
 diagnosticMode:
   enabled: false
-
-
-# OpenShift-specific workaround:
-{{- if .Values.application.collabora.enableInsecureCoolWSD }}
-# Adds an initContainer that copies default `coolwsd.xml` and disables capabilities.
-initContainers:
- - name: shell
-   image: {{ coalesce .Values.container.collabora.registry .Values.container.default.registry }}/{{ .Values.container.collabora.repository }}:{{ .Values.container.collabora.tag }}
-   imagePullPolicy: Always
-   command: ['sh', '-c', 'cp -r /etc/coolwsd/* /tmp/cool/ && sed -i "s|true</capabilities>|false</capabilities>|g" /tmp/cool/coolwsd.xml']
-   volumeMounts:
-     - name: cool
-       mountPath: /tmp/cool/
-
-global:
-  compatibility:
-    openshift:
-      adaptSecurityContext: disabled
-{{- end }}
