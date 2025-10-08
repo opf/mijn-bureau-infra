@@ -1,0 +1,95 @@
+# Mijn Bureau Demo Configuration
+# This is an example configuration for local development and testing
+# Copy this file to your helmfile environments directory and customize as needed
+
+global:
+  domain: "mb.test"  # Change this to your domain
+  hostname:
+    keycloak: "id"
+    grist: "grist"
+  ingress:
+    className: "nginx"
+
+resourcesPreset: "small"
+
+cluster:  # note: we are planning to support Gateway API in. the near future
+  ingress:
+    type: nginx-local  # Use nginx-local to avoid configuration snippet issues
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Disable SSL redirect for local development
+
+authentication:
+  oidc:
+    issuer: "http://id.mb.test/realms/mijnbureau"  # Change domain as needed
+    authorization_endpoint: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/auth"
+    token_endpoint: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/token"
+    introspection_endpoint: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/token/introspect"
+    userinfo_endpoint: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/userinfo"
+    end_session_endpoint: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/logout"
+    jwks_uri: "http://id.mb.test/realms/mijnbureau/protocol/openid-connect/certs"
+
+secret: #note: best to encrypt this, but it depends on your deployment how to do this best
+  grist:
+    adminEmail: johndoe@example.com  # Change to your email
+  keycloak:
+    adminUser: admin
+    adminPassword: myStrongPassword123  # Change this password!
+  openproject:
+    postgresPassword: myStrongPassword123  # Change this password!
+
+application:
+  grist:
+    enabled: true
+    namespace: mijn-bureau
+
+  keycloak:
+    enabled: true
+    namespace: mijn-bureau
+
+  openproject:
+    enabled: true
+    namespace: mijn-bureau
+    storageClass: standard
+    useTmpVolumes: false
+
+  chat:
+    enabled: false  # Disabled for demo
+
+  ollama:
+    enabled: false  # Disabled for demo
+
+  nextcloud:
+    enabled: false  # Disabled for demo
+
+tls: # Note: This part is a design flaw we need to fix
+  keycloak:
+    - hosts:
+        - id.mb.test  # Change domain as needed
+  grist:
+    - hosts:
+        - grist.mb.test  # Change domain as needed
+
+# Override Keycloak ingress settings to disable TLS for demo
+keycloak:
+  ingress:
+    tls: false
+    selfSigned: false
+  adminIngress:
+    tls: false
+    selfSigned: false
+
+# Override Grist ingress settings to disable TLS for demo
+grist:
+  ingress:
+    tls: false
+    selfSigned: false
+
+openproject:
+  ingress:
+    tls: false
+    selfSigned: false
+
+# Note: File storage disabled for demo environment
+# - No file attachments will be stored
+# - For production, configure proper storage (S3, Nextcloud, etc.)
+# - This avoids RWX volume issues in local kind clusters

@@ -1,73 +1,58 @@
-global:
-  security:
-    allowInsecureImages: true
+# OpenProject Configuration based on official opf/helm-charts
+# Reference: https://github.com/opf/helm-charts
 
-  defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
-  storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
-  imagePullSecrets:
-    - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
-
+# Use the official OpenProject image (slim variant as recommended)
 image:
   registry: {{ (coalesce .Values.container.openproject.registry .Values.container.default.registry) | quote }}
   repository: {{ .Values.container.openproject.repository | quote }}
   tag: {{ .Values.container.openproject.tag | quote }}
 
-autoscaling:
-  hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
+# OpenProject specific configuration
+openproject:
+  # HTTPS configuration - set to false for demo environment
+  https: false
 
+  # Admin user configuration
+  admin_user:
+    password: "admin"
+    password_reset: false
+    name: "Admin User"
+    mail: "admin@example.com"
+  # Seed locale
+  seed_locale: "en"
+
+# Ingress configuration
 ingress:
   enabled: true
   host: {{ .Values.global.hostname.openproject }}.{{ .Values.global.domain }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
-    enabled: true
-    secretName: {{ printf "%s-tls" .Values.global.hostname.openproject }}
+    enabled: false  # Disabled for demo environment
   annotations:
     {{- if .Values.cluster.ingress.annotations }}
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
     {{- end }}
-    {{- if eq .Values.cluster.ingress.type "nginx" }}
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-    {{- end }}
-    {{- if eq .Values.cluster.ingress.type "haproxy-openshift" }}
-    haproxy.router.openshift.io/ssl-redirect: "true"
-    {{- end }}
 
-# Database configuration
-database:
-  host: {{ .Values.database.openproject.host }}
-  port: {{ .Values.database.openproject.port }}
-  database: {{ .Values.database.openproject.name }}
-  username: {{ .Values.database.openproject.user }}
-  password: {{ .Values.database.openproject.password }}
-
-# Cache configuration (using Redis instead of Memcached)
-cache:
-  host: {{ .Values.cache.openproject.host }}
-  port: {{ .Values.cache.openproject.port }}
-  password: {{ .Values.cache.openproject.password }}
-
-# PostgreSQL configuration (use embedded chart with our password)
+# PostgreSQL configuration (external)
 postgresql:
-  bundled: true
-  image:
-    registry: {{ coalesce .Values.container.postgres.registry .Values.container.default.registry | default "docker.io" | quote }}
-    repository: {{ .Values.container.postgres.repository | default "bitnami/postgresql" | quote }}
-    tag: {{ .Values.container.postgres.tag | default "17.5.0-debian-12-r18" | quote }}
+  bundled: false
+  connection:
+    host: {{ .Values.database.openproject.host }}
+    port: {{ .Values.database.openproject.port }}
   auth:
     postgresPassword: {{ .Values.database.openproject.adminpassword | quote }}
     username: {{ .Values.database.openproject.user | quote }}
     password: {{ .Values.database.openproject.password | quote }}
     database: {{ .Values.database.openproject.name | quote }}
 
-# Redis configuration (using Redis instead of Memcached)
+# Cache configuration (Redis)
+cache:
+  host: {{ .Values.cache.openproject.host }}
+  port: {{ .Values.cache.openproject.port }}
+  password: {{ .Values.cache.openproject.password }}
+
 redis:
-  image:
-    registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
-    repository: {{ .Values.container.redis.repository | quote }}
-    tag: {{ .Values.container.redis.tag | quote }}
+  enabled: false
 
 # OIDC configuration
 oidc:
@@ -100,130 +85,49 @@ smtp:
 # Resources
 resources:
   limits:
-    cpu: "4"
-    memory: 4Gi
+    cpu: "2"
+    memory: 2Gi
   requests:
     cpu: 250m
     memory: 512Mi
 
-# Environment variables
-env:
-  TMPDIR: /app/tmp
-  TMP: /app/tmp
-  TEMP: /app/tmp
+# Persistence configuration - Disable file storage for demo environment
+persistence:
+  assets:
+    enabled: false  # Disable file storage for demo environment
 
-# Security context
-podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
+# Global configuration
+global:
+  security:
+    allowInsecureImages: true
+  defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
+  storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
 
-containerSecurityContext:
+# Security context configuration to fix temporary directory permissions
+# Based on solution from opnc-helm-chart repository
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
   allowPrivilegeEscalation: false
   capabilities:
     drop:
     - ALL
-  privileged: false
-  readOnlyRootFilesystem: true
-  runAsGroup: 1001
+  readOnlyRootFilesystem: false  # Allow writing to /tmp and /app/tmp
+
+# Container security context for seeder jobs
+containerSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
   runAsNonRoot: true
-  runAsUser: 1001
-  seLinuxOptions: {}
-  seccompProfile:
-    type: RuntimeDefault
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false  # Allow writing to temporary directories
 
-# Enable temporary volumes to fix seeder issues (learned from opnc-helm-chart)
-openproject:
-  useTmpVolumes: true
-  tmpVolumesStorageClassName: "standard"
-  tmpVolumesAnnotations:
-    volume.beta.kubernetes.io/storage-class: "standard"
-  tmpVolumesLabels:
-    app.kubernetes.io/component: "temp-storage"
-  # Additional volume for custom temp directory
-  # Note: Using existing /app/tmp mount from OpenProject chart
-  # The OpenProject chart already handles tmp directory permissions
-  # Add init container to create tmp directory in persistent volume
-  extraInitContainers:
-    - name: "init-tmp-dir"
-      image: "busybox:1.36"
-      command: ["sh", "-c"]
-      args:
-        - |
-          mkdir -p /var/openproject/assets/tmp
-          chown -R 1001:1001 /var/openproject/assets/tmp
-          chmod -R 755 /var/openproject/assets/tmp
-      volumeMounts:
-        - name: "data"
-          mountPath: "/var/openproject/assets"
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-
-# Seeder job configuration with proper resources (from OpenProject 7.1.0+)
-seederJob:
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-  # Ensure seeder job has proper environment variables
-  env:
-    TMPDIR: /var/openproject/assets/tmp
-    TMP: /var/openproject/assets/tmp
-    TEMP: /var/openproject/assets/tmp
-    RUBY_OPT: "-W0"
-  # Mount the same tmp volume as the main application
-  # Note: /app/tmp is already mounted by the OpenProject chart
-  # Add init container to create tmp directory with proper permissions
-  extraInitContainers:
-    - name: "init-tmp-dir"
-      image: "busybox:1.36"
-      command: ["sh", "-c"]
-      args:
-        - |
-          mkdir -p /var/openproject/assets/tmp
-          chown -R 1001:1001 /var/openproject/assets/tmp
-          chmod -R 755 /var/openproject/assets/tmp
-      volumeMounts:
-        - name: "data"
-          mountPath: "/var/openproject/assets"
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0
-
-# Environment variables for all containers (including seeder)
-# Fix for Ruby tmpdir issues: Use dedicated writable temp directory
-# instead of world-writable /tmp to avoid security warnings
-environment:
-  TMPDIR: /var/openproject/assets/tmp
-  TMP: /var/openproject/assets/tmp
-  TEMP: /var/openproject/assets/tmp
-  # Suppress Ruby warnings about world-writable temp directories
-  RUBY_OPT: "-W0"
-
-# Network policy
-networkPolicy:
-  enabled: true
-  allowExternal: false
-  allowExternalEgress: false
-
-  extraEgress:
-    # Allow DNS resolution
-    - ports:
-        - port: 53
-          protocol: UDP
-      to: []
-    - ports:
-        - port: 53
-          protocol: TCP
-      to: []
-    # Allow HTTPS outbound
-    - ports:
-        - port: 443
-          protocol: TCP
-      to: []
-    # Allow HTTP outbound
-    - ports:
-        - port: 80
-          protocol: TCP
-      to: []
+# Autoscaling
+autoscaling:
+  hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
