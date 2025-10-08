@@ -89,6 +89,29 @@ openproject:
     tls: false
     selfSigned: false
 
+  # Security context configuration for demo environment only
+  # Based on solution from opnc-helm-chart repository
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false  # Allow writing to /tmp and /app/tmp
+
+  # Container security context for seeder jobs (demo only)
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: false  # Allow writing to temporary directories
+
 # Note: File storage disabled for demo environment
 # - No file attachments will be stored
 # - For production, configure proper storage (S3, Nextcloud, etc.)

@@ -105,28 +105,14 @@ global:
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
 
-# Security context configuration to fix temporary directory permissions
-# Based on solution from opnc-helm-chart repository
-securityContext:
-  runAsUser: 1000
-  fsGroup: 1000
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: false  # Allow writing to /tmp and /app/tmp
+# Security context configuration (demo environment only)
+{{- if .Values.openproject.securityContext }}
+securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
+{{- end }}
 
-# Container security context for seeder jobs
-containerSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: false  # Allow writing to temporary directories
+{{- if .Values.openproject.containerSecurityContext }}
+containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYaml | nindent 2 }}
+{{- end }}
 
 # Autoscaling
 autoscaling:
