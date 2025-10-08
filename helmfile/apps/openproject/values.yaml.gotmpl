@@ -1,39 +1,29 @@
-# OpenProject Configuration based on official opf/helm-charts
-# Reference: https://github.com/opf/helm-charts
-
-# Use the official OpenProject image (slim variant as recommended)
+# OpenProject Configuration
 image:
   registry: {{ (coalesce .Values.container.openproject.registry .Values.container.default.registry) | quote }}
   repository: {{ .Values.container.openproject.repository | quote }}
   tag: {{ .Values.container.openproject.tag | quote }}
 
-# OpenProject specific configuration
 openproject:
-  # HTTPS configuration - set to false for demo environment
-  https: false
-
-  # Admin user configuration
+  https: {{ .Values.openproject.https }}
   admin_user:
-    password: "admin"
-    password_reset: false
-    name: "Admin User"
-    mail: "admin@example.com"
-  # Seed locale
-  seed_locale: "en"
+    password: {{ .Values.openproject.admin_user.password | quote }}
+    password_reset: {{ .Values.openproject.admin_user.password_reset }}
+    name: {{ .Values.openproject.admin_user.name | quote }}
+    mail: {{ .Values.openproject.admin_user.mail | quote }}
+  seed_locale: {{ .Values.openproject.seed_locale }}
 
-# Ingress configuration
 ingress:
   enabled: true
   host: {{ .Values.global.hostname.openproject }}.{{ .Values.global.domain }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
-    enabled: false  # Disabled for demo environment
+    enabled: {{ .Values.openproject.ingress.tls }}
   annotations:
     {{- if .Values.cluster.ingress.annotations }}
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
     {{- end }}
 
-# PostgreSQL configuration (external)
 postgresql:
   bundled: false
   connection:
@@ -45,7 +35,6 @@ postgresql:
     password: {{ .Values.database.openproject.password | quote }}
     database: {{ .Values.database.openproject.name | quote }}
 
-# Cache configuration (Redis)
 cache:
   host: {{ .Values.cache.openproject.host }}
   port: {{ .Values.cache.openproject.port }}
@@ -54,7 +43,6 @@ cache:
 redis:
   enabled: false
 
-# OIDC configuration
 oidc:
   enabled: true
   provider:
@@ -68,7 +56,6 @@ oidc:
     jwks_uri: "{{ .Values.authentication.oidc.issuer }}/protocol/openid-connect/certs"
     scope: ["openid", "profile", "email"]
 
-# SMTP configuration
 smtp:
   enabled: {{ .Values.smtp.enabled }}
   host: {{ .Values.smtp.host | quote }}
@@ -82,7 +69,6 @@ smtp:
   username: {{ .Values.smtp.username | quote }}
   password: {{ .Values.smtp.password | quote }}
 
-# Resources
 resources:
   limits:
     cpu: "2"
@@ -91,21 +77,18 @@ resources:
     cpu: 250m
     memory: 512Mi
 
-# Persistence configuration - Disable file storage for demo environment
 persistence:
   assets:
-    enabled: false  # Disable file storage for demo environment
+    enabled: {{ .Values.openproject.persistence.assets.enabled }}
 
-# Global configuration
 global:
   security:
-    allowInsecureImages: true
+    allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages }}
   defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
   storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
 
-# Security context configuration (demo environment only)
 {{- if .Values.openproject.securityContext }}
 securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
 {{- end }}
@@ -114,6 +97,5 @@ securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
 containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYaml | nindent 2 }}
 {{- end }}
 
-# Autoscaling
 autoscaling:
   hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
