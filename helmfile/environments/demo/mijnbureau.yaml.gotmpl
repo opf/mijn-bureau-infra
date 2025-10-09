@@ -7,6 +7,7 @@ global:
   hostname:
     keycloak: "id"
     grist: "grist"
+    openproject: "openproject"
   ingress:
     className: "nginx"
 
@@ -68,6 +69,9 @@ tls: # Note: This part is a design flaw we need to fix
   grist:
     - hosts:
         - grist.mb.test  # Change domain as needed
+  openproject:
+    - hosts:
+        - openproject.mb.test  # Change domain as needed
 
 # Override Keycloak ingress settings to disable TLS for demo
 keycloak:

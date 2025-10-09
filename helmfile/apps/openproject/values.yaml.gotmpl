@@ -76,6 +76,12 @@ redis:
     repository: {{ .Values.container.redis.repository | quote }}
     tag: {{ .Values.container.redis.tag | quote }}
 
+# Disable memcached since we're using Redis
+memcached:
+  enabled: false
+  service:
+    sessionAffinity: None
+
 oidc:
   enabled: true
   provider:
@@ -115,7 +121,15 @@ resources:
     memory: 4Gi
   requests:
     cpu: 250m
-    memory: 512Mi
+    memory: 1Gi
+
+# Increase init container resources
+initContainer:
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      memory: 512Mi
 
 persistence:
   assets:
@@ -126,8 +140,10 @@ global:
     allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages }}
   defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
   storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
-  imagePullSecrets:
-    - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+  imagePullSecrets: []
+
+# Fix imagePullSecrets issue
+imagePullSecrets: []
 
 {{- if .Values.openproject.securityContext }}
 securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
