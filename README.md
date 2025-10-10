@@ -55,6 +55,19 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 - User Portal
 - Admin Portal
 
+## New: Project Management with OpenProject
+
+MijnBureau now includes **OpenProject** for project management:
+
+```bash
+# Deploy OpenProject
+export MIJNBUREAU_MASTER_PASSWORD="demo-password"
+export MIJNBUREAU_CREATE_NAMESPACES=true
+helmfile -e demo -l name=openproject apply
+
+# Access: http://openproject.mb.test/ (admin@example.com / admin123)
+```
+
 ## Commit Conventions
 
 This repo uses the [gitmoji](https://gitmoji.dev/) commit convention with the following scopes:
