@@ -93,9 +93,9 @@ openproject:
   # Demo environment configuration
   https: false
   admin_user:
-    password: "admin"
+    password: "admin123"
     password_reset: false
-    name: "Admin User"
+    name: "Admin"
     mail: "admin@example.com"
   seed_locale: "en"
   persistence:
@@ -103,10 +103,8 @@ openproject:
       enabled: false
   security:
     allowInsecureImages: true
-
   ingress:
     tls: false
-    selfSigned: false
 
   # Security context for demo environment (fixes temporary directory permissions)
   securityContext:

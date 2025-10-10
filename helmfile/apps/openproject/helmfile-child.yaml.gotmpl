@@ -6,31 +6,10 @@ repositories:
     url: https://charts.openproject.org
 
 releases:
-  - name: openproject-postgresql
-    chart: ../common/charts/postgresql
-    version: "17.5.0"
-    namespace: {{ .Values.application.openproject.namespace }}
-    installed: {{ and (eq .Environment.Name "demo") ( .Values.application.openproject.enabled) | toYaml }}
-    values:
-      - "values-postgresql.yaml.gotmpl"
-
-  - name: openproject-redis
-    chart: ../common/charts/redis
-    version: "21.2.6"
-    namespace: {{ .Values.application.openproject.namespace }}
-    installed: {{ and (eq .Environment.Name "demo") ( .Values.application.openproject.enabled) | toYaml }}
-    values:
-      - "values-redis.yaml.gotmpl"
-
   - name: openproject
     chart: openproject/openproject
     version: "11.0.0"
     condition: application.openproject.enabled
     namespace: {{ .Values.application.openproject.namespace }}
-    {{- if and (eq .Environment.Name "demo") ( .Values.application.openproject.enabled) }}
-    needs:
-      - {{ .Values.application.openproject.namespace }}/openproject-postgresql
-      - {{ .Values.application.openproject.namespace }}/openproject-redis
-    {{- end }}
     values:
       - "values.yaml.gotmpl"

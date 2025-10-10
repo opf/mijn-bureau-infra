@@ -1,4 +1,6 @@
 # OpenProject Configuration
+# Production-ready configuration with demo optimizations
+
 global:
   security:
     allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages | default true }}
@@ -154,12 +156,12 @@ persistence:
   assets:
     enabled: {{ ne .Environment.Name "demo" }}
 
-# Security context configuration
-{{- if .Values.openproject.securityContext }}
+# Security context configuration (optional)
+{{- if and .Values.openproject (hasKey .Values.openproject "securityContext") }}
 securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
 {{- end }}
 
-{{- if .Values.openproject.containerSecurityContext }}
+{{- if and .Values.openproject (hasKey .Values.openproject "containerSecurityContext") }}
 containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYaml | nindent 2 }}
 {{- end }}
 
