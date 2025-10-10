@@ -1,36 +1,38 @@
 # OpenProject Configuration
+global:
+  security:
+    allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages | default true }}
+
+  imagePullSecrets:
+    - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
+
 image:
   registry: {{ (coalesce .Values.container.openproject.registry .Values.container.default.registry) | quote }}
   repository: {{ .Values.container.openproject.repository | quote }}
   tag: {{ .Values.container.openproject.tag | quote }}
 
 openproject:
-  https: {{ .Values.openproject.https }}
+  https: {{ .Values.openproject.https | default false }}
   admin_user:
     password: {{ .Values.openproject.admin_user.password | quote }}
-    password_reset: {{ .Values.openproject.admin_user.password_reset }}
+    password_reset: {{ .Values.openproject.admin_user.password_reset | default false }}
     name: {{ .Values.openproject.admin_user.name | quote }}
     mail: {{ .Values.openproject.admin_user.mail | quote }}
-  seed_locale: {{ .Values.openproject.seed_locale }}
+  seed_locale: {{ .Values.openproject.seed_locale | default "en" }}
 
 ingress:
   enabled: true
   host: {{ .Values.global.hostname.openproject }}.{{ .Values.global.domain }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
-    enabled: {{ .Values.openproject.ingress.tls }}
-    annotations:
-  {{- if .Values.cluster.ingress.annotations }}
-  {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
-  {{- end }}
-  {{- if eq .Values.cluster.ingress.type "nginx" }}
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-  {{- end }}
-  {{- if eq .Values.cluster.ingress.type "haproxy-openshift" }}
-      haproxy.router.openshift.io/ssl-redirect: "true"
-  {{- end }}
+    enabled: {{ .Values.openproject.ingress.tls | default false }}
+  annotations:
+    {{- if .Values.cluster.ingress.annotations }}
+    {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
+    {{- end }}
+    {{- if eq .Values.cluster.ingress.type "nginx" }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "{{ .Values.openproject.ingress.tls | default false }}"
+    {{- end }}
 
 # Database configuration
 database:
@@ -40,31 +42,30 @@ database:
   username: {{ .Values.database.openproject.user }}
   password: {{ .Values.database.openproject.password }}
 
-# Cache configuration (using Redis instead of Memcached)
-cache:
-  host: {{ .Values.cache.openproject.host }}
-  port: {{ .Values.cache.openproject.port }}
-  password: {{ .Values.cache.openproject.password }}
-
-# PostgreSQL configuration (use embedded chart with our password)
+# PostgreSQL configuration
 postgresql:
-  bundled: true
+  bundled: {{ eq .Environment.Name "demo" }}
+  {{- if eq .Environment.Name "demo" }}
   image:
-    registry: {{ coalesce .Values.container.postgres.registry .Values.container.default.registry | default "docker.io" | quote }}
-    repository: {{ .Values.container.postgres.repository | default "bitnami/postgresql" | quote }}
-    tag: {{ .Values.container.postgres.tag | default "17.5.0-debian-12-r18" | quote }}
-  volumePermissions:
-    enabled: true
-    image:
-      registry: "docker.io"
-      repository: "alpine"
-      tag: "3.19"
+    registry: "registry-1.docker.io"
+    repository: "bitnamilegacy/postgresql"
+    tag: "17-debian-12"
   auth:
-    postgresPassword: {{ .Values.database.openproject.adminpassword | quote }}
-    username: {{ .Values.database.openproject.user | quote }}
-    password: {{ .Values.database.openproject.password | quote }}
-    database: {{ .Values.database.openproject.name | quote }}
+    postgresPassword: {{ .Values.secret.openproject.postgresPassword | quote }}
+    username: "openproject"
+    password: {{ .Values.secret.openproject.postgresPassword | quote }}
+    database: "openproject"
+  {{- else }}
+  # External PostgreSQL configuration
+  connection:
+    host: {{ .Values.database.openproject.host }}
+    port: {{ .Values.database.openproject.port }}
+    database: {{ .Values.database.openproject.name }}
+    username: {{ .Values.database.openproject.user }}
+    password: {{ .Values.database.openproject.password }}
+  {{- end }}
 
+# Cache configuration (using Redis)
 cache:
   host: {{ .Values.cache.openproject.host }}
   port: {{ .Values.cache.openproject.port }}
@@ -76,12 +77,15 @@ redis:
     repository: {{ .Values.container.redis.repository | quote }}
     tag: {{ .Values.container.redis.tag | quote }}
 
-# Disable memcached since we're using Redis
+# Use bundled memcached with working image
 memcached:
-  enabled: false
-  service:
-    sessionAffinity: None
+  bundled: true
+  image:
+    repository: bitnami/memcached
+    tag: "latest"
 
+# OIDC configuration (optional)
+{{- if .Values.authentication.oidc }}
 oidc:
   enabled: true
   provider:
@@ -94,7 +98,13 @@ oidc:
     userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
     jwks_uri: "{{ .Values.authentication.oidc.issuer }}/protocol/openid-connect/certs"
     scope: ["openid", "profile", "email"]
+{{- else }}
+# OIDC disabled - using simple admin login
+oidc:
+  enabled: false
+{{- end }}
 
+# SMTP configuration
 {{- if eq .Environment.Name "demo" }}
 # Demo environment - disable SMTP for simplicity
 smtp:
@@ -102,7 +112,7 @@ smtp:
 {{- else }}
 # Production environment - use SMTP
 smtp:
-  enabled: {{ .Values.smtp.enabled }}
+  enabled: {{ .Values.smtp.enabled | default false }}
   host: {{ .Values.smtp.host | quote }}
   port: {{ .Values.smtp.port }}
   protocol: {{ .Values.smtp.protocol | quote }}
@@ -115,36 +125,36 @@ smtp:
   password: {{ .Values.smtp.password | quote }}
 {{- end }}
 
+# Resource configuration
 resources:
   limits:
     cpu: "4"
-    memory: 4Gi
+    memory: "4Gi"
   requests:
-    cpu: 250m
-    memory: 1Gi
+    cpu: "1"
+    memory: "2Gi"
 
-# Increase init container resources
-initContainer:
+# Init container resources
+appInit:
   resources:
     limits:
-      memory: 1Gi
+      memory: "2Gi"
     requests:
-      memory: 512Mi
+      memory: "1Gi"
 
+dbInit:
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
+
+# Persistence configuration
 persistence:
   assets:
-    enabled: {{ .Values.openproject.persistence.assets.enabled }}
+    enabled: {{ ne .Environment.Name "demo" }}
 
-global:
-  security:
-    allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages }}
-  defaultStorageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
-  storageClass: {{ coalesce .Values.pvc.openproject.openproject.storageClass .Values.pvc.default.storageClass | quote }}
-  imagePullSecrets: []
-
-# Fix imagePullSecrets issue
-imagePullSecrets: []
-
+# Security context configuration
 {{- if .Values.openproject.securityContext }}
 securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
 {{- end }}
@@ -153,6 +163,7 @@ securityContext: {{ .Values.openproject.securityContext | toYaml | nindent 2 }}
 containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYaml | nindent 2 }}
 {{- end }}
 
+# Autoscaling configuration
 autoscaling:
   hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
 
