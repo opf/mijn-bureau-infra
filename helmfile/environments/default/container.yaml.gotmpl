@@ -51,10 +51,22 @@ container:
     tag: "17-debian-12"
     imagePullSecret: ~
 
+  postgres_exporter:
+    registry: "registry-1.docker.io"
+    repository: "bitnamilegacy/postgres-exporter"
+    tag: "0.17.1-debian-12-r12"
+    imagePullSecret: ~
+
   redis:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/redis"
     tag: "8.0.3-debian-12-r1"
+    imagePullSecret: ~
+
+  redis_exporter:
+    registry: "registry-1.docker.io"
+    repository: "bitnamilegacy/redis-exporter"
+    tag: "1.74.0-debian-12-r2"
     imagePullSecret: ~
 
   elementweb:
@@ -91,4 +103,27 @@ container:
     registry: "registry-1.docker.io"
     repository: "openproject/openproject"
     tag: "16.4.1-slim"
+    imagePullSecret: ~
+
+  livekit_server:
+    registry: "registry-1.docker.io"
+    repository: "livekit/livekit-server"
+    tag: "v1.9.1"
+    imagePullSecret: ~
+
+  kubectl:
+    registry: docker.io
+    repository: bitnamilegacy/kubectl
+    tag: 1.32.1
+
+  meet_backend:
+    registry: "registry-1.docker.io"
+    repository: "lasuite/meet-backend"
+    tag: "v0.1.38"
+    imagePullSecret: ~
+
+  meet_frontend:
+    registry: "registry-1.docker.io"
+    repository: "lasuite/meet-frontend"
+    tag: "v0.1.38"
     imagePullSecret: ~

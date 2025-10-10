@@ -354,7 +354,7 @@ resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 ##     cpu: 3
 ##     memory: 1024Mi
 ##
-resources: {}
+resources: {{ .Values.resource.grist.minio | default dict | toYaml | nindent 2 }}
 ## Configure extra options for liveness probe
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
 ## @param livenessProbe.enabled Enable livenessProbe
@@ -537,7 +537,7 @@ defaultInitContainers:
     ## @param defaultInitContainers.volumePermissions.resourcesPreset Set MinIO&reg; "volume-permissions" init container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if defaultInitContainers.volumePermissions.resources is set (defaultInitContainers.volumePermissions.resources is recommended for production).
     ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
     ##
-    resourcesPreset: "nano"
+    resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
     ## @param defaultInitContainers.volumePermissions.resources Set MinIO&reg; "volume-permissions" init container requests and limits for different resources like CPU or memory (essential for production workloads)
     ## E.g:
     ## resources:
@@ -863,13 +863,13 @@ metrics:
   prometheusAuthType: public
   ## @param metrics.enabled Enable the export of Prometheus metrics
   ##
-  enabled: false
+  enabled: {{ .Values.metric.enabled | default false  }}
   ## Prometheus Operator ServiceMonitor configuration
   ##
   serviceMonitor:
     ## @param metrics.serviceMonitor.enabled If the operator is installed in your cluster, set to true to create a Service Monitor Entry
     ##
-    enabled: false
+    enabled: {{ .Values.metric.serviceMonitor.enabled | default false  }}
     ## @param metrics.serviceMonitor.namespace Namespace which Prometheus is running in
     ##
     namespace: ""
@@ -914,7 +914,7 @@ metrics:
   prometheusRule:
     ## @param metrics.prometheusRule.enabled Create a Prometheus Operator PrometheusRule (also requires `metrics.enabled` to be `true` and `metrics.prometheusRule.rules`)
     ##
-    enabled: false
+    enabled: {{ .Values.metric.prometheusRule.enabled | default false  }}
     ## @param metrics.prometheusRule.namespace Namespace for the PrometheusRule Resource (defaults to the Release Namespace)
     ##
     namespace: ""
@@ -1487,6 +1487,19 @@ provisioning:
   ## @param provisioning.sleepTime Sleep time before checking Minio availability
   ##
   sleepTime: 5
+  ## @param provisioning.waitTimeout Timeout in seconds for waiting for MinIO to become available (init container)
+  ##
+  waitTimeout: 120
+  ## @param provisioning.retryAttempts Number of retry attempts when checking MinIO availability
+  ##
+  retryAttempts: 12
+  ## @param provisioning.retryInterval Sleep time in seconds between retry attempts
+  ##
+  retryInterval: 5
+  ## @param provisioning.backoffLimit Maximum number of pod restarts allowed on failure (uses exponential backoff)
+  ## Set to handle infrastructure-level failures while local retry handles MinIO restart delays
+  ##
+  backoffLimit: 50
   ## @param provisioning.schedulerName Name of the k8s scheduler (other than default) for MinIO&reg; provisioning
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
@@ -1524,7 +1537,7 @@ provisioning:
   ## @param provisioning.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if provisioning.resources is set (provisioning.resources is recommended for production).
   ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resourcesPreset: "nano"
+  resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
   ## @param provisioning.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
   ## Example:
   ## resources:

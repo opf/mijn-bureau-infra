@@ -1,4 +1,6 @@
 global:
+  defaultStorageClass: {{ .Values.pvc.default.storageClass | quote }}
+
   security:
     allowInsecureImages: true
 
@@ -11,6 +13,7 @@ image:
   tag: {{ .Values.container.grist.tag | quote }}
 
 auth:
+  enabled: true
   oidcIdpIssuer: {{ .Values.authentication.oidc.issuer | quote }}
   oidcIdpClientId: {{ .Values.authentication.client.grist.client_id | quote }}
   oidcIdpClientSecret: {{ .Values.authentication.client.grist.client_secret | quote }}
@@ -20,6 +23,18 @@ auth:
 
 autoscaling:
   hpa: {{ .Values.autoscaling.horizontal.grist | toYaml | nindent 4 }}
+
+ai:
+  enabled: true
+{{- if .Values.ai.llm.endpoint }}
+  endpoint: "{{ .Values.ai.llm.endpoint}}/chat/completions"
+{{- end }}
+{{- if .Values.ai.llm.model }}
+  model: {{ .Values.ai.llm.model | quote }}
+{{- end }}
+{{- if .Values.ai.llm.apiKey }}
+  apiKey: {{ .Values.ai.llm.apiKey | quote }}
+{{- end }}
 
 ingress:
   enabled: true
@@ -43,7 +58,7 @@ ingress:
 
 resourcesPreset: {{ .Values.global.resourcesPreset | quote }}
 
-resources: {{ .Values.resource.grist | toYaml | nindent 2 }}
+resources: {{ .Values.resource.grist.grist | default dict | toYaml | nindent 2 }}
 
 networkPolicy:
   enabled: true
@@ -94,13 +109,21 @@ networkPolicy:
             matchLabels:
               app.kubernetes.io/name: minio
       {{- end }}
+    # Ollama connectivity for AI features
+    - ports:
+        - port: 11434
+          protocol: TCP
+      {{- if .Values.application.ollama.enabled }}
+      to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ollama
+      {{- end }}
 
 
 podSecurityContext: {{ .Values.security.default.podSecurityContext | toYaml | nindent 2 }}
 
 containerSecurityContext: {{ .Values.security.default.containerSecurityContext | toYaml | nindent 2 }}
-
-metrics: {{ .Values.monitoring.prometheus | toYaml | nindent 2 }}
 
 defaultLocale: {{ .Values.global.defaultLocale | quote }}
 
