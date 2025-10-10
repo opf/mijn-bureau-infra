@@ -16,6 +16,7 @@ resourcesPreset: "small"
 cluster:  # note: we are planning to support Gateway API in. the near future
   ingress:
     type: nginx-local  # Use nginx-local to avoid configuration snippet issues
+    className: "nginx"  # Set the ingress class name
     annotations:
       nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Disable SSL redirect for local development
 
