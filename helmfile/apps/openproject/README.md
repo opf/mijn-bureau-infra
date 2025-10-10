@@ -104,6 +104,28 @@ helmfile -e production apply
 
 ## Configuration Options
 
+### Complete Values Reference
+
+| Parameter | Description | Default | Demo | Production |
+|-----------|-------------|---------|------|------------|
+| `openproject.https` | Enable HTTPS | `false` | `false` | `true` |
+| `openproject.admin_user.password` | Admin password | `admin123` | `admin123` | `secure-password` |
+| `openproject.admin_user.name` | Admin display name | `Admin` | `Admin` | `Admin` |
+| `openproject.admin_user.mail` | Admin email | `admin@example.com` | `admin@example.com` | `admin@yourdomain.com` |
+| `openproject.seed_locale` | Default locale | `en` | `en` | `en` |
+| `postgresql.bundled` | Use bundled PostgreSQL | `true` | `true` | `false` |
+| `postgresql.image.registry` | PostgreSQL image registry | `registry-1.docker.io` | `registry-1.docker.io` | N/A |
+| `postgresql.image.repository` | PostgreSQL image repository | `bitnamilegacy/postgresql` | `bitnamilegacy/postgresql` | N/A |
+| `postgresql.image.tag` | PostgreSQL image tag | `17-debian-12` | `17-debian-12` | N/A |
+| `memcached.enabled` | Enable Memcached | `true` | `true` | `true` |
+| `memcached.image.tag` | Memcached image tag | `latest` | `latest` | `latest` |
+| `smtp.enabled` | Enable SMTP | `false` | `false` | `true` |
+| `persistence.assets.enabled` | Enable asset persistence | `true` | `false` | `true` |
+| `resources.limits.cpu` | CPU limit | `4` | `4` | `8` |
+| `resources.limits.memory` | Memory limit | `4Gi` | `4Gi` | `8Gi` |
+| `resources.requests.cpu` | CPU request | `1` | `1` | `2` |
+| `resources.requests.memory` | Memory request | `2Gi` | `2Gi` | `4Gi` |
+
 ### Database Configuration
 
 #### Bundled PostgreSQL (Demo)
@@ -190,6 +212,18 @@ resources:
 - **Metrics**: Resource usage and performance metrics
 - **Backup**: Database backup and recovery procedures
 
+## Version Compatibility
+
+| OpenProject Chart | OpenProject Version | Kubernetes | Helm |
+|-------------------|---------------------|------------|------|
+| 11.0.0 | 16.4.1 | 1.20+ | 3.0+ |
+
+### Breaking Changes
+
+- **Chart 11.0.0**: Requires Kubernetes 1.20+ and Helm 3.0+
+- **Security Context**: Demo environment requires specific security context configuration
+- **Image Registry**: Updated to use `registry-1.docker.io` for PostgreSQL images
+
 ## Troubleshooting
 
 ### Common Issues
@@ -198,6 +232,8 @@ resources:
 2. **Database connection**: Verify PostgreSQL pod is running
 3. **Memory issues**: Increase resource limits if needed
 4. **Image pull errors**: Check image registry access
+5. **Security context errors**: Ensure proper security context for demo environment
+6. **PVC issues**: Check if persistent volume claims are bound
 
 ### Useful Commands
 
@@ -213,7 +249,29 @@ kubectl get ingress -n mijn-bureau
 
 # Check services
 kubectl get svc -n mijn-bureau | grep openproject
+
+# Check PVC status
+kubectl get pvc -n mijn-bureau
+
+# Check events
+kubectl get events -n mijn-bureau --sort-by='.lastTimestamp'
 ```
+
+### Debug Mode
+
+To enable debug logging, add to your values:
+
+```yaml
+openproject:
+  debug: true
+  log_level: debug
+```
+
+## Official Documentation
+
+- **OpenProject Official Docs**: [https://www.openproject.org/docs/](https://www.openproject.org/docs/)
+- **OpenProject Helm Chart**: [https://github.com/opf/helm-charts](https://github.com/opf/helm-charts)
+- **Kubernetes Installation**: [https://www.openproject.org/docs/installation-and-operations/installation/kubernetes/](https://www.openproject.org/docs/installation-and-operations/installation/kubernetes/)
 
 ## Support
 

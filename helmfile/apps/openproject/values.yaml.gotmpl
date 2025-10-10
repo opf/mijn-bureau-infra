@@ -166,6 +166,8 @@ containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYa
 {{- end }}
 
 # Autoscaling configuration
+{{- if .Values.autoscaling.horizontal.openproject }}
 autoscaling:
   hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
+{{- end }}
 
