@@ -1418,6 +1418,25 @@ keycloakConfigCli:
             ],
             "protocol": "openid-connect"
           },
+         {
+            "clientId": "{{ .Values.authentication.client.conversations.client_id }}",
+            "name": "Conversations",
+            "description": "AI assistant with LaSuite conversations",
+            "rootUrl": "https://{{ .Values.global.hostname.conversations }}.{{ .Values.global.domain }}",
+            "adminUrl": "https://{{ .Values.global.hostname.conversations }}.{{ .Values.global.domain }}",
+            "baseUrl": "https://{{ .Values.global.hostname.conversations }}.{{ .Values.global.domain }}",
+            "enabled": true,
+            "alwaysDisplayInConsole": true,
+            "clientAuthenticatorType": "client-secret",
+            "secret": {{ .Values.authentication.client.conversations.client_secret | quote }},
+            "redirectUris": [
+              "/*"
+            ],
+            "webOrigins": [
+              "https://{{ .Values.global.hostname.conversations }}.{{ .Values.global.domain }}"
+            ],
+            "protocol": "openid-connect"
+          },
           {
             "clientId": "{{ .Values.authentication.client.nextcloud.client_id }}",
             "name": "NextCloud",
