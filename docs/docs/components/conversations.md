@@ -1,11 +1,10 @@
 # Conversations
 
-MijnBureau supplies an installation of [Conversations](hhttps://github.com/suitenumerique/conversations). It is AI Assistant developer by LaSuite. It is still a prototype so use in production is not encouraged.
+MijnBureau supplies an installation of [Conversations](https://github.com/suitenumerique/conversations). Conversations is AI Assistant developer by LaSuite. It is still a prototype so use in production is not encouraged. To run the AI assistant you need an AI system available that supports the OpenAI chat endpoint. There are many companies that provide such systems, or you can run your own with ollama that is provided within this setup.
 
 ## Configuration
 
-To configure this solution, you can override the default settings for your
-[selected environment](https://minbzk.github.io/mijn-bureau-infra/docs/category/installation). The defaults are
+To configure this solution, you can override the default settings for your environment. The defaults are
 located in the folder `helmfile/environments/default`.
 
 | Name                                     | Description                                             |
