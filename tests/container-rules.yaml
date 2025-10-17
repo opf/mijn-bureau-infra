@@ -66,6 +66,9 @@ container:
   nextcloud:
     registry: ""
     imagePullSecret: ""
+  docs:
+    registry: ""
+    imagePullSecret: ""
 
   osShell:
     registry: ""

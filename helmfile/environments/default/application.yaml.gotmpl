@@ -68,3 +68,17 @@ application:
     enabled: false
     namespace: ~
     secretKey: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "conversations" "secretkey" | sha1sum | quote }}
+
+  docs:
+    enabled: true
+    namespace: ~
+    backend:
+      django:
+        secretKey: {{ print ( derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "djangoSecretKey" | sha1sum ) ( derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "djangoSecretKey2" | sha1sum ) | trunc 63 | quote }}
+    collaboration:
+      secret: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "collaborationSecret" | sha1sum | quote }}
+    frontend:
+      # When the GPLv3 is acceptable, this can be set to true. See https://github.com/suitenumerique/docs/blob/main/docs/env.md#impress-frontend-image
+      publishAsMit: false
+    yProvider:
+      key: {{ derivePassword 1 "long" (requiredEnv "MIJNBUREAU_MASTER_PASSWORD") "docs" "yProviderKey" | sha1sum | quote }}

@@ -19,6 +19,7 @@ MijnBureau offers a rich set of features focused on collaboration:
 - Collaborative Documents
 - Collaborative Spreadsheets
 - Collaborative Presentations
+- Collaborative Notes
 - Secure File Sharing
 - Team Chat
 - Self-hosted AI Language Models
@@ -51,6 +52,7 @@ MijnBureau currently includes the following key components:
 | Spreadsheet        | Grist                | [v1.6.1](https://github.com/gristlabs/grist-core/tree/v1.6.1)                     | [documentation](https://support.getgrist.com/self-managed/)                          | Apache-2.0 |
 | File sharing       | Nextcloud            | [v30.0.7](https://github.com/nextcloud/server/tree/v30.0.7)                       | [documentation](https://nextcloud.com/)                                              | AGPL-3.0   |
 | Office             | Collabora            | [v25.04.5.1](https://github.com/CollaboraOnline/online/releases/tag/cp-25.04.5-1) | [documentation](https://sdk.collaboraonline.com/docs/installation/index.html)        | MPL-2.0    |
+| Notes              | Docs                 | [v3.8.0](https://github.com/suitenumerique/docs/releases/tag/v3.8.0)              | [documentation](https://github.com/suitenumerique/docs/tree/main/docs/installation)  | MIT        |
 | Video backend      | Livekit              | [v1.9.1](https://github.com/livekit/livekit/releases/tag/v1.9.1)                  | [documentation](https://livekit.io/)                                                 | Apache-2.0 |
-| Video conferencing | meet                 | [v0.1.38](https://github.com/suitenumerique/meet/releases/tag/v0.1.38)            | [documentation](https://github.com/suitenumerique/meet/tree/main/docs)               | MIT        |
+| Video conferencing | Meet                 | [v0.1.38](https://github.com/suitenumerique/meet/releases/tag/v0.1.38)            | [documentation](https://github.com/suitenumerique/meet/tree/main/docs)               | MIT        |
 | AI Assistent       | Conversations        | [main](https://github.com/suitenumerique/conversations/)                          | [documentation](https://github.com/suitenumerique/conversations/blob/main/README.md) | MIT        |
