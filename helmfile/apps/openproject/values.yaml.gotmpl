@@ -21,6 +21,7 @@ openproject:
     name: {{ .Values.openproject.admin_user.name | quote }}
     mail: {{ .Values.openproject.admin_user.mail | quote }}
   seed_locale: {{ .Values.openproject.seed_locale | default "en" }}
+  useTmpVolumes: {{ .Values.openproject.useTmpVolumes | default false }}
 
 ingress:
   enabled: true
@@ -47,7 +48,6 @@ database:
 # PostgreSQL configuration
 postgresql:
   bundled: {{ eq .Environment.Name "demo" }}
-  {{- if eq .Environment.Name "demo" }}
   image:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/postgresql"
@@ -57,15 +57,12 @@ postgresql:
     username: "openproject"
     password: {{ .Values.secret.openproject.postgresPassword | quote }}
     database: "openproject"
-  {{- else }}
-  # External PostgreSQL configuration
   connection:
     host: {{ .Values.database.openproject.host }}
     port: {{ .Values.database.openproject.port }}
     database: {{ .Values.database.openproject.name }}
     username: {{ .Values.database.openproject.user }}
     password: {{ .Values.database.openproject.password }}
-  {{- end }}
 
 # Cache configuration (using Redis)
 cache:
@@ -86,10 +83,9 @@ memcached:
     repository: bitnami/memcached
     tag: "latest"
 
-# OIDC configuration (optional)
-{{- if .Values.authentication.oidc }}
+# OIDC configuration
 oidc:
-  enabled: true
+  enabled: {{ .Values.authentication.oidc | default false }}
   provider:
     name: "Keycloak"
     host: {{ .Values.global.hostname.keycloak }}.{{ .Values.global.domain }}
@@ -100,21 +96,10 @@ oidc:
     userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
     jwks_uri: "{{ .Values.authentication.oidc.issuer }}/protocol/openid-connect/certs"
     scope: ["openid", "profile", "email"]
-{{- else }}
-# OIDC disabled - using simple admin login
-oidc:
-  enabled: false
-{{- end }}
 
 # SMTP configuration
-{{- if eq .Environment.Name "demo" }}
-# Demo environment - disable SMTP for simplicity
 smtp:
-  enabled: false
-{{- else }}
-# Production environment - use SMTP
-smtp:
-  enabled: {{ .Values.smtp.enabled | default false }}
+  enabled: {{ and (ne .Environment.Name "demo") (.Values.smtp.enabled | default false) }}
   host: {{ .Values.smtp.host | quote }}
   port: {{ .Values.smtp.port }}
   protocol: {{ .Values.smtp.protocol | quote }}
@@ -125,7 +110,6 @@ smtp:
     require_transport_security: {{ .Values.smtp.tls.requireTransportSecurity }}
   username: {{ .Values.smtp.username | quote }}
   password: {{ .Values.smtp.password | quote }}
-{{- end }}
 
 # Resource configuration
 resources:
@@ -153,6 +137,22 @@ dbInit:
 
 # Persistence configuration
 persistence:
+  # main data volume (used by OpenProject for assets/uploads, etc.)
+  enabled: {{ .Values.openproject.persistence.enabled | default true }}
+  size: {{ .Values.openproject.persistence.size | default "8Gi" | quote }}
+  accessModes:
+    {{- if .Values.openproject.persistence.accessModes }}
+    {{- range .Values.openproject.persistence.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+    {{- else }}
+    - "ReadWriteOnce"
+    {{- end }}
+  {{- if .Values.openproject.persistence.storageClass }}
+  storageClass: {{ .Values.openproject.persistence.storageClass | quote }}
+  {{- end }}
+
+  # control the optional separate assets PVC from the upstream chart
   assets:
     enabled: {{ ne .Environment.Name "demo" }}
 
