@@ -19,13 +19,13 @@ helmfiles:
 ---
 
 helmfiles:
-  - path: "helmfile/apps/grist/helmfile-child.yaml.gotmpl"
+  - path: "helmfile/apps/keycloak/helmfile-child.yaml.gotmpl"
     values: &appvalues
       - "helmfile/environments/default/*.yaml*"
       - {{ toYaml .Values | nindent 8 }}
   - path: "helmfile/apps/ollama/helmfile-child.yaml.gotmpl"
     values: *appvalues
-  - path: "helmfile/apps/keycloak/helmfile-child.yaml.gotmpl"
+  - path: "helmfile/apps/grist/helmfile-child.yaml.gotmpl"
     values: *appvalues
   - path: "helmfile/apps/meet/helmfile-child.yaml.gotmpl"
     values: *appvalues
@@ -38,4 +38,8 @@ helmfiles:
   - path: "helmfile/apps/openproject/helmfile-child.yaml.gotmpl"
     values: *appvalues
   - path: "helmfile/apps/livekit/helmfile-child.yaml.gotmpl"
+    values: *appvalues
+  - path: "helmfile/apps/conversations/helmfile-child.yaml.gotmpl"
+    values: *appvalues
+  - path: "helmfile/apps/docs/helmfile-child.yaml.gotmpl"
     values: *appvalues

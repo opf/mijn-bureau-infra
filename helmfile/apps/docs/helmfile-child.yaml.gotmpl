@@ -1,0 +1,50 @@
+bases:
+  - "../../bases/default.yaml.gotmpl"
+
+releases:
+  - name: docs-postgresql
+    chart: ../common/charts/postgresql
+    version: "16.7.18"
+    namespace: {{ .Values.application.docs.namespace }}
+    installed: {{ and (eq .Environment.Name "demo") (.Values.application.docs.enabled) | toYaml }}
+    values:
+      - "values-postgresql.yaml.gotmpl"
+
+  - name: docs-redis
+    chart: ../common/charts/redis
+    version: "21.2.6"
+    namespace: {{ .Values.application.docs.namespace }}
+    installed: {{ and (eq .Environment.Name "demo") (.Values.application.docs.enabled) | toYaml }}
+    values:
+      - "values-redis.yaml.gotmpl"
+
+  - name: docs-minio
+    chart: ../common/charts/minio
+    version: "17.0.11"
+    namespace: {{ .Values.application.docs.namespace }}
+    installed: {{ and (eq .Environment.Name "demo") (.Values.application.docs.enabled) | toYaml }}
+    values:
+      - "values-minio.yaml.gotmpl"
+
+  - name: docs
+    chart: charts/docs
+    condition: application.docs.enabled
+    namespace: {{ .Values.application.docs.namespace }}
+    {{- if and (eq .Environment.Name "demo") (.Values.application.docs.enabled) }}
+    needs:
+      - {{ .Values.application.docs.namespace }}/docs-postgresql
+      - {{ .Values.application.docs.namespace }}/docs-redis
+      - {{ .Values.application.docs.namespace }}/docs-minio
+    {{- end }}
+    values:
+      - "values.yaml.gotmpl"
+
+  - name: docs-nginx
+    chart: ../common/charts/nginx
+    version: "22.0.0"
+    namespace: {{ .Values.application.docs.namespace }}
+    installed: {{ and .Values.application.docs.enabled (eq .Values.cluster.ingress.type "haproxy-openshift") | toYaml }}
+    needs:
+      - {{ .Values.application.docs.namespace }}/docs
+    values:
+      - "values-nginx.yaml.gotmpl"

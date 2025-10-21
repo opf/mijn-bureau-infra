@@ -115,6 +115,7 @@ container:
     registry: docker.io
     repository: bitnamilegacy/kubectl
     tag: 1.32.1
+    imagePullSecret: ~
 
   meet_backend:
     registry: "registry-1.docker.io"
@@ -127,3 +128,34 @@ container:
     repository: "lasuite/meet-frontend"
     tag: "v0.1.38"
     imagePullSecret: ~
+
+  conversations_backend:
+    registry: "registry-1.docker.io"
+    repository: "lasuite/conversations-backend"
+    tag: "main" # prototype, so no versioning yet
+    imagePullSecret: ~
+
+  conversations_frontend:
+    registry: "registry-1.docker.io"
+    repository: "lasuite/conversations-frontend"
+    tag: "main" # prototype, so no versioning yet
+    imagePullSecret: ~
+
+  nginx:
+    registry: docker.io
+    repository: bitnamilegacy/nginx
+    tag: 1.29.1
+    imagePullSecret: ~
+
+  docs:
+    imagePullSecret: ~
+    registry: "registry-1.docker.io"
+    backend:
+      repository: "lasuite/impress-backend"
+      tag: "v3.7.0"
+    frontend:
+      repository: "lasuite/impress-frontend"
+      tag: "v3.7.0"
+    yProvider:
+      repository: "lasuite/impress-y-provider"
+      tag: "v3.7.0"

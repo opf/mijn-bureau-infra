@@ -1,0 +1,2882 @@
+#
+# SPDX-License-Identifier: APACHE-2.0
+
+## @section Global parameters
+
+global:
+  ## Global Docker image parameters
+  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+  ## @param global.imageRegistry Global Docker Image registry
+  ## @param global.imagePullSecrets Global Docker registry secret names as an array
+  ##
+  imageRegistry: ""
+  imagePullSecrets: []
+  ## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
+  ##
+  defaultStorageClass: ""
+  ## Security parameters
+  ## @param global.security.allowInsecureImages Allows skipping image verification
+  ##
+  security:
+    allowInsecureImages: false
+  ## Compatibility adaptations for Kubernetes platforms
+  ##
+  compatibility:
+    ## Compatibility adaptations for Openshift
+    ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+    ##
+    openshift:
+      adaptSecurityContext: auto
+    ## @param global.compatibility.omitEmptySeLinuxOptions If set to true, removes the seLinuxOptions from the securityContexts when it is set to an empty object
+    ##
+    omitEmptySeLinuxOptions: false
+
+## @section Common parameters
+
+## @param kubeVersion Override Kubernetes version reported by .Capabilities
+##
+kubeVersion: ""
+## @param apiVersions Override Kubernetes API versions reported by .Capabilities
+##
+apiVersions: []
+## @param nameOverride String to partially override common.names.name
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override common.names.fullname
+##
+fullnameOverride: ""
+## @param namespaceOverride String to fully override common.names.namespace
+##
+namespaceOverride: ""
+## @param commonLabels Labels to add to all deployed objects
+##
+commonLabels: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param clusterDomain Kubernetes cluster domain name
+##
+clusterDomain: cluster.local
+## @param extraDeploy Array of extra objects to deploy with the release
+##
+extraDeploy: []
+## Diagnostic mode
+## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+## @param diagnosticMode.command Command to override all containers in the chart release
+## @param diagnosticMode.args Args to override all containers in the chart release
+##
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
+
+## @section Impress backend Parameters
+##
+
+## Impress backend
+##
+backend:
+  ## Impress backend image
+  ## ref: https://hub.docker.com/r/lasuite/impress-backend/tags
+  ## @param backend.image.registry Impress backend image registry
+  ## @param backend.image.repository Impress backend image repository
+  ## @skip backend.image.tag Impress backend image tag (immutable tags are recommended)
+  ## @param backend.image.digest Impress backend image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+  ## @param backend.image.pullPolicy Impress backend image pull policy
+  ## @param backend.image.pullSecrets Impress backend image pull secrets
+  ## @param backend.image.debug Enable Impress backend image debug mode
+  ##
+  image:
+    registry: docker.io
+    repository: lasuite/impress-backend
+    tag: "v3.7.0"
+    digest: ""
+    ## Specify a imagePullPolicy
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+    ##
+    pullPolicy: Always
+    ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    debug: false
+  ## @param backend.replicaCount Number of Impress backend replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param backend.containerPorts.http Impress backend HTTP container port
+  ##
+  containerPorts:
+    http: 8000
+  ## @param backend.extraContainerPorts Optionally specify extra list of additional ports for Impress backend containers
+  ## e.g:
+  ## extraContainerPorts:
+  ##   - name: myservice
+  ##     containerPort: 9090
+  ##
+  extraContainerPorts: []
+  ## Configure extra options for Impress backend containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param backend.livenessProbe.enabled Enable livenessProbe on Impress backend containers
+  ## @param backend.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param backend.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param backend.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param backend.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param backend.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param backend.readinessProbe.enabled Enable readinessProbe on Impress backend containers
+  ## @param backend.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param backend.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param backend.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param backend.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param backend.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param backend.startupProbe.enabled Enable startupProbe on Impress backend containers
+  ## @param backend.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param backend.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param backend.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param backend.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param backend.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param backend.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param backend.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param backend.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## Impress backend resource requests and limits
+  ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param backend.resourcesPreset Set Impress backend container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if backend.resources is set (backend.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+  ##
+  resourcesPreset: "nano"
+  ## @param backend.resources Set Impress backend container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param backend.podSecurityContext.enabled Enable Impress backend pods' Security Context
+  ## @param backend.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Impress backend pods
+  ## @param backend.podSecurityContext.sysctls Set kernel settings using the sysctl interface for Impress backend pods
+  ## @param backend.podSecurityContext.supplementalGroups Set filesystem extra groups for Impress backend pods
+  ## @param backend.podSecurityContext.fsGroup Set fsGroup in Impress backend pods' Security Context
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param backend.containerSecurityContext.enabled Enabled Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Impress backend container
+  ## @param backend.containerSecurityContext.runAsUser Set runAsUser in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.runAsGroup Set runAsGroup in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.runAsNonRoot Set runAsNonRoot in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.privileged Set privileged in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Impress backend container' Security Context
+  ## @param backend.containerSecurityContext.capabilities.drop List of capabilities to be dropped in Impress backend container
+  ## @param backend.containerSecurityContext.seccompProfile.type Set seccomp profile in Impress backend container
+  ##
+  containerSecurityContext:
+    enabled: true
+    seLinuxOptions: {}
+    runAsUser: 1001
+    runAsGroup: 1001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    seccompProfile:
+      type: "RuntimeDefault"
+
+  ## @param backend.existingConfigmap The name of an existing ConfigMap with your custom configuration for Impress backend
+  ##
+  existingConfigmap: ""
+  ## @param backend.command Override default Impress backend container command (useful when using custom images)
+  ##
+  command: []
+  ## @param backend.args Override default Impress backend container args (useful when using custom images)
+  ##
+  args: []
+  ## @param backend.automountServiceAccountToken Mount Service Account token in Impress backend pods
+  ##
+  automountServiceAccountToken: false
+  ## @param backend.hostAliases Impress backend pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param backend.daemonsetAnnotations Annotations for Impress backend daemonset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  daemonsetAnnotations: {}
+  ## @param backend.deploymentAnnotations Annotations for Impress backend deployment
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  deploymentAnnotations: {}
+  ## @param backend.statefulsetAnnotations Annotations for Impress backend statefulset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  statefulsetAnnotations: {}
+  ## @param backend.podLabels Extra labels for Impress backend pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param backend.podAnnotations Annotations for Impress backend pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param backend.podAffinityPreset Pod affinity preset. Ignored if `backend.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param backend.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `backend.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node backend.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param backend.nodeAffinityPreset.type Node affinity preset type. Ignored if `backend.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param backend.nodeAffinityPreset.key Node label key to match. Ignored if `backend.affinity` is set
+    ##
+    key: ""
+    ## @param backend.nodeAffinityPreset.values Node label values to match. Ignored if `backend.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param backend.affinity Affinity for Impress backend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `backend.podAffinityPreset`, `backend.podAntiAffinityPreset`, and `backend.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param backend.nodeSelector Node labels for Impress backend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  ##
+  nodeSelector: {}
+  ## @param backend.tolerations Tolerations for Impress backend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## ONLY FOR DEPLOYMENTS:
+  ## @param backend.updateStrategy.type Impress backend deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ## ONLY FOR STATEFULSETS:
+  ## @param backend.updateStrategy.type Impress backend statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## ONLY FOR DEPLOYMENTS:
+    ## Can be set to RollingUpdate or Recreate
+    ## ONLY FOR STATEFULSETS:
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## ONLY FOR STATEFULSETS:
+  ## @param backend.podManagementPolicy Pod management policy for Impress backend statefulset
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  ##
+  podManagementPolicy: OrderedReady
+  ## @param backend.priorityClassName Impress backend pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param backend.topologySpreadConstraints Topology Spread Constraints for Impress backend pod assignment spread across your cluster among failure-domains
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+  ##
+  topologySpreadConstraints: []
+  ## @param meet.runtimeClassName Name of the runtime class name for meet pods
+  ## ref: https://kubernetes.io/docs/concepts/containers/runtime-class/#usage
+  ##
+  runtimeClassName: ""
+  ## @param backend.schedulerName Name of the k8s scheduler (other than default) for Impress backend pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param backend.terminationGracePeriodSeconds Seconds Impress backend pods need to terminate gracefully
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+  ##
+  terminationGracePeriodSeconds: ""
+  ## @param backend.lifecycleHooks for Impress backend containers to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param backend.extraEnvVars Array with extra environment variables to add to Impress backend containers
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param backend.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Impress backend containers
+  ##
+  extraEnvVarsCM: ""
+  ## @param backend.extraEnvVarsSecret Name of existing Secret containing extra env vars for Impress backend containers
+  ##
+  extraEnvVarsSecret: ""
+  ## @param backend.extraVolumes Optionally specify extra list of additional volumes for the Impress backend pods
+  ##
+  extraVolumes: []
+  ## @param backend.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Impress backend containers
+  ##
+  extraVolumeMounts: []
+  ## @param backend.sidecars Add additional sidecar containers to the Impress backend pods
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: []
+  ## @param backend.initContainers Add additional init containers to the Impress backend pods
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: []
+  ## Pod Disruption Budget configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb
+  ## @param backend.pdb.create Enable/disable a Pod Disruption Budget creation
+  ## @param backend.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+  ## @param backend.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `backend.pdb.minAvailable` and `backend.pdb.maxUnavailable` are empty.
+  ##
+  pdb:
+    create: true
+    minAvailable: ""
+    maxUnavailable: ""
+  ## Autoscaling configuration
+  ## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+  ##
+  autoscaling:
+    ## @param backend.autoscaling.vpa.enabled Enable VPA for Impress backend pods
+    ## @param backend.autoscaling.vpa.annotations Annotations for VPA resource
+    ## @param backend.autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+    ## @param backend.autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
+    ## @param backend.autoscaling.vpa.minAllowed VPA Min allowed resources for the pod
+    ##
+    vpa:
+      enabled: false
+      annotations: {}
+      controlledResources: []
+      maxAllowed: {}
+      minAllowed: {}
+      ## @param backend.autoscaling.vpa.updatePolicy.updateMode Autoscaling update policy
+      ## Specifies whether recommended updates are applied when a Pod is started and whether recommended updates are applied during the life of a Pod
+      ## Possible values are "Off", "Initial", "Recreate", and "Auto".
+      ##
+      updatePolicy:
+        updateMode: Auto
+    ## @param backend.autoscaling.hpa.enabled Enable HPA for Impress backend pods
+    ## @param backend.autoscaling.hpa.minReplicas Minimum number of replicas
+    ## @param backend.autoscaling.hpa.maxReplicas Maximum number of replicas
+    ## @param backend.autoscaling.hpa.targetCPU Target CPU utilization percentage
+    ## @param backend.autoscaling.hpa.targetMemory Target Memory utilization percentage
+    ##
+    hpa:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: ""
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param backend.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param backend.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param backend.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: false
+    ## @param backend.networkPolicy.addExternalClientAccess Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    addExternalClientAccess: false
+    ## @param backend.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param backend.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param backend.networkPolicy.ingressPodMatchLabels [object] Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.
+    ## e.g:
+    ## ingressPodMatchLabels:
+    ##   my-client: "true"
+    #
+    ingressPodMatchLabels: {}
+    ## @param backend.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ## @param backend.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+  ## Docs backend service parameters
+  service:
+    ## @param backend.service.type Impress backend service type
+    ##
+    type: ClusterIP
+    ## @param backend.service.ports.http Impress backend service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param backend.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param backend.service.clusterIP Impress backend service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param backend.service.loadBalancerIP Impress backend service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param backend.service.loadBalancerSourceRanges Impress backend service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param backend.service.externalTrafficPolicy Impress backend service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param backend.service.annotations Additional custom annotations for Impress backend service
+    ##
+    annotations: {}
+    ## @param backend.service.extraPorts Extra ports to expose in Impress backend service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+    ## @param backend.service.sessionAffinity Control where client requests go, to the same pod or round-robin
+    ## Values: ClientIP or None
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+    ##
+    sessionAffinity: None
+    ## @param backend.service.sessionAffinityConfig Additional settings for the sessionAffinity
+    ## sessionAffinityConfig:
+    ##   clientIP:
+    ##     timeoutSeconds: 300
+    ##
+    sessionAffinityConfig: {}
+  ## Docs backend job configurations dedicated to run a specific management command, for example after a deployment
+  ## @param backend.jobs.ttlSecondsAfterFinished Period to wait before remove jobs
+  ## @param backend.jobs.backoffLimit Numbers of jobs retries
+  ## @param backend.jobs.jobs [array] A list of job configurations.
+  ## Example:
+  ##   jobs:
+  ##     - name: ""
+  ##       annotations:
+  ##         argocd.argoproj.io/hook: PostSync
+  ##         argocd.argoproj.io/sync-options: Replace=true,Force=true
+  ##       command: []
+  ##       restartPolicy: Never
+  jobs:
+    ttlSecondsAfterFinished: 3600
+    backoffLimit: 20
+    jobs:
+      - name: migrate
+        annotations:
+          argocd.argoproj.io/sync-options: Replace=true,Force=true
+        command:
+          - /bin/sh
+          - "-c"
+          - |
+            while ! python manage.py check --database default > /dev/null 2>&1
+            do
+              echo "Database not ready"
+              sleep 2
+            done
+
+            echo "Database is ready"
+
+            python manage.py migrate --no-input
+        restartPolicy: OnFailure
+      - name: createSuperUser
+        annotations:
+          argocd.argoproj.io/sync-options: Replace=true,Force=true
+        command:
+          - "/bin/sh"
+          - "-c"
+          - |
+            while ! python manage.py check --database default > /dev/null 2>&1
+            do
+              echo "Database not ready"
+              sleep 2
+            done
+
+            echo "Database is ready"
+
+            python manage.py createsuperuser --email $DJANGO_SUPERUSER_EMAIL --password $DJANGO_SUPERUSER_PASSWORD
+        restartPolicy: OnFailure
+  # List of cronjob to add
+  # cronJobs:
+  #   - name: reset-database
+  #     schedule: "0 */2 * * *"
+  #     args:
+  #       - "/bin/sh"
+  #       - "-c"
+  #       - python manage.py flush --no-input
+  #     restartPolicy: OnFailure
+  ## @param backend.cronJobs Cron job name, schedule, command
+  cronJobs: []
+  configuration:
+    ## @param backend.configuration.ai.enabled Enable AI options
+    ## @param backend.configuration.ai.allowReachFrom Users that can use AI must be this level. options are "public", "authenticated", "restricted"
+    ## @param backend.configuration.ai.apiKey AI key to be used for AI Base url
+    ## @param backend.configuration.ai.baseUrl OpenAI compatible AI base url
+    ## @param backend.configuration.ai.model AI Model to use
+    ai:
+      enabled: false
+      allowReachFrom: "authenticated"
+      apiKey: "myApiKey"
+      baseUrl: "http://dev-backend-ai.docs.svc.cluster.local"
+      model: "myModel"
+    analytics:
+      crisp:
+        ## @param backend.configuration.analytics.crisp.websiteId Crisp website id for support
+        websiteId: ""
+    django:
+      ## @param backend.configuration.django.configuration Django environment settings, can be one of `Build`, `Development`, `Demo`, `Feature`, 'Test', `Staging`, `PreProduction`, or `Production`
+      configuration: Production
+      ## @param backend.configuration.django.cors.allowAllOrigins Allow all CORS origins
+      ## @param backend.configuration.django.cors.allowedOriginRegexes List of origins allowed for CORS using regulair expressions
+      ## @param backend.configuration.django.cors.allowedOrigins List of origins allowed for CORS
+      cors:
+        allowAllOrigins: false
+        allowedOriginRegexes: ""
+        allowedOrigins: ""
+      ## @param backend.configuration.django.email.backend Email backend library
+      ## @param backend.configuration.django.email.from Email address used as sender
+      ## @param backend.configuration.django.email.brandName Brand name for email
+      ## @param backend.configuration.django.email.host.name Hostname of email
+      ## @param backend.configuration.django.email.host.username User to authenticate with on the email host
+      ## @param backend.configuration.django.email.host.password Password to authenticate with on the email host
+      ## @param backend.configuration.django.email.logoImg Logo for the email
+      ## @param backend.configuration.django.email.port Port used to connect to email host
+      ## @param backend.configuration.django.email.useSsl Use ssl for email host connection
+      ## @param backend.configuration.django.email.useTls Use tls for email host connection
+      email:
+        backend: django.core.mail.backends.smtp.EmailBackend
+        from: from@example.com
+        brandName: "La Suite Numérique"
+        host:
+          name: "mailcatcher"
+          username: ""
+          password: ""
+        logoImg: https://docs.127.0.0.1.nip.io/assets/logo-suite-numerique.png
+        port: 1025
+        useSsl: false
+        useTls: false
+      ## @param backend.configuration.django.serverToServerApiTokens Server to server API tokens
+      serverToServerApiTokens: secret-api-key
+      ## @param backend.configuration.django.secretKey Django secret key
+      secretKey: djangoSecretKey
+      ## @param backend.configuration.django.settingsModule Django settings module
+      settingsModule: impress.settings
+      ## @param backend.configuration.django.storagesStaticFilesBackend Implementation for the static files backend storage
+      storagesStaticFilesBackend: whitenoise.storage.CompressedManifestStaticFilesStorage
+      ## @param backend.configuration.django.superUser.email Super user e-mail address
+      ## @param backend.configuration.django.superUser.password Super user password
+      superUser:
+        email: you@example.com
+        password: admin
+    ## @param backend.configuration.document.maxSize Maximum size of documents and attachments in bytes
+    document:
+      maxSize: 10485760
+    ## @param backend.configuration.frontend.cssUrl To add a external css file to the app
+    ## @param backend.configuration.frontend.homepageFeatureEnabled Frontend feature flag to display the homepage
+    ## @param backend.configuration.frontend.theme Frontend theme to use
+    frontend:
+      cssUrl: ""
+      homepageFeatureEnabled: false
+      theme: ""
+    ## @param backend.configuration.languageCode Default language
+    languageCode: "en-us"
+    ## @param backend.configuration.logging.level.handlers.console Logging level for the console handler.
+    ## @param backend.configuration.logging.level.loggers.root Default logging level. options are "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"
+    ## @param backend.configuration.logging.level.loggers.app Application logging level. options are "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"
+    logging:
+      level:
+        handlers:
+          console: ERROR
+        loggers:
+          root: INFO
+          app: INFO
+    ## @param backend.configuration.malwareDetection.backend The malware detection backend use from the django-lasuite package
+    ## @extra backend.configuration.malwareDetection.parameters A dict containing all the parameters to initiate the malware detection backend
+    ## @skip backend.configuration.malwareDetection.parameters.callback_path
+    malwareDetection:
+      backend: lasuite.malware_detection.backends.dummy.DummyBackend
+      parameters:
+        callback_path: "core.malware_detection.malware_detection_callback"
+    ## @param backend.configuration.sentryDsn Sentry host
+    sentryDsn: ""
+    ## @param backend.configuration.sessionCookieAge Duration of the cookie session
+    sessionCookieAge: 43200
+    ## @param backend.configuration.spectacularSettingsEnableDjangoDeployCheck Runs exemplary schema generation and emits warnings as part of "./manage.py check --deploy"
+    spectacularSettingsEnableDjangoDeployCheck: false
+    ## Theme customization and translation options
+    ## Ref: https://github.com/suitenumerique/docs/blob/main/docs/theming.md
+    ## @param backend.configuration.themeCustomization.enabled Enable theme customization
+    ## @param backend.configuration.themeCustomization.cacheTimeout Cache duration for the customization settings
+    ## @param backend.configuration.themeCustomization.fileContent Content of the theme customization file. Must be a json object.
+    ## @param backend.configuration.themeCustomization.filePath Full path to the file customizing the theme. An example is provided in src/backend/impress/configuration/theme/default.json
+    ## @param backend.configuration.themeCustomization.mountPath Path where the customization file will be mounted in the backend deployment.
+    themeCustomization:
+      enabled: false
+      cacheTimeout: 86400
+      fileContent: ""
+      filePath: ""
+      mountPath: /app/impress/configuration/theme
+    ## @param backend.configuration.trashbinCutoffDays Trashbin cutoff in days
+    trashbinCutoffDays: 30
+  ## @section Celery worker parameters
+  celery:
+    ## Celery worker image
+    ## @param backend.celery.replicaCount Number of Celery worker replicas to deploy
+    # NOTE: Each worker must have its own name. This is not worked out, so more than one is not possible currently.
+    # ref: https://docs.celeryq.dev/en/stable/userguide/workers.html
+    ##
+    replicaCount: 1
+    ## Configure extra options for Celery worker containers' liveness and readiness probes
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param backend.celery.livenessProbe.enabled Enable livenessProbe on Celery worker containers
+    ## @param backend.celery.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+    ## @param backend.celery.livenessProbe.periodSeconds Period seconds for livenessProbe
+    ## @param backend.celery.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+    ## @param backend.celery.livenessProbe.failureThreshold Failure threshold for livenessProbe
+    ## @param backend.celery.livenessProbe.successThreshold Success threshold for livenessProbe
+    ##
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    ## @param backend.celery.readinessProbe.enabled Enable readinessProbe on Celery worker containers
+    ## @param backend.celery.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+    ## @param backend.celery.readinessProbe.periodSeconds Period seconds for readinessProbe
+    ## @param backend.celery.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+    ## @param backend.celery.readinessProbe.failureThreshold Failure threshold for readinessProbe
+    ## @param backend.celery.readinessProbe.successThreshold Success threshold for readinessProbe
+    ##
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    ## @param backend.celery.startupProbe.enabled Enable startupProbe on Celery worker containers
+    ## @param backend.celery.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+    ## @param backend.celery.startupProbe.periodSeconds Period seconds for startupProbe
+    ## @param backend.celery.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+    ## @param backend.celery.startupProbe.failureThreshold Failure threshold for startupProbe
+    ## @param backend.celery.startupProbe.successThreshold Success threshold for startupProbe
+    ##
+    startupProbe:
+      enabled: false
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    ## @param backend.celery.customLivenessProbe Custom livenessProbe that overrides the default one
+    ##
+    customLivenessProbe: {}
+    ## @param backend.celery.customReadinessProbe Custom readinessProbe that overrides the default one
+    ##
+    customReadinessProbe: {}
+    ## @param backend.celery.customStartupProbe Custom startupProbe that overrides the default one
+    ##
+    customStartupProbe: {}
+    ## Celery worker resource requests and limits
+    ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    ## @param backend.celery.resourcesPreset Set Celery worker container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if backend.celery.resources is set (frontend.resources is recommended for production).
+    ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+    ##
+    resourcesPreset: "nano"
+    ## @param backend.celery.resources Set Celery worker container requests and limits for different resources like CPU or memory (essential for production workloads)
+    ## Example:
+    ## resources:
+    ##   requests:
+    ##     cpu: 2
+    ##     memory: 512Mi
+    ##   limits:
+    ##     cpu: 3
+    ##     memory: 1024Mi
+    ##
+    resources: {}
+    ## Configure Pods Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param backend.celery.podSecurityContext.enabled Enable Celery worker pods' Security Context
+    ## @param backend.celery.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Celery worker pods
+    ## @param backend.celery.podSecurityContext.sysctls Set kernel settings using the sysctl interface for Celery worker pods
+    ## @param backend.celery.podSecurityContext.supplementalGroups Set filesystem extra groups for Celery worker pods
+    ## @param backend.celery.podSecurityContext.fsGroup Set fsGroup in Celery worker pods' Security Context
+    ##
+    podSecurityContext:
+      enabled: true
+      fsGroupChangePolicy: Always
+      sysctls: []
+      supplementalGroups: []
+      fsGroup: 1001
+    ## Configure Container Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+    ## @param backend.celery.containerSecurityContext.enabled Enabled Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Celery worker container
+    ## @param backend.celery.containerSecurityContext.runAsUser Set runAsUser in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.runAsGroup Set runAsGroup in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.runAsNonRoot Set runAsNonRoot in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.privileged Set privileged in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Celery worker container' Security Context
+    ## @param backend.celery.containerSecurityContext.capabilities.drop List of capabilities to be dropped in Celery worker container
+    ## @param backend.celery.containerSecurityContext.seccompProfile.type Set seccomp profile in Celery worker container
+    ##
+    containerSecurityContext:
+      enabled: true
+      seLinuxOptions: {}
+      runAsUser: 1001
+      runAsGroup: 1001
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      privileged: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      seccompProfile:
+        type: "RuntimeDefault"
+    ## @param backend.celery.existingConfigmap The name of an existing ConfigMap with your custom configuration for Celery worker
+    ##
+    existingConfigmap: ""
+    ## @param backend.celery.command Override default Celery worker container command (useful when using custom images)
+    ##
+    command: []
+    ## @param backend.celery.args Override default Celery worker container args (useful when using custom images)
+    ##
+    args: ["celery", "-A", "impress.celery_app", "worker", "-l", "INFO", "-n", "impress@%h"]
+    ## @param backend.celery.automountServiceAccountToken Mount Service Account token in Celery worker pods
+    ##
+    automountServiceAccountToken: false
+    ## @param backend.celery.hostAliases Celery worker pods host aliases
+    ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+    ##
+    hostAliases: []
+    ## @param backend.celery.daemonsetAnnotations Annotations for Celery worker daemonset
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    daemonsetAnnotations: {}
+    ## @param backend.celery.deploymentAnnotations Annotations for Celery worker deployment
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    deploymentAnnotations: {}
+    ## @param backend.celery.statefulsetAnnotations Annotations for Celery worker statefulset
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    statefulsetAnnotations: {}
+    ## @param backend.celery.podLabels Extra labels for Celery worker pods
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+    ##
+    podLabels: {}
+    ## @param backend.celery.podAnnotations Annotations for Celery worker pods
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations: {}
+    ## @param backend.celery.podAffinityPreset Pod affinity preset. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+    ##
+    podAffinityPreset: ""
+    ## @param backend.celery.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+    ##
+    podAntiAffinityPreset: soft
+    ## Node backend.celery.affinity preset
+    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+    ##
+    nodeAffinityPreset:
+      ## @param backend.celery.nodeAffinityPreset.type Node affinity preset type. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+      ##
+      type: ""
+      ## @param backend.celery.nodeAffinityPreset.key Node label key to match. Ignored if `frontend.affinity` is set
+      ##
+      key: ""
+      ## @param backend.celery.nodeAffinityPreset.values Node label values to match. Ignored if `frontend.affinity` is set
+      ## E.g.
+      ## values:
+      ##   - e2e-az1
+      ##   - e2e-az2
+      ##
+      values: []
+    ## @param backend.celery.affinity Affinity for Celery worker pods assignment
+    ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+    ## NOTE: `frontend.podAffinityPreset`, `frontend.podAntiAffinityPreset`, and `frontend.nodeAffinityPreset` will be ignored when it's set
+    ##
+    affinity: {}
+    ## @param backend.celery.nodeSelector Node labels for Celery worker pods assignment
+    ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+    ##
+    nodeSelector: {}
+    ## @param backend.celery.tolerations Tolerations for Celery worker pods assignment
+    ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+    ##
+    tolerations: []
+    ## ONLY FOR DEPLOYMENTS:
+    ## @param backend.celery.updateStrategy.type Celery worker deployment strategy type
+    ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+    ## ONLY FOR STATEFULSETS:
+    ## @param backend.celery.updateStrategy.type Celery worker statefulset strategy type
+    ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    ##
+    updateStrategy:
+      ## ONLY FOR DEPLOYMENTS:
+      ## Can be set to RollingUpdate or Recreate
+      ## ONLY FOR STATEFULSETS:
+      ## Can be set to RollingUpdate or OnDelete
+      ##
+      type: RollingUpdate
+    ## ONLY FOR STATEFULSETS:
+    ## @param backend.celery.podManagementPolicy Pod management policy for Celery worker statefulset
+    ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+    ##
+    podManagementPolicy: OrderedReady
+    ## @param backend.celery.priorityClassName Celery worker pods' priorityClassName
+    ##
+    priorityClassName: ""
+    ## @param backend.celery.topologySpreadConstraints Topology Spread Constraints for Celery worker pod assignment spread across your cluster among failure-domains
+    ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+    ##
+    topologySpreadConstraints: []
+    ## @param meet.runtimeClassName Name of the runtime class name for meet pods
+    ## ref: https://kubernetes.io/docs/concepts/containers/runtime-class/#usage
+    ##
+    runtimeClassName: ""
+    ## @param backend.celery.schedulerName Name of the k8s scheduler (other than default) for Celery worker pods
+    ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+    ##
+    schedulerName: ""
+    ## @param backend.celery.terminationGracePeriodSeconds Seconds Celery worker pods need to terminate gracefully
+    ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+    ##
+    terminationGracePeriodSeconds: ""
+    ## @param backend.celery.lifecycleHooks for Celery worker containers to automate configuration before or after startup
+    ##
+    lifecycleHooks: {}
+    ## @param backend.celery.extraEnvVars Array with extra environment variables to add to Celery worker containers
+    ## e.g:
+    ## extraEnvVars:
+    ##   - name: FOO
+    ##     value: "bar"
+    ##
+    extraEnvVars: []
+    ## @param backend.celery.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Celery worker containers
+    ##
+    extraEnvVarsCM: ""
+    ## @param backend.celery.extraEnvVarsSecret Name of existing Secret containing extra env vars for Celery worker containers
+    ##
+    extraEnvVarsSecret: ""
+    ## @param backend.celery.extraVolumes Optionally specify extra list of additional volumes for the Celery worker pods
+    ##
+    extraVolumes: []
+    ## @param backend.celery.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Celery worker containers
+    ##
+    extraVolumeMounts: []
+    ## @param backend.celery.sidecars Add additional sidecar containers to the Celery worker pods
+    ## e.g:
+    ## sidecars:
+    ##   - name: your-image-name
+    ##     image: your-image
+    ##     imagePullPolicy: Always
+    ##     ports:
+    ##       - name: portname
+    ##         containerPort: 1234
+    ##
+    sidecars: []
+    ## @param backend.celery.initContainers Add additional init containers to the Celery worker pods
+    ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+    ## e.g:
+    ## initContainers:
+    ##  - name: your-image-name
+    ##    image: your-image
+    ##    imagePullPolicy: Always
+    ##    command: ['sh', '-c', 'echo "hello world"']
+    ##
+    initContainers: []
+    ## Pod Disruption Budget configuration
+    ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb
+    ## @param backend.celery.pdb.create Enable/disable a Pod Disruption Budget creation
+    ## @param backend.celery.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+    ## @param backend.celery.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `frontend.pdb.minAvailable` and `frontend.pdb.maxUnavailable` are empty.
+    ##
+    pdb:
+      create: true
+      minAvailable: ""
+      maxUnavailable: ""
+    ## Autoscaling configuration
+    ## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+    ##
+    autoscaling:
+      ## @param backend.celery.autoscaling.vpa.enabled Enable VPA for Celery worker pods
+      ## @param backend.celery.autoscaling.vpa.annotations Annotations for VPA resource
+      ## @param backend.celery.autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+      ## @param backend.celery.autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
+      ## @param backend.celery.autoscaling.vpa.minAllowed VPA Min allowed resources for the pod
+      ##
+      vpa:
+        enabled: false
+        annotations: {}
+        controlledResources: []
+        maxAllowed: {}
+        minAllowed: {}
+        ## @param backend.celery.autoscaling.vpa.updatePolicy.updateMode Autoscaling update policy
+        ## Specifies whether recommended updates are applied when a Pod is started and whether recommended updates are applied during the life of a Pod
+        ## Possible values are "Off", "Initial", "Recreate", and "Auto".
+        ##
+        updatePolicy:
+          updateMode: Auto
+      ## @param backend.celery.autoscaling.hpa.enabled Enable HPA for Celery worker pods
+      ## @param backend.celery.autoscaling.hpa.minReplicas Minimum number of replicas
+      ## @param backend.celery.autoscaling.hpa.maxReplicas Maximum number of replicas
+      ## @param backend.celery.autoscaling.hpa.targetCPU Target CPU utilization percentage
+      ## @param backend.celery.autoscaling.hpa.targetMemory Target Memory utilization percentage
+      ##
+      hpa:
+        enabled: false
+        minReplicas: 1
+        maxReplicas: 3
+        targetCPU: 75
+        targetMemory: ""
+    ## Network Policies
+    ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+    ##
+    networkPolicy:
+      ## @param backend.celery.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+      ##
+      enabled: true
+      ## @param backend.celery.networkPolicy.allowExternal Don't require server label for connections
+      ## The Policy model to apply. When set to false, only pods with the correct
+      ## server label will have network access to the ports server is listening
+      ## on. When true, server will accept connections from any source
+      ## (with the correct destination port).
+      ##
+      allowExternal: true
+      ## @param backend.celery.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+      ##
+      allowExternalEgress: false
+      ## @param backend.celery.networkPolicy.addExternalClientAccess Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+      ##
+      addExternalClientAccess: false
+      ## @param backend.celery.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
+      ## e.g:
+      ## extraIngress:
+      ##   - ports:
+      ##       - port: 1234
+      ##     from:
+      ##       - podSelector:
+      ##           - matchLabels:
+      ##               - role: frontend
+      ##       - podSelector:
+      ##           - matchExpressions:
+      ##               - key: role
+      ##                 operator: In
+      ##                 values:
+      ##                   - frontend
+      extraIngress: []
+      ## @param backend.celery.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+      ## e.g:
+      ## extraEgress:
+      ##   - ports:
+      ##       - port: 1234
+      ##     to:
+      ##       - podSelector:
+      ##           - matchLabels:
+      ##               - role: frontend
+      ##       - podSelector:
+      ##           - matchExpressions:
+      ##               - key: role
+      ##                 operator: In
+      ##                 values:
+      ##                   - frontend
+      ##
+      extraEgress: []
+      ## @param backend.celery.networkPolicy.ingressPodMatchLabels [object] Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.
+      ## e.g:
+      ## ingressPodMatchLabels:
+      ##   my-client: "true"
+      #
+      ingressPodMatchLabels: {}
+      ## @param backend.celery.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+      ## @param backend.celery.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+      ##
+      ingressNSMatchLabels: {}
+      ingressNSPodMatchLabels: {}
+    configuration:
+      ## @param backend.celery.configuration.broker.transportOptions Celery broker transport options
+      broker:
+        transportOptions: "{}"
+      ## @param backend.celery.configuration.concurrency.min Minimum amount of workers available. Each worker takes 80Mib.
+      ## @param backend.celery.configuration.concurrency.max Maximum amount of workers available. Each worker takes 80Mib.
+      concurrency:
+        min: 10
+        max: 100
+
+## @section Impress frontend Parameters
+##
+
+## Impress frontend
+##
+frontend:
+  ## Impress frontend image
+  ## ref: https://hub.docker.com/r/lasuite/impress-frontend/tags
+  ## @param frontend.image.registry Impress frontend image registry
+  ## @param frontend.image.repository Impress frontend image repository
+  ## @skip frontend.image.tag Impress frontend image tag (immutable tags are recommended)
+  ## @param frontend.image.digest Impress frontend image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+  ## @param frontend.image.pullPolicy Impress frontend image pull policy
+  ## @param frontend.image.pullSecrets Impress frontend image pull secrets
+  ## @param frontend.image.debug Enable Impress frontend image debug mode
+  ##
+  image:
+    registry: docker.io
+    repository: lasuite/impress-frontend
+    tag: v3.7.0
+    digest: ""
+    ## Specify a imagePullPolicy
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+    ##
+    pullPolicy: Always
+    ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    debug: false
+  ## @param frontend.replicaCount Number of Impress frontend replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param frontend.containerPorts.http Impress frontend HTTP container port
+  ##
+  containerPorts:
+    http: 8080
+  ## @param frontend.extraContainerPorts Optionally specify extra list of additional ports for Impress frontend containers
+  ## e.g:
+  ## extraContainerPorts:
+  ##   - name: myservice
+  ##     containerPort: 9090
+  ##
+  extraContainerPorts: []
+  ## Configure extra options for Impress frontend containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param frontend.livenessProbe.enabled Enable livenessProbe on Impress frontend containers
+  ## @param frontend.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param frontend.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param frontend.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param frontend.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param frontend.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param frontend.readinessProbe.enabled Enable readinessProbe on Impress frontend containers
+  ## @param frontend.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param frontend.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param frontend.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param frontend.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param frontend.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param frontend.startupProbe.enabled Enable startupProbe on Impress frontend containers
+  ## @param frontend.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param frontend.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param frontend.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param frontend.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param frontend.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param frontend.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param frontend.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param frontend.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## Impress frontend resource requests and limits
+  ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param frontend.resourcesPreset Set Impress frontend container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if frontend.resources is set (frontend.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+  ##
+  resourcesPreset: "nano"
+  ## @param frontend.resources Set Impress frontend container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param frontend.podSecurityContext.enabled Enable Impress frontend pods' Security Context
+  ## @param frontend.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Impress frontend pods
+  ## @param frontend.podSecurityContext.sysctls Set kernel settings using the sysctl interface for Impress frontend pods
+  ## @param frontend.podSecurityContext.supplementalGroups Set filesystem extra groups for Impress frontend pods
+  ## @param frontend.podSecurityContext.fsGroup Set fsGroup in Impress frontend pods' Security Context
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param frontend.containerSecurityContext.enabled Enabled Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Impress frontend container
+  ## @param frontend.containerSecurityContext.runAsUser Set runAsUser in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.runAsGroup Set runAsGroup in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.runAsNonRoot Set runAsNonRoot in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.privileged Set privileged in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Impress frontend container' Security Context
+  ## @param frontend.containerSecurityContext.capabilities.drop List of capabilities to be dropped in Impress frontend container
+  ## @param frontend.containerSecurityContext.seccompProfile.type Set seccomp profile in Impress frontend container
+  ##
+  containerSecurityContext:
+    enabled: true
+    seLinuxOptions: {}
+    runAsUser: 1001
+    runAsGroup: 1001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    seccompProfile:
+      type: "RuntimeDefault"
+
+  ## @param frontend.existingConfigmap The name of an existing ConfigMap with your custom configuration for Impress frontend
+  ##
+  existingConfigmap: ""
+  ## @param frontend.command Override default Impress frontend container command (useful when using custom images)
+  ##
+  command: []
+  ## @param frontend.args Override default Impress frontend container args (useful when using custom images)
+  ##
+  args: []
+  ## @param frontend.automountServiceAccountToken Mount Service Account token in Impress frontend pods
+  ##
+  automountServiceAccountToken: false
+  ## @param frontend.hostAliases Impress frontend pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param frontend.daemonsetAnnotations Annotations for Impress frontend daemonset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  daemonsetAnnotations: {}
+  ## @param frontend.deploymentAnnotations Annotations for Impress frontend deployment
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  deploymentAnnotations: {}
+  ## @param frontend.statefulsetAnnotations Annotations for Impress frontend statefulset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  statefulsetAnnotations: {}
+  ## @param frontend.podLabels Extra labels for Impress frontend pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param frontend.podAnnotations Annotations for Impress frontend pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param frontend.podAffinityPreset Pod affinity preset. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param frontend.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node frontend.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param frontend.nodeAffinityPreset.type Node affinity preset type. Ignored if `frontend.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param frontend.nodeAffinityPreset.key Node label key to match. Ignored if `frontend.affinity` is set
+    ##
+    key: ""
+    ## @param frontend.nodeAffinityPreset.values Node label values to match. Ignored if `frontend.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param frontend.affinity Affinity for Impress frontend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `frontend.podAffinityPreset`, `frontend.podAntiAffinityPreset`, and `frontend.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param frontend.nodeSelector Node labels for Impress frontend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  ##
+  nodeSelector: {}
+  ## @param frontend.tolerations Tolerations for Impress frontend pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## ONLY FOR DEPLOYMENTS:
+  ## @param frontend.updateStrategy.type Impress frontend deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ## ONLY FOR STATEFULSETS:
+  ## @param frontend.updateStrategy.type Impress frontend statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## ONLY FOR DEPLOYMENTS:
+    ## Can be set to RollingUpdate or Recreate
+    ## ONLY FOR STATEFULSETS:
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## ONLY FOR STATEFULSETS:
+  ## @param frontend.podManagementPolicy Pod management policy for Impress frontend statefulset
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  ##
+  podManagementPolicy: OrderedReady
+  ## @param frontend.priorityClassName Impress frontend pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param frontend.topologySpreadConstraints Topology Spread Constraints for Impress frontend pod assignment spread across your cluster among failure-domains
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+  ##
+  topologySpreadConstraints: []
+  ## @param meet.runtimeClassName Name of the runtime class name for meet pods
+  ## ref: https://kubernetes.io/docs/concepts/containers/runtime-class/#usage
+  ##
+  runtimeClassName: ""
+  ## @param frontend.schedulerName Name of the k8s scheduler (other than default) for Impress frontend pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param frontend.terminationGracePeriodSeconds Seconds Impress frontend pods need to terminate gracefully
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+  ##
+  terminationGracePeriodSeconds: ""
+  ## @param frontend.lifecycleHooks for Impress frontend containers to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param frontend.extraEnvVars Array with extra environment variables to add to Impress frontend containers
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param frontend.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Impress frontend containers
+  ##
+  extraEnvVarsCM: ""
+  ## @param frontend.extraEnvVarsSecret Name of existing Secret containing extra env vars for Impress frontend containers
+  ##
+  extraEnvVarsSecret: ""
+  ## @param frontend.extraVolumes Optionally specify extra list of additional volumes for the Impress frontend pods
+  ##
+  extraVolumes: []
+  ## @param frontend.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Impress frontend containers
+  ##
+  extraVolumeMounts: []
+  ## @param frontend.sidecars Add additional sidecar containers to the Impress frontend pods
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: []
+  ## @param frontend.initContainers Add additional init containers to the Impress frontend pods
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: []
+  ## Pod Disruption Budget configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb
+  ## @param frontend.pdb.create Enable/disable a Pod Disruption Budget creation
+  ## @param frontend.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+  ## @param frontend.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `frontend.pdb.minAvailable` and `frontend.pdb.maxUnavailable` are empty.
+  ##
+  pdb:
+    create: true
+    minAvailable: ""
+    maxUnavailable: ""
+  ## Autoscaling configuration
+  ## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+  ##
+  autoscaling:
+    ## @param frontend.autoscaling.vpa.enabled Enable VPA for Impress frontend pods
+    ## @param frontend.autoscaling.vpa.annotations Annotations for VPA resource
+    ## @param frontend.autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+    ## @param frontend.autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
+    ## @param frontend.autoscaling.vpa.minAllowed VPA Min allowed resources for the pod
+    ##
+    vpa:
+      enabled: false
+      annotations: {}
+      controlledResources: []
+      maxAllowed: {}
+      minAllowed: {}
+      ## @param frontend.autoscaling.vpa.updatePolicy.updateMode Autoscaling update policy
+      ## Specifies whether recommended updates are applied when a Pod is started and whether recommended updates are applied during the life of a Pod
+      ## Possible values are "Off", "Initial", "Recreate", and "Auto".
+      ##
+      updatePolicy:
+        updateMode: Auto
+    ## @param frontend.autoscaling.hpa.enabled Enable HPA for Impress frontend pods
+    ## @param frontend.autoscaling.hpa.minReplicas Minimum number of replicas
+    ## @param frontend.autoscaling.hpa.maxReplicas Maximum number of replicas
+    ## @param frontend.autoscaling.hpa.targetCPU Target CPU utilization percentage
+    ## @param frontend.autoscaling.hpa.targetMemory Target Memory utilization percentage
+    ##
+    hpa:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: ""
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param frontend.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param frontend.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param frontend.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: false
+    ## @param frontend.networkPolicy.addExternalClientAccess Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    addExternalClientAccess: false
+    ## @param frontend.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param frontend.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param frontend.networkPolicy.ingressPodMatchLabels [object] Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.
+    ## e.g:
+    ## ingressPodMatchLabels:
+    ##   my-client: "true"
+    #
+    ingressPodMatchLabels: {}
+    ## @param frontend.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ## @param frontend.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+  ## Docs frontend service parameters
+  service:
+    ## @param frontend.service.type Impress frontend service type
+    ##
+    type: ClusterIP
+    ## @param frontend.service.ports.http Impress frontend service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param frontend.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param frontend.service.clusterIP Impress frontend service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param frontend.service.loadBalancerIP Impress frontend service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param frontend.service.loadBalancerSourceRanges Impress frontend service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param frontend.service.externalTrafficPolicy Impress frontend service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param frontend.service.annotations Additional custom annotations for Impress frontend service
+    ##
+    annotations: {}
+    ## @param frontend.service.extraPorts Extra ports to expose in Impress frontend service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+    ## @param frontend.service.sessionAffinity Control where client requests go, to the same pod or round-robin
+    ## Values: ClientIP or None
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+    ##
+    sessionAffinity: None
+    ## @param frontend.service.sessionAffinityConfig Additional settings for the sessionAffinity
+    ## sessionAffinityConfig:
+    ##   clientIP:
+    ##     timeoutSeconds: 300
+    ##
+    sessionAffinityConfig: {}
+  configuration:
+    ## @param frontend.configuration.apiOrigin Backend domain - it uses the current domain if not initialized
+    apiOrigin: ""
+    ## @param frontend.configuration.serviceWorkerDeactivated To not install the service worker
+    serviceWorkerDeactivated: false
+    ## @param frontend.configuration.publishAsMit Removes packages whose licences are incompatible with the MIT licence (xl-docx-exporter: GPL, xl-pdf-exporter: GPL, xl-multi-column: GPL)
+    publishAsMit: true
+
+## @section Docs y-provider Parameters
+##
+
+yProvider:
+  ## Impress y-provider image
+  ## ref: https://hub.docker.com/r/lasuite/impress-y-provider
+  ## @param yProvider.image.registry Impress y-provider image registry
+  ## @param yProvider.image.repository Impress y-provider image repository
+  ## @skip yProvider.image.tag Impress y-provider image tag (immutable tags are recommended)
+  ## @param yProvider.image.digest Impress y-provider image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+  ## @param yProvider.image.pullPolicy Impress y-provider image pull policy
+  ## @param yProvider.image.pullSecrets Impress y-provider image pull secrets
+  ## @param yProvider.image.debug Enable Impress y-provider image debug mode
+  ##
+  image:
+    registry: docker.io
+    repository: lasuite/impress-y-provider
+    tag: v3.7.0
+    digest: ""
+    ## Specify a imagePullPolicy
+    ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+    ##
+    pullPolicy: Always
+    ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    debug: false
+  ## @param yProvider.replicaCount Number of Impress y-provider replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param yProvider.containerPorts.http Impress y-provider HTTP container port
+  ##
+  containerPorts:
+    http: 4444
+  ## @param yProvider.extraContainerPorts Optionally specify extra list of additional ports for Impress y-provider containers
+  ## e.g:
+  ## extraContainerPorts:
+  ##   - name: myservice
+  ##     containerPort: 9090
+  ##
+  extraContainerPorts: []
+  ## Configure extra options for Impress y-provider containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param yProvider.livenessProbe.enabled Enable livenessProbe on Impress y-provider containers
+  ## @param yProvider.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param yProvider.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param yProvider.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param yProvider.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param yProvider.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param yProvider.readinessProbe.enabled Enable readinessProbe on Impress y-provider containers
+  ## @param yProvider.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param yProvider.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param yProvider.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param yProvider.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param yProvider.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param yProvider.startupProbe.enabled Enable startupProbe on Impress y-provider containers
+  ## @param yProvider.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param yProvider.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param yProvider.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param yProvider.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param yProvider.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param yProvider.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param yProvider.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param yProvider.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## Impress y-provider resource requests and limits
+  ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## @param yProvider.resourcesPreset Set Impress y-provider container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if yProvider.resources is set (yProvider.resources is recommended for production).
+  ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+  ##
+  resourcesPreset: "nano"
+  ## @param yProvider.resources Set Impress y-provider container requests and limits for different resources like CPU or memory (essential for production workloads)
+  ## Example:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param yProvider.podSecurityContext.enabled Enable Impress y-provider pods' Security Context
+  ## @param yProvider.podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Impress y-provider pods
+  ## @param yProvider.podSecurityContext.sysctls Set kernel settings using the sysctl interface for Impress y-provider pods
+  ## @param yProvider.podSecurityContext.supplementalGroups Set filesystem extra groups for Impress y-provider pods
+  ## @param yProvider.podSecurityContext.fsGroup Set fsGroup in Impress y-provider pods' Security Context
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroupChangePolicy: Always
+    sysctls: []
+    supplementalGroups: []
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param yProvider.containerSecurityContext.enabled Enabled Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Impress y-provider container
+  ## @param yProvider.containerSecurityContext.runAsUser Set runAsUser in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.runAsGroup Set runAsGroup in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.runAsNonRoot Set runAsNonRoot in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.privileged Set privileged in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Impress y-provider container' Security Context
+  ## @param yProvider.containerSecurityContext.capabilities.drop List of capabilities to be dropped in Impress y-provider container
+  ## @param yProvider.containerSecurityContext.seccompProfile.type Set seccomp profile in Impress y-provider container
+  ##
+  containerSecurityContext:
+    enabled: true
+    seLinuxOptions: {}
+    runAsUser: 1001
+    runAsGroup: 1001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    privileged: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+    seccompProfile:
+      type: "RuntimeDefault"
+  ## @param yProvider.existingConfigmap The name of an existing ConfigMap with your custom configuration for Impress y-provider
+  ##
+  existingConfigmap: ""
+  ## @param yProvider.command Override default Impress y-provider container command (useful when using custom images)
+  ##
+  command: []
+  ## @param yProvider.args Override default Impress y-provider container args (useful when using custom images)
+  ##
+  args: []
+  ## @param yProvider.automountServiceAccountToken Mount Service Account token in Impress y-provider pods
+  ##
+  automountServiceAccountToken: false
+  ## @param yProvider.hostAliases Impress y-provider pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param yProvider.daemonsetAnnotations Annotations for Impress y-provider daemonset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  daemonsetAnnotations: {}
+  ## @param yProvider.deploymentAnnotations Annotations for Impress y-provider deployment
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  deploymentAnnotations: {}
+  ## @param yProvider.statefulsetAnnotations Annotations for Impress y-provider statefulset
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  statefulsetAnnotations: {}
+  ## @param yProvider.podLabels Extra labels for Impress y-provider pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param yProvider.podAnnotations Annotations for Impress y-provider pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param yProvider.podAffinityPreset Pod affinity preset. Ignored if `yProvider.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param yProvider.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `yProvider.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node yProvider.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param yProvider.nodeAffinityPreset.type Node affinity preset type. Ignored if `yProvider.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param yProvider.nodeAffinityPreset.key Node label key to match. Ignored if `yProvider.affinity` is set
+    ##
+    key: ""
+    ## @param yProvider.nodeAffinityPreset.values Node label values to match. Ignored if `yProvider.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param yProvider.affinity Affinity for Impress y-provider pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `yProvider.podAffinityPreset`, `yProvider.podAntiAffinityPreset`, and `yProvider.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param yProvider.nodeSelector Node labels for Impress y-provider pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  ##
+  nodeSelector: {}
+  ## @param yProvider.tolerations Tolerations for Impress y-provider pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## ONLY FOR DEPLOYMENTS:
+  ## @param yProvider.updateStrategy.type Impress y-provider deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ## ONLY FOR STATEFULSETS:
+  ## @param yProvider.updateStrategy.type Impress y-provider statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## ONLY FOR DEPLOYMENTS:
+    ## Can be set to RollingUpdate or Recreate
+    ## ONLY FOR STATEFULSETS:
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## ONLY FOR STATEFULSETS:
+  ## @param yProvider.podManagementPolicy Pod management policy for Impress y-provider statefulset
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  ##
+  podManagementPolicy: OrderedReady
+  ## @param yProvider.priorityClassName Impress y-provider pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param yProvider.topologySpreadConstraints Topology Spread Constraints for Impress y-provider pod assignment spread across your cluster among failure-domains
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+  ##
+  topologySpreadConstraints: []
+  ## @param meet.runtimeClassName Name of the runtime class name for meet pods
+  ## ref: https://kubernetes.io/docs/concepts/containers/runtime-class/#usage
+  ##
+  runtimeClassName: ""
+  ## @param yProvider.schedulerName Name of the k8s scheduler (other than default) for Impress y-provider pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param yProvider.terminationGracePeriodSeconds Seconds Impress y-provider pods need to terminate gracefully
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+  ##
+  terminationGracePeriodSeconds: ""
+  ## @param yProvider.lifecycleHooks for Impress y-provider containers to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param yProvider.extraEnvVars Array with extra environment variables to add to Impress y-provider containers
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param yProvider.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Impress y-provider containers
+  ##
+  extraEnvVarsCM: ""
+  ## @param yProvider.extraEnvVarsSecret Name of existing Secret containing extra env vars for Impress y-provider containers
+  ##
+  extraEnvVarsSecret: ""
+  ## @param yProvider.extraVolumes Optionally specify extra list of additional volumes for the Impress y-provider pods
+  ##
+  extraVolumes: []
+  ## @param yProvider.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Impress y-provider containers
+  ##
+  extraVolumeMounts: []
+  ## @param yProvider.sidecars Add additional sidecar containers to the Impress y-provider pods
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: []
+  ## @param yProvider.initContainers Add additional init containers to the Impress y-provider pods
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: []
+  ## Pod Disruption Budget configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb
+  ## @param yProvider.pdb.create Enable/disable a Pod Disruption Budget creation
+  ## @param yProvider.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+  ## @param yProvider.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `yProvider.pdb.minAvailable` and `yProvider.pdb.maxUnavailable` are empty.
+  ##
+  pdb:
+    create: true
+    minAvailable: ""
+    maxUnavailable: ""
+  ## Autoscaling configuration
+  ## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+  ##
+  autoscaling:
+    ## @param yProvider.autoscaling.vpa.enabled Enable VPA for Impress y-provider pods
+    ## @param yProvider.autoscaling.vpa.annotations Annotations for VPA resource
+    ## @param yProvider.autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+    ## @param yProvider.autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
+    ## @param yProvider.autoscaling.vpa.minAllowed VPA Min allowed resources for the pod
+    ##
+    vpa:
+      enabled: false
+      annotations: {}
+      controlledResources: []
+      maxAllowed: {}
+      minAllowed: {}
+      ## @param yProvider.autoscaling.vpa.updatePolicy.updateMode Autoscaling update policy
+      ## Specifies whether recommended updates are applied when a Pod is started and whether recommended updates are applied during the life of a Pod
+      ## Possible values are "Off", "Initial", "Recreate", and "Auto".
+      ##
+      updatePolicy:
+        updateMode: Auto
+    ## @param yProvider.autoscaling.hpa.enabled Enable HPA for Impress y-provider pods
+    ## @param yProvider.autoscaling.hpa.minReplicas Minimum number of replicas
+    ## @param yProvider.autoscaling.hpa.maxReplicas Maximum number of replicas
+    ## @param yProvider.autoscaling.hpa.targetCPU Target CPU utilization percentage
+    ## @param yProvider.autoscaling.hpa.targetMemory Target Memory utilization percentage
+    ##
+    hpa:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 75
+      targetMemory: ""
+  ## Network Policies
+  ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+  ##
+  networkPolicy:
+    ## @param yProvider.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
+    ##
+    enabled: true
+    ## @param yProvider.networkPolicy.allowExternal Don't require server label for connections
+    ## The Policy model to apply. When set to false, only pods with the correct
+    ## server label will have network access to the ports server is listening
+    ## on. When true, server will accept connections from any source
+    ## (with the correct destination port).
+    ##
+    allowExternal: true
+    ## @param yProvider.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
+    ##
+    allowExternalEgress: false
+    ## @param yProvider.networkPolicy.addExternalClientAccess Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    addExternalClientAccess: false
+    ## @param yProvider.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
+    ## e.g:
+    ## extraIngress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     from:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    extraIngress: []
+    ## @param yProvider.networkPolicy.extraEgress [array] Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+    ## e.g:
+    ## extraEgress:
+    ##   - ports:
+    ##       - port: 1234
+    ##     to:
+    ##       - podSelector:
+    ##           - matchLabels:
+    ##               - role: frontend
+    ##       - podSelector:
+    ##           - matchExpressions:
+    ##               - key: role
+    ##                 operator: In
+    ##                 values:
+    ##                   - frontend
+    ##
+    extraEgress: []
+    ## @param yProvider.networkPolicy.ingressPodMatchLabels [object] Labels to match to allow traffic from other pods. Ignored if `networkPolicy.allowExternal` is true.
+    ## e.g:
+    ## ingressPodMatchLabels:
+    ##   my-client: "true"
+    #
+    ingressPodMatchLabels: {}
+    ## @param yProvider.networkPolicy.ingressNSMatchLabels [object] Labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ## @param yProvider.networkPolicy.ingressNSPodMatchLabels [object] Pod labels to match to allow traffic from other namespaces. Ignored if `networkPolicy.allowExternal` is true.
+    ##
+    ingressNSMatchLabels: {}
+    ingressNSPodMatchLabels: {}
+  ## Docs y-provider service parameters
+  service:
+    ## @param yProvider.service.type Impress y-provider service type
+    ##
+    type: ClusterIP
+    ## @param yProvider.service.ports.http Impress y-provider service HTTP port
+    ##
+    ports:
+      http: 443
+    ## Node ports to expose
+    ## @param yProvider.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param yProvider.service.clusterIP Impress y-provider service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param yProvider.service.loadBalancerIP Impress y-provider service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param yProvider.service.loadBalancerSourceRanges Impress y-provider service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param yProvider.service.externalTrafficPolicy Impress y-provider service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param yProvider.service.annotations Additional custom annotations for Impress y-provider service
+    ##
+    annotations: {}
+    ## @param yProvider.service.extraPorts Extra ports to expose in Impress y-provider service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+    ## @param yProvider.service.sessionAffinity Control where client requests go, to the same pod or round-robin
+    ## Values: ClientIP or None
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+    ##
+    sessionAffinity: None
+    ## @param yProvider.service.sessionAffinityConfig Additional settings for the sessionAffinity
+    ## sessionAffinityConfig:
+    ##   clientIP:
+    ##     timeoutSeconds: 300
+    ##
+    sessionAffinityConfig: {}
+  configuration:
+    ## @param yProvider.configuration.api.key Y provider API key
+    api:
+      key: my-secret
+    ## @param yProvider.configuration.caches.keyPrefix The prefix used to every cache keys.
+    ## @param yProvider.configuration.caches.defaultTimeout Cache default timeout
+    caches:
+      keyPrefix: "docs"
+      defaultTimeout: 30
+    ## @param yProvider.configuration.conversionApi.contentField Conversion api content field
+    ## @param yProvider.configuration.conversionApi.endpoint Conversion API endpoint
+    ## @param yProvider.configuration.conversionApi.secure Require secure conversion api
+    ## @param yProvider.configuration.conversionApi.timeout Conversion api timeout
+    conversionApi:
+      contentField: content
+      endpoint: convert
+      secure: false
+      timeout: 30
+
+## @section Traffic Exposure Parameters
+##
+
+## Docs ingress parameters
+## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingress:
+  ## @param ingress.enabled Enable ingress record generation for Docs
+  ##
+  enabled: false
+  ## @param ingress.frontendPathType Ingress path type
+  ##
+  frontendPathType: Prefix
+  ## @param ingress.backendPathType Ingress path type
+  ##
+  backendPathType: Prefix
+  ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingress.hostname Default host for the ingress record
+  ##
+  hostname: docs.local
+  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingress.frontendPath Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  frontendPath: /
+  ## @param ingress.backendPath Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  backendPath: /api
+  ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations: {}
+  ## @param ingress.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
+  ## You can:
+  ##   - Use the `ingress.secrets` parameter to create this TLS secret
+  ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingress.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  ##
+  selfSigned: false
+  ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: docs.local
+  ##     frontendPath: /
+  ##   - name: docs.local
+  ##     backendPath: /
+  ##
+  extraHosts: []
+  ## @param ingress.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingress.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - docs.local
+  ##   secretName: docs.local-tls
+  ##
+  extraTls: []
+  ## @param ingress.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: docs.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingress.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []
+## Docs admin ingress parameters
+## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingressAdmin:
+  ## @param ingressAdmin.enabled Enable ingress record generation for Docs admin
+  ##
+  enabled: false
+  ## @param ingressAdmin.adminPathType Ingress path type for admin path
+  ##
+  adminPathType: Prefix
+  ## @param ingressAdmin.staticPathType Ingress path type for static path
+  ##
+  staticPathType: Prefix
+  ## @param ingressAdmin.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingressAdmin.hostname Default host for the ingress record
+  ##
+  hostname: docs.local
+  ## @param ingressAdmin.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingressAdmin.adminPath Default admin path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  adminPath: /admin
+  ## @param ingressAdmin.staticPath Default static path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  staticPath: /static
+  ## @param ingressAdmin.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations: {}
+  ## @param ingressAdmin.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
+  ## You can:
+  ##   - Use the `ingress.secrets` parameter to create this TLS secret
+  ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingressAdmin.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  ##
+  selfSigned: false
+  ## @param ingressAdmin.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: docs.local
+  ##     path: /
+  ##
+  extraHosts: []
+  ## @param ingressAdmin.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingressAdmin.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - docs.local
+  ##   secretName: docs.local-tls
+  ##
+  extraTls: []
+  ## @param ingressAdmin.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: docs.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingressAdmin.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []
+## Docs collaboration websockets ingress parameters
+## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingressCollaborationWS:
+  ## @param ingressCollaborationWS.enabled Enable ingress record generation for Docs collaboration websockets
+  ##
+  enabled: false
+  ## @param ingressCollaborationWS.pathType Ingress path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingressCollaborationWS.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingressCollaborationWS.hostname Default host for the ingress record
+  ##
+  hostname: docs.local
+  ## @param ingressCollaborationWS.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingressCollaborationWS.path Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  path: /collaboration/ws/
+  ## @extra ingressCollaborationWS.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## @skip ingressCollaborationWS.annotations.nginx
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingressCollaborationWS.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations:
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
+  ## @param ingressCollaborationWS.tls Enable TLS configuration for the host defined at `ingressCollaborationWS.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingressCollaborationWS.hostname }}`
+  ## You can:
+  ##   - Use the `ingressCollaborationWS.secrets` parameter to create this TLS secret
+  ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  ##   - Rely on Helm to create self-signed certificates by setting `ingressCollaborationWS.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingressCollaborationWS.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  ##
+  selfSigned: false
+  ## @param ingressCollaborationWS.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: docs.local
+  ##     path: /
+  ##
+  extraHosts: []
+  ## @param ingressCollaborationWS.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingressCollaborationWS.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - docs.local
+  ##   secretName: docs.local-tls
+  ##
+  extraTls: []
+  ## @param ingressCollaborationWS.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: docs.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingressCollaborationWS.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []
+## Docs collaboration API ingress parameters
+## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingressCollaborationApi:
+  ## @param ingressCollaborationApi.enabled Enable ingress record generation for Docs collaboration API
+  ##
+  enabled: false
+  ## @param ingressCollaborationApi.pathType Ingress path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingressCollaborationApi.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingressCollaborationApi.hostname Default host for the ingress record
+  ##
+  hostname: docs.local
+  ## @param ingressCollaborationApi.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingressCollaborationApi.path Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  path: /collaboration/api/
+  ## @extra ingressCollaborationApi.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## @skip ingressCollaborationApi.annotations.nginx
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-hash-by: $arg_room
+  ## @param ingressCollaborationApi.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
+  ## You can:
+  ##   - Use the `ingress.secrets` parameter to create this TLS secret
+  ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingressCollaborationApi.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  ##
+  selfSigned: false
+  ## @param ingressCollaborationApi.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: docs.local
+  ##     path: /
+  ##
+  extraHosts: []
+  ## @param ingressCollaborationApi.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingressCollaborationApi.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - docs.local
+  ##   secretName: docs.local-tls
+  ##
+  extraTls: []
+  ## @param ingressCollaborationApi.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: docs.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingressCollaborationApi.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []
+## Docs media ingress parameters
+## ref: http://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingressMedia:
+  ## @param ingressMedia.enabled Enable ingress record generation for Docs media
+  ##
+  enabled: false
+  ## @param ingressMedia.pathType Ingress path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingressMedia.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingressMedia.hostname Default host for the ingress record
+  ##
+  hostname: docs.local
+  ## @param ingressMedia.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingressMedia.path Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  path: /media/(.*)
+  ## @param ingressMedia.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   nginx.ingress.kubernetes.io/auth-url: https://docs.127.0.0.1.nip.io/api/v1.0/documents/media-auth/
+  ##   nginx.ingress.kubernetes.io/auth-response-headers: "Authorization, X-Amz-Date, X-Amz-Content-SHA256"
+  ##   nginx.ingress.kubernetes.io/upstream-vhost: dev-backend-minio.impress.svc.cluster.local:9000
+  ##   nginx.ingress.kubernetes.io/configuration-snippet: |
+  ##     add_header Content-Security-Policy "default-src 'none'" always;
+  ##
+  annotations: {}
+  ## @param ingressMedia.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
+  ## You can:
+  ##   - Use the `ingress.secrets` parameter to create this TLS secret
+  ##   - Rely on cert-manager to create it by setting the corresponding annotations
+  ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingressMedia.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  ##
+  selfSigned: false
+  ## @param ingressMedia.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: docs.local
+  ##     path: /
+  ##
+  extraHosts: []
+  ## @param ingressMedia.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingressMedia.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - docs.local
+  ##   secretName: docs.local-tls
+  ##
+  extraTls: []
+  ## @param ingressMedia.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: docs.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingressMedia.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []
+
+## @section Default init containers Parameters
+
+defaultInitContainers:
+  ## 'volume-permissions' init container
+  ## Changes the owner and group of the persistent volume mount(s) point(s) to runAsUser:fsGroup values
+  ##   based on the *podSecurityContext/*containerSecurityContext parameters
+  ##
+  volumePermissions:
+    ## @param defaultInitContainers.volumePermissions.enabled Enable init container that adapts the owner/group of the PV mount(s) point(s)
+    ##
+    enabled: false
+    ## OS Shell + Utility image
+    ## ref: https://hub.docker.com/r/bitnami/os-shell
+    ## @param defaultInitContainers.volumePermissions.image.registry [default: REGISTRY_NAME] "volume-permissions" init-containers' image registry
+    ## @param defaultInitContainers.volumePermissions.image.repository [default: REPOSITORY_NAME/os-shell] "volume-permissions" init-containers' image repository
+    ## @skip defaultInitContainers.volumePermissions.image.tag "volume-permissions" init-containers' image tag (immutable tags are recommended)
+    ## @param defaultInitContainers.volumePermissions.image.digest "volume-permissions" init-containers' image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+    ## @param defaultInitContainers.volumePermissions.image.pullPolicy "volume-permissions" init-containers' image pull policy
+    ## @param defaultInitContainers.volumePermissions.image.pullSecrets "volume-permissions" init-containers' image pull secrets
+    ##
+    image:
+      registry: docker.io
+      repository: bitnami/os-shell
+      tag: 12-debian-12-r46
+      digest: ""
+      pullPolicy: Always
+      ## Optionally specify an array of imagePullSecrets.
+      ## Secrets must be manually created in the namespace.
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      ## Example:
+      ## pullSecrets:
+      ##   - myRegistryKeySecretName
+      ##
+      pullSecrets: []
+    ## Configure "volume-permissions" init-container Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.enabled Enabled "volume-permissions" init-containers' Security Context
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in "volume-permissions" init-containers
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.runAsUser Set runAsUser in "volume-permissions" init-containers' Security Context
+    ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
+    ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
+    ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.privileged Set privileged in "volume-permissions" init-containers' Security Context
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in "volume-permissions" init-containers' Security Context
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.capabilities.add List of capabilities to be added in "volume-permissions" init-containers
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.capabilities.drop List of capabilities to be dropped in "volume-permissions" init-containers
+    ## @param defaultInitContainers.volumePermissions.containerSecurityContext.seccompProfile.type Set seccomp profile in "volume-permissions" init-containers
+    ##
+    containerSecurityContext:
+      enabled: true
+      seLinuxOptions: {}
+      runAsUser: 0
+      privileged: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        add: []
+        drop: ["ALL"]
+      seccompProfile:
+        type: "RuntimeDefault"
+    ## "volume-permissions" init container resource requests and limits
+    ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+    ## @param defaultInitContainers.volumePermissions.resourcesPreset Set "volume-permissions" init container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if defaultInitContainers.volumePermissions.resources is set (defaultInitContainers.volumePermissions.resources is recommended for production).
+    ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+    ##
+    resourcesPreset: "nano"
+    ## @param defaultInitContainers.volumePermissions.resources Set "volume-permissions" init container requests and limits for different resources like CPU or memory (essential for production workloads)
+    ## E.g:
+    ## resources:
+    ##   requests:
+    ##     cpu: 2
+    ##     memory: 512Mi
+    ##   limits:
+    ##     cpu: 3
+    ##     memory: 1024Mi
+    ##
+    resources: {}
+
+## @section Other Parameters
+##
+
+## ServiceAccount configuration
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+  ## @param serviceAccount.annotations Additional Service Account annotations (evaluated as a template)
+  ##
+  annotations: {}
+  ## @param serviceAccount.automountServiceAccountToken Automount service account token for the server service account
+  ##
+  automountServiceAccountToken: true
+
+## Prometheus metrics
+##
+metrics:
+  ## @param metrics.enabled Enable the export of Prometheus metrics
+  ##
+  enabled: false
+  ## Prometheus Operator ServiceMonitor configuration
+  ##
+  serviceMonitor:
+    ## @param metrics.serviceMonitor.enabled if `true`, creates a Prometheus Operator ServiceMonitor (also requires `metrics.enabled` to be `true`)
+    ##
+    enabled: false
+    ## @param metrics.serviceMonitor.namespace Namespace in which Prometheus is running
+    ##
+    namespace: ""
+    ## @param metrics.serviceMonitor.annotations Additional custom annotations for the ServiceMonitor
+    ##
+    annotations: {}
+    ## @param metrics.serviceMonitor.labels Extra labels for the ServiceMonitor
+    ##
+    labels: {}
+    ## @param metrics.serviceMonitor.jobLabel The name of the label on the target service to use as the job name in Prometheus
+    ##
+    jobLabel: ""
+    ## @param metrics.serviceMonitor.honorLabels honorLabels chooses the metric's labels on collisions with target labels
+    ##
+    honorLabels: false
+    ## @param metrics.serviceMonitor.tlsConfig [object] TLS configuration used for scrape endpoints used by Prometheus
+    ##
+    tlsConfig: {}
+    ## @param metrics.serviceMonitor.interval Interval at which metrics should be scraped.
+    ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#endpoint
+    ## e.g:
+    ## interval: 10s
+    ##
+    interval: ""
+    ## @param metrics.serviceMonitor.scrapeTimeout Timeout after which the scrape is ended
+    ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#endpoint
+    ## e.g:
+    ## scrapeTimeout: 10s
+    ##
+    scrapeTimeout: ""
+    ## @param metrics.serviceMonitor.metricRelabelings Specify additional relabeling of metrics
+    ##
+    metricRelabelings: []
+    ## @param metrics.serviceMonitor.relabelings Specify general relabeling
+    ##
+    relabelings: []
+    ## @param metrics.serviceMonitor.selector Prometheus instance selector labels
+    ## ref: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
+    ## selector:
+    ##   prometheus: my-prometheus
+    ##
+    selector: {}
+
+## @section Docs configuration paramaters
+
+## @param collaboration.api.secret Secret for the collaboration API
+## @param collaboration.loggingEnabled Enable logging
+## @param collaboration.webSockets.notConnected.readOnly Users not connected to the collaboration server cannot edit
+## @param collaboration.webSockets.notConnected.cacheTimeout Cache used to store current editor session key when only users without websocket are editing a document
+collaboration:
+  api:
+    # Collaboration api secret
+    secret: my-secret
+  loggingEnabled: true
+  webSockets:
+    notConnected:
+      readOnly: false
+      cacheTimeout: 120
+
+auth:
+  oidc:
+    ## @param auth.oidc.allowDuplicateEmails Allow duplicate emails
+    ## @param auth.oidc.authRequestExtraParams OIDC extra auth parameters
+    ## @param auth.oidc.createUser Create used on OIDC
+    ## @param auth.oidc.fallbackToEmailForIdentification Fallback to email for identification
+    allowDuplicateEmails: false
+    authRequestExtraParams: "{}"
+    createUser: false
+    fallbackToEmailForIdentification: true
+    ## @param auth.oidc.openIdProvider.jwksEndpoint JWKS endpoint for OIDC
+    ## @param auth.oidc.openIdProvider.authorizationEndpoint Authorization endpoint for OIDC
+    ## @param auth.oidc.openIdProvider.tokenEndpoint Token endpoint for OIDC
+    ## @param auth.oidc.openIdProvider.userEndpoint User endpoint for OIDC
+    ## @param auth.oidc.openIdProvider.logoutEndpoint Logout endpoint for OIDC
+    openIdProvider:
+      jwksEndpoint: https://docs-keycloak.127.0.0.1.nip.io/realms/docs/protocol/openid-connect/certs
+      authorizationEndpoint: https://docs-keycloak.127.0.0.1.nip.io/realms/docs/protocol/openid-connect/auth
+      tokenEndpoint: https://docs-keycloak.127.0.0.1.nip.io/realms/docs/protocol/openid-connect/token
+      userEndpoint: https://docs-keycloak.127.0.0.1.nip.io/realms/docs/protocol/openid-connect/userinfo
+      logoutEndpoint: https://docs-keycloak.127.0.0.1.nip.io/realms/docs/protocol/openid-connect/logout
+    ## @param auth.oidc.redirect.allowedHosts Allowed hosts for OIDC redirect url
+    ## @param auth.oidc.redirect.requireHttps Require https for OIDC redirect url
+    redirect:
+      allowedHosts: []
+      requireHttps: false
+    ## @param auth.oidc.relyingParty.clientId Client id used for OIDC
+    ## @param auth.oidc.relyingParty.clientSecret Client secret used for OIDC
+    ## @param auth.oidc.relyingParty.scopes Scopes requested for OIDC
+    ## @param auth.oidc.relyingParty.signAlgo Verification algorithm used OIDC tokens
+    relyingParty:
+      clientId: docs
+      clientSecret: ThisIsAnExampleKeyForDevPurposeOnly
+      scopes: "openid email"
+      signAlgo: RS256
+    ## @param auth.oidc.storeIdToken Store OIDC token
+    ## @param auth.oidc.useNonce Use nonce for OIDC
+    storeIdToken: true
+    useNonce: true
+    ## @param auth.oidc.userInfo.fullNameField OIDC token claims to create full name
+    ## @param auth.oidc.userInfo.shortNameField OIDC token claims to create shortname
+    userInfo:
+      fullNameField: "given_name,usual_name"
+      shortNameField: "given_name"
+    ## @param auth.oidc.userEssentialClaims Essential claims in OIDC token
+    userEssentialClaims: "[]"
+  ## @param auth.api.usersList.limit Limit on API users
+  ## @param auth.api.usersList.throttleRateBurst Throttle rate for api on burst
+  ## @param auth.api.usersList.throttleRateSustained Throttle rate for api
+  api:
+    usersList:
+      limit: 5
+      throttleRateBurst: "30/minute"
+      throttleRateSustained: "180/hour"
+
+
+## @param database.engine Engine to use for database connections
+## @param database.host Host of the database
+## @param database.port Port of the database
+## @param database.name Name of the database
+## @param database.user User to authenticate with
+## @param database.password Password to authenticate with
+database:
+  engine: django.db.backends.postgresql_psycopg2
+  host: localhost
+  port: 5432
+  name: impress
+  user: dinum
+  password: pass
+
+## @param redis.url Cache url, also used as Celery broker.
+redis:
+  url: redis://user:pass@redis-master:6379/1
+
+## @param awsS3.endpointUrl S3 endpoint
+## @param awsS3.accessKeyId Access id for s3 endpoint
+## @param awsS3.secretAccessKey Access key for s3 endpoint
+## @param awsS3.storageBucketName Bucket name for s3 endpoint
+awsS3:
+  endpointUrl: http://dev-backend-minio.docs.svc.cluster.local:9000
+  accessKeyId: dinum
+  secretAccessKey: password
+  storageBucketName: docs-media-storage
