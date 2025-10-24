@@ -14,7 +14,7 @@ image:
   tag: {{ .Values.container.openproject.tag | quote }}
 
 openproject:
-  https: {{ .Values.openproject.ingress.tls | default false }}
+  https: {{ .Values.openproject.ingress.tls | default true }}
   admin_user:
     password: {{ .Values.openproject.admin_user.password | quote }}
     password_reset: {{ .Values.openproject.admin_user.password_reset | default true }}
