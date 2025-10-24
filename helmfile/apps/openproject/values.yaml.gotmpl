@@ -49,6 +49,12 @@ postgresql:
     username: "openproject"
     password: {{ .Values.secret.openproject.postgresPassword | quote }}
     database: "openproject"
+  connection:
+    host: {{ .Values.database.openproject.host }}
+    port: {{ .Values.database.openproject.port }}
+    database: {{ .Values.database.openproject.name }}
+    username: {{ .Values.database.openproject.user }}
+    password: {{ .Values.database.openproject.password }}
 
 # Cache configuration
 # Use memcached for demo, Redis for production
@@ -71,6 +77,21 @@ oidc:
     userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
     jwks_uri: "{{ .Values.authentication.oidc.jwks_endpoint }}"
     scope: ["openid", "profile", "email"]
+
+# Init container resources
+appInit:
+  resources:
+    limits:
+      memory: {{ .Values.openproject.appInit.resources.limits.memory | default "2Gi" | quote }}
+    requests:
+      memory: {{ .Values.openproject.appInit.resources.requests.memory | default "1Gi" | quote }}
+
+dbInit:
+  resources:
+    limits:
+      memory: {{ .Values.openproject.dbInit.resources.limits.memory | default "1Gi" | quote }}
+    requests:
+      memory: {{ .Values.openproject.dbInit.resources.requests.memory | default "512Mi" | quote }}
 
 # Persistence configuration
 persistence:
