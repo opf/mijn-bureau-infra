@@ -69,46 +69,8 @@ oidc:
     authorization_endpoint: "{{ .Values.authentication.oidc.authorization_endpoint }}"
     token_endpoint: "{{ .Values.authentication.oidc.token_endpoint }}"
     userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
-    jwks_uri: "{{ .Values.authentication.oidc.issuer }}/protocol/openid-connect/certs"
+    jwks_uri: "{{ .Values.authentication.oidc.jwks_endpoint }}"
     scope: ["openid", "profile", "email"]
-
-# SMTP configuration
-smtp:
-  enabled: {{ and (ne .Environment.Name "demo") (.Values.smtp.enabled | default false) }}
-  host: {{ .Values.smtp.host | quote }}
-  port: {{ .Values.smtp.port }}
-  protocol: {{ .Values.smtp.protocol | quote }}
-  from_address: {{ .Values.smtp.fromAddress | quote }}
-  tls:
-    enabled: {{ .Values.smtp.tls.enabled }}
-    force: {{ .Values.smtp.tls.force }}
-    require_transport_security: {{ .Values.smtp.tls.requireTransportSecurity }}
-  username: {{ .Values.smtp.username | quote }}
-  password: {{ .Values.smtp.password | quote }}
-
-# Resource configuration
-resources:
-  limits:
-    cpu: "4"
-    memory: "4Gi"
-  requests:
-    cpu: "1"
-    memory: "2Gi"
-
-# Init container resources
-appInit:
-  resources:
-    limits:
-      memory: "2Gi"
-    requests:
-      memory: "1Gi"
-
-dbInit:
-  resources:
-    limits:
-      memory: "1Gi"
-    requests:
-      memory: "512Mi"
 
 # Persistence configuration
 persistence:
