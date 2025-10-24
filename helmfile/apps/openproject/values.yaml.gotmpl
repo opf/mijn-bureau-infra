@@ -58,14 +58,6 @@ memcached:
     repository: bitnami/memcached
     tag: "latest"
 
-# Redis configuration for production
-redis:
-  bundled: {{ eq .Environment.Name "demo" }}
-  image:
-    registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
-    repository: {{ .Values.container.redis.repository | quote }}
-    tag: {{ .Values.container.redis.tag | quote }}
-
 # OIDC configuration
 oidc:
   enabled: {{ .Values.authentication.oidc | default false }}
