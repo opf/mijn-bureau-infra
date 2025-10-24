@@ -44,6 +44,7 @@ MijnBureau already offers a rich set of features, with a strong focus on collabo
 - Team chat
 - Self-hosted AI language models
 - Integrated identity management
+- Project management
 
 We are actively expanding the suite and plan to add even more capabilities, including:
 
@@ -54,19 +55,6 @@ We are actively expanding the suite and plan to add even more capabilities, incl
 - Email
 - User Portal
 - Admin Portal
-
-## New: Project Management with OpenProject
-
-MijnBureau now includes **OpenProject** for project management:
-
-```bash
-# Deploy OpenProject
-export MIJNBUREAU_MASTER_PASSWORD="demo-password"
-export MIJNBUREAU_CREATE_NAMESPACES=true
-helmfile -e demo -l name=openproject apply
-
-# Access: http://openproject.mb.test/ (admin@example.com / admin123)
-```
 
 ## Commit Conventions
 
@@ -104,6 +92,7 @@ It currently includes the following open-source components
 | AI LLM             | Ollama               | [v0.7.0](https://github.com/ollama/ollama/tree/v0.7.0)                            | [documentation](https://ollama.com/)                                                 | MIT        |
 | Spreadsheet        | Grist                | [v1.6.1](https://github.com/gristlabs/grist-core/tree/v1.6.1)                     | [documentation](https://support.getgrist.com/self-managed/)                          | Apache-2.0 |
 | File sharing       | Nextcloud            | [v30.0.7](https://github.com/nextcloud/server/tree/v30.0.7)                       | [documentation](https://nextcloud.com/)                                              | AGPL-3.0   |
+| Project Management | OpenProject          | [16.5.1](https://github.com/opf/openproject/releases/tag/v16.5.1)                 | [documentation](https://www.openproject.org/docs/)                                   | GPL-3.0    |
 | Office             | Collabora            | [v25.04.5.1](https://github.com/CollaboraOnline/online/releases/tag/cp-25.04.5-1) | [documentation](https://sdk.collaboraonline.com/docs/installation/index.html)        | MPL-2.0    |
 | Notes              | Docs                 | [v3.8.0](https://github.com/suitenumerique/docs/releases/tag/v3.8.0)              | [documentation](https://github.com/suitenumerique/docs/tree/main/docs/installation)  | MIT        |
 | Video backend      | Livekit              | [v1.9.1](https://github.com/livekit/livekit/releases/tag/v1.9.1)                  | [documentation](https://livekit.io/)                                                 | Apache-2.0 |
