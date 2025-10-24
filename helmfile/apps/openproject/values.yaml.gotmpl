@@ -37,14 +37,6 @@ ingress:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "{{ .Values.openproject.ingress.tls | default false }}"
     {{- end }}
 
-# Database configuration
-database:
-  host: {{ .Values.database.openproject.host }}
-  port: {{ .Values.database.openproject.port }}
-  database: {{ .Values.database.openproject.name }}
-  username: {{ .Values.database.openproject.user }}
-  password: {{ .Values.database.openproject.password }}
-
 # PostgreSQL configuration
 postgresql:
   bundled: {{ eq .Environment.Name "demo" }}
@@ -57,31 +49,22 @@ postgresql:
     username: "openproject"
     password: {{ .Values.secret.openproject.postgresPassword | quote }}
     database: "openproject"
-  connection:
-    host: {{ .Values.database.openproject.host }}
-    port: {{ .Values.database.openproject.port }}
-    database: {{ .Values.database.openproject.name }}
-    username: {{ .Values.database.openproject.user }}
-    password: {{ .Values.database.openproject.password }}
 
-# Cache configuration (using Redis)
-cache:
-  host: {{ .Values.cache.openproject.host }}
-  port: {{ .Values.cache.openproject.port }}
-  password: {{ .Values.cache.openproject.password }}
+# Cache configuration
+# Use memcached for demo, Redis for production
+memcached:
+  bundled: {{ eq .Environment.Name "demo" }}
+  image:
+    repository: bitnami/memcached
+    tag: "latest"
 
+# Redis configuration for production
 redis:
+  bundled: {{ eq .Environment.Name "demo" }}
   image:
     registry: {{ (coalesce .Values.container.redis.registry .Values.container.default.registry) | quote }}
     repository: {{ .Values.container.redis.repository | quote }}
     tag: {{ .Values.container.redis.tag | quote }}
-
-# Use bundled memcached with working image
-memcached:
-  bundled: true
-  image:
-    repository: bitnami/memcached
-    tag: "latest"
 
 # OIDC configuration
 oidc:
