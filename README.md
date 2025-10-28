@@ -95,7 +95,7 @@ It currently includes the following open-source components
 | Notes              | Docs                 | [v3.8.0](https://github.com/suitenumerique/docs/releases/tag/v3.8.0)              | [documentation](https://github.com/suitenumerique/docs/tree/main/docs/installation)  | MIT        |
 | Video backend      | Livekit              | [v1.9.1](https://github.com/livekit/livekit/releases/tag/v1.9.1)                  | [documentation](https://livekit.io/)                                                 | Apache-2.0 |
 | Video conferencing | meet                 | [v0.1.38](https://github.com/suitenumerique/meet/releases/tag/v0.1.38)            | [documentation](https://github.com/suitenumerique/meet/tree/main/docs)               | MIT        |
-| AI Assistent       | Conversations        | [main](https://github.com/suitenumerique/conversations/)                          | [documentation](https://github.com/suitenumerique/conversations/blob/main/README.md) | MIT        |
+| AI Assistent       | Conversations        | [v0.0.5](https://github.com/suitenumerique/conversations/tag/v0.0.5)              | [documentation](https://github.com/suitenumerique/conversations/blob/main/README.md) | MIT        |
 
 ---
 
