@@ -30,7 +30,6 @@ global:
     ## @param global.compatibility.omitEmptySeLinuxOptions If set to true, removes the seLinuxOptions from the securityContexts when it is set to an empty object
     ##
     omitEmptySeLinuxOptions: false
-
 ## @section Common parameters
 
 ## @param kubeVersion Override Kubernetes version reported by .Capabilities
@@ -71,7 +70,6 @@ diagnosticMode:
     - sleep
   args:
     - infinity
-
 ## @section Impress backend Parameters
 ##
 
@@ -90,7 +88,7 @@ backend:
   image:
     registry: docker.io
     repository: lasuite/impress-backend
-    tag: "v3.7.0"
+    tag: "v3.8.21"
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -227,7 +225,6 @@ backend:
       drop: ["ALL"]
     seccompProfile:
       type: "RuntimeDefault"
-
   ## @param backend.existingConfigmap The name of an existing ConfigMap with your custom configuration for Impress backend
   ##
   existingConfigmap: ""
@@ -1010,7 +1007,6 @@ backend:
       concurrency:
         min: 10
         max: 100
-
 ## @section Impress frontend Parameters
 ##
 
@@ -1029,7 +1025,7 @@ frontend:
   image:
     registry: docker.io
     repository: lasuite/impress-frontend
-    tag: v3.7.0
+    tag: v3.8.21
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -1166,7 +1162,6 @@ frontend:
       drop: ["ALL"]
     seccompProfile:
       type: "RuntimeDefault"
-
   ## @param frontend.existingConfigmap The name of an existing ConfigMap with your custom configuration for Impress frontend
   ##
   existingConfigmap: ""
@@ -1489,10 +1484,8 @@ frontend:
     serviceWorkerDeactivated: false
     ## @param frontend.configuration.publishAsMit Removes packages whose licences are incompatible with the MIT licence (xl-docx-exporter: GPL, xl-pdf-exporter: GPL, xl-multi-column: GPL)
     publishAsMit: true
-
 ## @section Docs y-provider Parameters
 ##
-
 yProvider:
   ## Impress y-provider image
   ## ref: https://hub.docker.com/r/lasuite/impress-y-provider
@@ -1506,7 +1499,7 @@ yProvider:
   image:
     registry: docker.io
     repository: lasuite/impress-y-provider
-    tag: v3.7.0
+    tag: v3.8.21
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -1967,7 +1960,6 @@ yProvider:
     ## @param yProvider.configuration.collaboration.serverSecret Collaboration server secret
     collaboration:
       serverSecret: server-secret
-
 ## @section Traffic Exposure Parameters
 ##
 
@@ -2517,9 +2509,7 @@ ingressMedia:
   ##             name: http
   ##
   extraRules: []
-
 ## @section Default init containers Parameters
-
 defaultInitContainers:
   ## 'volume-permissions' init container
   ## Changes the owner and group of the persistent volume mount(s) point(s) to runAsUser:fsGroup values
@@ -2594,7 +2584,6 @@ defaultInitContainers:
     ##     memory: 1024Mi
     ##
     resources: {}
-
 ## @section Other Parameters
 ##
 
@@ -2615,7 +2604,6 @@ serviceAccount:
   ## @param serviceAccount.automountServiceAccountToken Automount service account token for the server service account
   ##
   automountServiceAccountToken: true
-
 ## Prometheus metrics
 ##
 metrics:
