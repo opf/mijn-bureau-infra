@@ -94,8 +94,6 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.frontend.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.frontend.image.debug .Values.diagnosticMode.enabled) | quote }}
             - name: PORT
               value: {{ .Values.frontend.containerPorts.http | quote }}
             - name: NEXT_PUBLIC_API_ORIGIN

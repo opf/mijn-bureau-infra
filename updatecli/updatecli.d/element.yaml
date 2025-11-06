@@ -1,0 +1,136 @@
+name: "Update Element versions"
+
+scms:
+  default:
+    kind: "github"
+    spec:
+      user: "{{ .github.user }}"
+      email: "{{ .github.email }}"
+      owner: "{{ .github.owner }}"
+      repository: "{{ .github.repository }}"
+      username: "{{ .github.username }}"
+      branch: "{{ .github.branch }}"
+      commitmessage:
+        title: Bump element version to {{ source "element_latest_version" }}
+        hidecredit: true
+        squash: true
+        type: "⬆️(deps)"
+
+sources:
+  element_latest_version:
+    name: "Get latest element tag"
+    kind: dockerimage
+    spec:
+      image: "vectorim/element-web"
+      architecture: amd64
+      tagfilter: "^v?[0-9.]+$"
+      versionfilter:
+        kind: semver
+        pattern: ">0.0.0"
+
+  synapse_latest_version:
+    name: "Get latest synapse tag"
+    kind: dockerimage
+    spec:
+      image: "matrixdotorg/synapse"
+      architecture: amd64
+      tagfilter: "^v?[0-9.]+$"
+      versionfilter:
+        kind: semver
+        pattern: ">0.0.0"
+
+targets:
+  update_element_tag:
+    name: "Update Element container tag"
+    kind: yaml
+    spec:
+      engine: yamlpath
+      file: "helmfile/environments/default/container.yaml.gotmpl"
+      key: "$.container.elementweb.tag"
+    sourceid: element_latest_version
+    scmid: default
+
+  update_element_chart:
+    name: "Update Element chart appVersion"
+    kind: yaml
+    spec:
+      engine: yamlpath
+      file: "helmfile/apps/chat/charts/element-web/Chart.yaml"
+      key: "$.appVersion"
+    transformers:
+      - trimprefix: "v"
+    sourceid: element_latest_version
+    scmid: default
+
+  update_synapse_container_tag:
+    name: "Update Synapse container tag"
+    kind: yaml
+    spec:
+      engine: yamlpath
+      file: "helmfile/environments/default/container.yaml.gotmpl"
+      key: "$.container.synapse.tag"
+    sourceid: synapse_latest_version
+    scmid: default
+
+  update_synapse_values_tag:
+    name: "Update Synapse values tag"
+    kind: yaml
+    spec:
+      engine: yamlpath
+      file: "helmfile/apps/chat/charts/synapse/values.yaml"
+      key: "$.image.tag"
+    sourceid: synapse_latest_version
+    scmid: default
+
+  update_synapse_readme_version:
+    name: "Update Synapse README.md"
+    kind: file
+    spec:
+      files:
+        - "helmfile/apps/chat/charts/synapse/README.md"
+      matchpattern: "`v([0-9.]+)`"
+      replacepattern: '`{{ source "synapse_latest_version" }}`'
+    sourceid: synapse_latest_version
+    scmid: default
+
+  update_synapse_chart:
+    name: "Update synapse chart appVersion"
+    kind: yaml
+    spec:
+      engine: yamlpath
+      file: "helmfile/apps/chat/charts/synapse/Chart.yaml"
+      key: "$.appVersion"
+    transformers:
+      - trimprefix: "v"
+    sourceid: synapse_latest_version
+    scmid: default
+
+  update_markdowns_element_version:
+    name: "Update markdown files with Element versions"
+    kind: file
+    spec:
+      files:
+        - "README.md"
+        - "docs/docs/intro.md"
+      matchpattern: "[vV]([0-9.]+)]\\Q(https://github.com/element-hq/element-web/tree/v\\E([0-9.]+)"
+      replacepattern: '{{ source "element_latest_version" }}](https://github.com/suitenumerique/docs/releases/tag/{{ source "synapse_latest_version" }}'
+    sourceid: element_latest_version
+    scmid: default
+
+  update_markdowns_synapse_version:
+    name: "Update markdown files with Synapse versions"
+    kind: file
+    spec:
+      files:
+        - "README.md"
+        - "docs/docs/intro.md"
+      matchpattern: "v([0-9.]+)]\\Q(https://github.com/element-hq/synapse/tree/v\\E([0-9.]+)"
+      replacepattern: '{{ source "synapse_latest_version" }}](https://github.com/suitenumerique/docs/releases/tag/{{ source "synapse_latest_version" }}'
+    sourceid: synapse_latest_version
+    scmid: default
+
+actions:
+  default:
+    scmid: default
+    kind: github/pullrequest
+    title: ⬆️(deps) Bump element version to {{ source "element_latest_version" }}

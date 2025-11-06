@@ -2,160 +2,145 @@ container:
   default:
     registry: ~
     imagePullSecret: ~
-
   ollama:
     registry: "docker.io"
     repository: "ollama/ollama"
     tag: "0.9.5"
     imagePullSecret: ~
-
   keycloak:
-    registry:  "docker.io"
+    registry: "docker.io"
     repository: bitnamilegacy/keycloak
-    tag: 26.2.5-debian-12-r3
+    tag: 26.3.3-debian-12-r0
     imagePullSecret: ~
-
   keycloak_cli:
-    registry:  "docker.io"
+    registry: "docker.io"
     repository: bitnamilegacy/keycloak-config-cli
-    tag: 6.4.0-debian-12-r8
+    tag: 6.4.0-debian-12-r9
     imagePullSecret: ~
-
   grist:
     registry: "registry-1.docker.io"
     repository: "gristlabs/grist"
     tag: "1.6.1"
     imagePullSecret: ~
-
   minio:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/minio"
-    tag: "2025.7.18-debian-12-r0"
+    tag: "2025.7.23-debian-12-r5"
     imagePullSecret: ~
-
   minio_shell:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/os-shell"
-    tag: "12-debian-12-r49"
+    tag: "12-debian-12-r51"
     imagePullSecret: ~
-
   minio_console:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/minio-object-browser"
-    tag: "2.0.2-debian-12-r1"
+    tag: "2.0.2-debian-12-r4"
     imagePullSecret: ~
-
   postgres:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/postgresql"
-    tag: "17-debian-12"
+    tag: "17.6.0-debian-12-r4"
     imagePullSecret: ~
-
   postgres_exporter:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/postgres-exporter"
-    tag: "0.17.1-debian-12-r12"
+    tag: "0.17.1-debian-12-r9"
     imagePullSecret: ~
-
   redis:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/redis"
-    tag: "8.0.3-debian-12-r1"
+    tag: "8.2.1-debian-12-r0"
     imagePullSecret: ~
-
   redis_exporter:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/redis-exporter"
-    tag: "1.74.0-debian-12-r2"
+    tag: "1.76.0-debian-12-r0"
     imagePullSecret: ~
-
   elementweb:
     registry: "registry-1.docker.io"
     repository: "vectorim/element-web"
-    tag: "v1.11.106"
+    tag: "v1.12.2"
     imagePullSecret: ~
-
   synapse:
     registry: "registry-1.docker.io"
     repository: "matrixdotorg/synapse"
-    tag: "v1.133.0"
+    tag: "v1.141.0"
     imagePullSecret: ~
-
   collabora:
     registry: "registry-1.docker.io"
     repository: "collabora/code"
     tag: "25.04.5.1.1"
     imagePullSecret: ~
-
   nextcloud:
     registry: "registry-1.docker.io"
     repository: "library/nextcloud"
     tag: "31.0.7-apache"
     imagePullSecret: ~
-
   osShell:
     registry: "registry-1.docker.io"
     repository: "bitnamilegacy/os-shell"
-    tag: "12-debian-12-r46"
+    tag: "12-debian-12-r51"
     imagePullSecret: ~
-
   openproject:
     registry: "registry-1.docker.io"
     repository: "openproject/openproject"
     tag: "16.5.1-slim"
     imagePullSecret: ~
-
   livekit_server:
     registry: "registry-1.docker.io"
     repository: "livekit/livekit-server"
-    tag: "v1.9.1"
+    tag: "v1.9.3"
     imagePullSecret: ~
-
   kubectl:
     registry: docker.io
     repository: bitnamilegacy/kubectl
-    tag: 1.32.1
+    tag: 1.33.4
     imagePullSecret: ~
-
   meet_backend:
     registry: "registry-1.docker.io"
     repository: "lasuite/meet-backend"
     tag: "v0.1.38"
     imagePullSecret: ~
-
   meet_frontend:
     registry: "registry-1.docker.io"
     repository: "lasuite/meet-frontend"
     tag: "v0.1.38"
     imagePullSecret: ~
-
   conversations_backend:
     registry: "registry-1.docker.io"
     repository: "lasuite/conversations-backend"
-    tag: "main" # prototype, so no versioning yet
+    tag: "v0.0.5"
     imagePullSecret: ~
-
   conversations_frontend:
     registry: "registry-1.docker.io"
     repository: "lasuite/conversations-frontend"
-    tag: "main" # prototype, so no versioning yet
+    tag: "v0.0.5"
     imagePullSecret: ~
-
   nginx:
     registry: docker.io
     repository: bitnamilegacy/nginx
     tag: 1.29.1
     imagePullSecret: ~
-
   docs:
     imagePullSecret: ~
     registry: "registry-1.docker.io"
     backend:
       repository: "lasuite/impress-backend"
-      tag: "v3.7.0"
+      tag: "v3.8.21"
     frontend:
       repository: "lasuite/impress-frontend"
-      tag: "v3.7.0"
+      tag: "v3.8.21"
     yProvider:
       repository: "lasuite/impress-y-provider"
-      tag: "v3.7.0"
+      tag: "v3.8.21"
+
+  bureaublad:
+    imagePullSecret: ~
+    registry: "ghcr.io"
+    backend:
+      repository: "minbzk/bureaublad-api"
+      tag: "v0.1.0"
+    frontend:
+      repository: "minbzk/bureaublad-frontend"
+      tag: "v0.1.0"
