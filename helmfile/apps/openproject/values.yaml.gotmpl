@@ -29,6 +29,7 @@ ingress:
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
     enabled: {{ .Values.global.tls.enabled | default true }}
+    secretName: {{ .Values.openproject.ingress.secretName | default "openproject-tls" }}
   annotations:
     {{- if .Values.cluster.ingress.annotations }}
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
