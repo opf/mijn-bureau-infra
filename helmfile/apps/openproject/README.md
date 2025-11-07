@@ -5,6 +5,7 @@ OpenProject is a web-based project management system for MijnBureau infrastructu
 ## Quick Start
 
 ### Demo Environment
+
 ```bash
 # Deploy OpenProject
 helmfile -e demo -l name=openproject apply
@@ -14,6 +15,7 @@ helmfile -e demo -l name=openproject apply
 ```
 
 ### Production Environment
+
 ```bash
 # Deploy OpenProject
 helmfile -e production -l name=openproject apply
@@ -25,6 +27,7 @@ helmfile -e production -l name=openproject apply
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 export MIJNBUREAU_MASTER_PASSWORD="your-secure-password"
 export MIJNBUREAU_CREATE_NAMESPACES=true
@@ -32,10 +35,10 @@ export MIJNBUREAU_CREATE_NAMESPACES=true
 
 ### Key Settings
 
-| Environment | Database | TLS | SMTP | Resources |
-|-------------|----------|-----|------|-----------|
-| Demo | Bundled PostgreSQL | Disabled | Disabled | 4 CPU / 4Gi |
-| Production | External PostgreSQL | Enabled | Enabled | 8 CPU / 8Gi |
+| Environment | Database            | TLS      | SMTP     | Resources   |
+| ----------- | ------------------- | -------- | -------- | ----------- |
+| Demo        | Bundled PostgreSQL  | Disabled | Disabled | 4 CPU / 4Gi |
+| Production  | External PostgreSQL | Enabled  | Enabled  | 8 CPU / 8Gi |
 
 ## Files
 
