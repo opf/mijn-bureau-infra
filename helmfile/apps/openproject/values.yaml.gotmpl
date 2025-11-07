@@ -29,6 +29,7 @@ ingress:
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
     enabled: {{ .Values.openproject.ingress.tls | default false }}
+    secretName: {{ .Values.openproject.ingress.tlsSecretName | default "ingress-tls" }}
   annotations:
     {{- if .Values.cluster.ingress.annotations }}
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
@@ -77,6 +78,14 @@ oidc:
     userinfo_endpoint: "{{ .Values.authentication.oidc.userinfo_endpoint }}"
     jwks_uri: "{{ .Values.authentication.oidc.jwks_endpoint }}"
     scope: ["openid", "profile", "email"]
+
+# SSL certificate trust configuration for outgoing TLS connections
+# Use the egress.tls.rootCA configuration from the OpenProject Helm chart
+egress:
+  tls:
+    rootCA:
+      configMap: {{ .Values.openproject.egress.tls.rootCA.configMap | default "ingress-ca-cert" }}
+      fileName: {{ .Values.openproject.egress.tls.rootCA.fileName | default "rootCA.pem" }}
 
 # Init container resources
 appInit:
@@ -128,4 +137,3 @@ containerSecurityContext: {{ .Values.openproject.containerSecurityContext | toYa
 autoscaling:
   hpa: {{ .Values.autoscaling.horizontal.openproject | toYaml | nindent 4 }}
 {{- end }}
-
