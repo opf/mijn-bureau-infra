@@ -1,41 +1,20 @@
----
-sidebar_position: 10
----
-
 # OpenProject
 
-Project management system for MijnBureau.
+MijnBureau supplies an installation of [OpenProject](https://www.openproject.org/). OpenProject is an open-source project management platform for planning, tracking, and collaborating on projects.
 
-## Quick Start
+## Configuration
 
-```bash
-# Deploy OpenProject
-export MIJNBUREAU_MASTER_PASSWORD="demo-password"
-export MIJNBUREAU_CREATE_NAMESPACES=true
-helmfile -e demo -l name=openproject apply
-```
+To configure OpenProject, override the default settings for your environment. The defaults are located in `helmfile/environments/default`.
 
-## Access
+## Authentication Integration
 
-- **URL**: `http://openproject.mb.test/`
-- **Login**: `admin@example.com` / `admin123`
+OpenProject integrates with MijnBureau authentication via:
 
-## Features
+- **OIDC Authentication**: Single sign-on using Keycloak
+- **User Provisioning**: Automatic account creation from OIDC provider
+- **Group Mapping**: Synchronization of user groups and permissions
 
-- Project planning with Gantt charts
-- Task management and time tracking
-- Team collaboration and file sharing
-- Project reporting and analytics
+## Notes
 
-## Troubleshooting
-
-```bash
-# Check status
-kubectl get pods -n mijn-bureau | grep openproject
-
-# Check logs
-kubectl logs -n mijn-bureau -l app.kubernetes.io/name=openproject
-
-# Restart if needed
-kubectl rollout restart deployment/openproject-web -n mijn-bureau
-```
+> **Demo Environment:** Uses bundled PostgreSQL and memcached.
+> **Production Environment:** Use external database/cache and configure OIDC authentication.
