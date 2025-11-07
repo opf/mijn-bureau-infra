@@ -3,7 +3,7 @@
 
 global:
   security:
-    allowInsecureImages: {{ .Values.openproject.security.allowInsecureImages | default false }}
+    allowInsecureImages: false
 
   imagePullSecrets:
     - name: {{ (coalesce .Values.container.openproject.imagePullSecret .Values.container.default.imagePullSecret) | quote }}
@@ -35,7 +35,7 @@ ingress:
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
     {{- end }}
     {{- if eq .Values.cluster.ingress.type "nginx" }}
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "{{ .Values.openproject.ingress.tls | default false }}"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     {{- end }}
 
 # PostgreSQL configuration
