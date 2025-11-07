@@ -97,6 +97,7 @@ It currently includes the following open-source components
 | Video conferencing | meet                 | [v0.1.38](https://github.com/suitenumerique/meet/releases/tag/v0.1.38)              | [documentation](https://github.com/suitenumerique/meet/tree/main/docs)               | MIT        |
 | AI Assistent       | Conversations        | [v0.0.7](https://github.com/suitenumerique/conversations/tag/v0.0.7)                | [documentation](https://github.com/suitenumerique/conversations/blob/main/README.md) | MIT        |
 | Bureaublad         | Startpage            | [v0.1.0](https://github.com/MinBZK/bureaublad/releases/tag/v0.1.0)                  | [documentation](<(https://github.com/MinBZK/bureaublad)>)                            | EUPL-1.2   |
+| File sharing       | drive                | [v0.7.0](https://github.com/suitenumerique/drive/releases/tag/v0.7.0)               | [documentation](https://github.com/suitenumerique/drive/blob/main/README.md)         | MIT        |
 
 ---
 
