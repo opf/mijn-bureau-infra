@@ -28,8 +28,7 @@ ingress:
   host: {{ .Values.global.hostname.openproject }}.{{ .Values.global.domain }}
   ingressClassName: {{ .Values.cluster.ingress.className | quote }}
   tls:
-    enabled: {{ .Values.openproject.ingress.tls | default false }}
-    secretName: {{ .Values.openproject.ingress.tlsSecretName | default "ingress-tls" }}
+    enabled: {{ .Values.global.tls.enabled | default true }}
   annotations:
     {{- if .Values.cluster.ingress.annotations }}
     {{ .Values.cluster.ingress.annotations | toYaml | nindent 4 }}
