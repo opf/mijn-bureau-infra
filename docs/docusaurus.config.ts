@@ -28,7 +28,9 @@ const config: Config = {
   trailingSlash: false,
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+  onBrokenAnchors: "throw",
+  onDuplicateRoutes: "throw",
+  noIndex: false,
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -36,8 +38,21 @@ const config: Config = {
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
+    localeConfigs: {
+      en: {
+        label: "English",
+        direction: "ltr",
+        htmlLang: "en-US",
+        calendar: "gregory",
+      },
+    },
   },
-
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+      onBrokenMarkdownImages: "warn",
+    },
+  },
   plugins: [
     [
       require.resolve("@easyops-cn/docusaurus-search-local"),
@@ -103,12 +118,16 @@ const config: Config = {
           label: "Documentation",
         },
         {
-          href: "https://github.com/MinBZK/mijn-bureau-infra",
-          label: "GitHub",
-          position: "right",
+          to: "/demo",
+          label: "Demo",
+          position: "left",
         },
       ],
     },
+    colorMode: {
+      disableSwitch: true,
+    },
+
     docs: {
       versionPersistence: "localStorage",
       sidebar: {

@@ -27,16 +27,16 @@ MijnBureau offers a rich set of features focused on collaboration:
 - Video Conferencing
 - AI Assistant
 - Start page with integrations to the different features
+- User Portal
 
 ### Planned Features
 
 We are actively expanding the suite with plans to include:
 
-- Discussion Forum
-- Password Manager
 - Email
-- User Portal
 - Admin Portal
+- Password Manager
+- Discussion Forum
 
 ---
 
