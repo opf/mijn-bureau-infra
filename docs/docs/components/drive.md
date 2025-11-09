@@ -1,4 +1,4 @@
-# Meet
+# Drive
 
 MijnBureau supplies an installation of [Drive](https://github.com/suitenumerique/drive). It is a filestorage solutions that uses S3 and can be seen as a simpelere alternative to nextcloud files.
 
@@ -8,19 +8,19 @@ To configure this solution, you can override the default settings for your
 [selected environment](https://minbzk.github.io/mijn-bureau-infra/docs/category/installation). The defaults are
 located in the folder `helmfile/environments/default`.
 
-| Name                             | Description                                    |
-| -------------------------------- | ---------------------------------------------- |
-| `global.domain`                  | The domain name of your MijnBureau instance    |
-| `global.hostname.drive`          | The name of the subdomain for the meet client  |
-| `application.drive.enabled`      | Enable meet for your MijnBureau implementation |
-| `application.drive.namespace`    | The Kubernetes namespace name                  |
-| `authorization.drive.enabled`    | Enable meet for your MijnBureau implementation |
-| `tls.drive.*`                    | The TLS settings for meet                      |
-| `pvc.drive.*`                    | storage requirements                           |
-| `resources.drive.*`              | Resources for meet                             |
-| `autoscaling.horizontal.drive.*` | Autoscaling for meet.                          |
-| `container.drive.*`              | Container selection                            |
-| `secret.drive.*`                 | Superuser credentials                          |
+| Name                             | Description                                     |
+| -------------------------------- | ----------------------------------------------- |
+| `global.domain`                  | The domain name of your MijnBureau instance     |
+| `global.hostname.drive`          | The name of the subdomain for the drive client  |
+| `application.drive.enabled`      | Enable drive for your MijnBureau implementation |
+| `application.drive.namespace`    | The Kubernetes namespace name                   |
+| `authorization.drive.enabled`    | Enable drive for your MijnBureau implementation |
+| `tls.drive.*`                    | The TLS settings for drive                      |
+| `pvc.drive.*`                    | storage requirements                            |
+| `resources.drive.*`              | Resources for drive                             |
+| `autoscaling.horizontal.drive.*` | Autoscaling for drive.                          |
+| `container.drive.*`              | Container selection                             |
+| `secret.drive.*`                 | Superuser credentials                           |
 
 ## More information
 
