@@ -1,6 +1,6 @@
 # Password Manager
 
-The Password Manager feature is not yet available in MijnBureau. However, it is actively being developed and will be introduced in a future release.
+The Password Manager is currently under active development and will be included in a future MijnBureau release.
 
 Below is a preview of the upcoming Password Manager VaultWarden
 

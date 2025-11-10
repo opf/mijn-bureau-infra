@@ -1,6 +1,14 @@
 # Documents
 
-MijnBureau offers collaborative document editing, enabling teams to work together seamlessly on various types of content. Based on collabora online is offers enterprise grade document editing. used in my products like NextCloud, OpenDesk this is the core of many collaboration suites.
+MijnBureau provides real-time collaborative editing for documents, presentations, and spreadsheets. Built on Collabora Online (used by suites like Nextcloud and OpenDesk), it lets multiple users edit, comment, and track changes simultaneously while preserving office-style formatting and file compatibility.
+
+Key features:
+
+- Real-time co-editing with conflict-free merge behavior
+- Commenting and revision history for auditability
+- Seamless integration with MijnBureau access controls and storage
+- Support for common document formats (DOCX, ODT, XLSX, PPTX)
+- Mobile- and desktop-friendly editing experience
 
 ### Document Editing
 

@@ -1,6 +1,6 @@
 # Notes
 
-Collaborativly work on notes. This application is developed by the frensh government and used in many organization in production. It allows collaborative document editing and structures wiki support for knowledge bases.
+Collaboratively create and edit notes. Developed by the French government and widely used in production across organizations, the application provides real-time collaborative editing and structured wiki features for knowledge bases.
 
 Below is a preview.
 
