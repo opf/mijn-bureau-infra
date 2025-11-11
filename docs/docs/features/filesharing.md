@@ -1,13 +1,16 @@
 # File Sharing
 
-MijnBureau includes a file-sharing feature to enable secure and efficient collaboration. This feature ensures that users can share files seamlessly within the platform.
+MijnBureau offers two secure, user-friendly file sharing and syncing options: Nextcloud and LaSuite Drive. Both are integrated into the platform, allowing teams to easily upload, share, edit, and sync files.
 
----
+- Nextcloud: A mature, enterprise-grade solution with comprehensive features such as version control, shared folders, and collaborative editing.
+- LaSuite Drive: Developed by the French government and currently in the incubation phase, LaSuite Drive is a promising alternative with a focus on simplicity and privacy.
 
-## Screenshots
+Below are examples of both solutions.
 
-Below are previews of the file-sharing feature. We have two solutions. One based on nextcloud the other based on LaSuite drive.
+## NextCloud files
 
 ![File Sharing Preview 1](/img/features/filestorage.png)
+
+## LaSuite drive
 
 ![File Sharing Preview 2](/img/features/filestorage2.png)
